@@ -54,24 +54,28 @@ impl Model {
         }
     }
 
+    // Contruct navbar at top of page
     fn view_navbar(&self) -> Html {
         html! {
             <Navbar navbrand=self.view_navbrand() navstart=self.view_navstart() navend=self.view_navend() />
         }
     }
 
+    // Construct navbrand section of navbar
     fn view_navbrand(&self) -> Html {
         html! {
 
         }
     }
 
+    // Construct navend section of navbar
     fn view_navend(&self) -> Html {
         html! {
 
         }
     }
 
+    // Construct main section of navbar
     fn view_navstart(&self) -> Html {
         html! {
 
