@@ -81,7 +81,17 @@ impl Model {
     // Construct main section of navbar
     fn view_navstart(&self) -> Html {
         html! {
-
+            <>
+                <NavbarItem tag=A>
+                    { "Login" }
+                </NavbarItem>
+                <NavbarItem tag=A>
+                    { "Documention" }
+                </NavbarItem>
+                <NavbarItem tag=A>
+                    { "About" }
+                </NavbarItem>
+            </>
         }
     }
 
