@@ -1,6 +1,6 @@
 #![recursion_limit = "256"]
 
-use ybc::{ Box, Container, Section, Tile };
+use ybc::{ Box, Container, Navbar, Section, Tile };
 use ybc::TileCtx::{ Ancestor, Child, Parent };
 use ybc::TileSize;
 
@@ -51,6 +51,30 @@ impl Model {
                     { week_elements.into_iter().collect::<Html>() }
                 </g>
             </svg>
+        }
+    }
+
+    fn view_navbar(&self) -> Html {
+        html! {
+            <Navbar navbrand=self.view_navbrand() navstart=self.view_navstart() navend=self.view_navend() />
+        }
+    }
+
+    fn view_navbrand(&self) -> Html {
+        html! {
+
+        }
+    }
+
+    fn view_navend(&self) -> Html {
+        html! {
+
+        }
+    }
+
+    fn view_navstart(&self) -> Html {
+        html! {
+
         }
     }
 
