@@ -14,6 +14,46 @@ struct Model {
 }
 
 impl Model {
+    // Create calender grid element
+    fn view_blockgrid(&self) -> Html {
+        // create empty vector representing weeks out of a year
+        let mut week_elements = Vec::new();
+        
+        // Loop for every week in one year
+        for x in 0..52 {
+            // Create empty vector of blocks representing days of a week
+            let mut day_elements = Vec::new();
+
+            // Loop for everyday in one week
+            for y in 0..7 {
+                // Create <rect> element representing a day
+                let element = html! {
+                    <rect width="11" height="11" y=y * 15 rx=2 ry=2 fill="#c9cacc"></rect>
+                };
+                
+                day_elements.push(element);
+            }
+
+            // Create <g> element representing a week
+            let element = html! {
+                <g transform=format!("translate({}, 0)", x * 14)>
+                    { day_elements.into_iter().collect::<Html>() }
+                </g>
+            };
+
+            week_elements.push(element)
+        }
+
+        // Create svg container, collect grid elements and append to <g> tag
+        html! {
+            <svg width="750" height="128">
+                <g transform="translate(20, 20)">
+                    { week_elements.into_iter().collect::<Html>() }
+                </g>
+            </svg>
+        }
+    }
+
     // Create skill block item.
     fn view_skill_block(&self) -> Html {
         html! {
@@ -27,7 +67,7 @@ impl Model {
                     <Tile ctx=Parent size=TileSize::Eight>
                         <Tile classes=Some("notification is-primary") ctx=Child>
                             <Box>
-                                {self.view_blockgrid()}
+                                { self.view_blockgrid() }
                             </Box>
                         </Tile>
                     </Tile>
