@@ -66,7 +66,7 @@ impl Model {
     fn view_navbrand(&self) -> Html {
         html! {
             <NavbarItem tag=A>
-                <img src="https://via.placeholder.com/150" />
+                <img src="https://bulma.io/images/bulma-logo.png" />
             </NavbarItem>
         }
     }
