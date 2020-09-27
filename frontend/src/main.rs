@@ -1,6 +1,7 @@
 #![recursion_limit = "256"]
 
-use ybc::{ Box, Container, Navbar, Section, Tile };
+use ybc::{ Box, Container, Navbar, NavbarItem, Section, Tile };
+use ybc::NavbarItemTag::A;
 use ybc::TileCtx::{ Ancestor, Child, Parent };
 use ybc::TileSize;
 
@@ -64,7 +65,9 @@ impl Model {
     // Construct navbrand section of navbar
     fn view_navbrand(&self) -> Html {
         html! {
-
+            <NavbarItem tag=A>
+                <img src="https://image.shutterstock.com/image-vector/cube-logo-flat-illustration-stack-260nw-1500140135.jpg" />
+            </NavbarItem>
         }
     }
 
