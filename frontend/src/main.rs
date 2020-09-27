@@ -66,7 +66,7 @@ impl Model {
     fn view_navbrand(&self) -> Html {
         html! {
             <NavbarItem tag=A>
-                <img src="https://image.shutterstock.com/image-vector/cube-logo-flat-illustration-stack-260nw-1500140135.jpg" />
+                <img src="https://via.placeholder.com/150" />
             </NavbarItem>
         }
     }
@@ -135,6 +135,7 @@ impl Component for Model {
     fn view(&self) -> Html {
         html! {
             <>
+                { self.view_navbar() }
                 <Section>
                     <Container>
                         { self.view_skill_block() }
