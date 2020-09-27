@@ -58,7 +58,7 @@ impl Model {
     fn view_skill_block(&self) -> Html {
         html! {
             <>
-                <Tile>
+                <Tile ctx=Ancestor>
                     <Tile ctx=Parent size=TileSize::Two>
                         <Tile classes=Some("notification is-primary") ctx=Child>
                             <p class="title">{ "Example" }</p>
