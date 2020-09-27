@@ -28,7 +28,7 @@ impl Model {
             for y in 0..7 {
                 // Create <rect> element representing a day
                 let element = html! {
-                    <rect width="11" height="11" y=y * 15 rx=2 ry=2 fill="#c9cacc"></rect>
+                    <rect width="11" height="11" y=y * 15 rx=2 ry=2 fill="#dadada" style="outline: 1px solid #1b1f230a; outline-offset: -1px;"></rect>
                 };
                 
                 day_elements.push(element);
