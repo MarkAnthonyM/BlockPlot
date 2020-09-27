@@ -1,3 +1,9 @@
+#![recursion_limit = "256"]
+
+use ybc::{ Box, Container, Section, Tile };
+use ybc::TileCtx::{ Ancestor, Child, Parent };
+use ybc::TileSize;
+
 use yew::prelude::*;
 
 enum Msg { }
@@ -5,6 +11,35 @@ enum Msg { }
 struct Model {
     // "ComponentLink is like a reference to a component"
     _link: ComponentLink<Self>,
+}
+
+impl Model {
+    // Create skill block item.
+    fn view_skill_block(&self) -> Html {
+        html! {
+            <>
+                <Tile>
+                    <Tile ctx=Parent size=TileSize::Two>
+                        <Tile classes=Some("notification is-primary") ctx=Child>
+                            <p class="title">{ "Example" }</p>
+                        </Tile>
+                    </Tile>
+                    <Tile ctx=Parent size=TileSize::Eight>
+                        <Tile classes=Some("notification is-primary") ctx=Child>
+                            <Box>
+                                {self.view_blockgrid()}
+                            </Box>
+                        </Tile>
+                    </Tile>
+                    <Tile ctx=Parent size=TileSize::Two>
+                        <Tile classes=Some("notification is-primary") ctx=Child>
+                            <p class="title">{ "Example" }</p>
+                        </Tile>
+                    </Tile>
+                </Tile>
+            </>
+        }
+    }
 }
 
 impl Component for Model {
@@ -28,9 +63,13 @@ impl Component for Model {
 
     fn view(&self) -> Html {
         html! {
-            <div>
-                <h1>{ "Hello, World!" }</h1>
-            </div>
+            <>
+                <Section>
+                    <Container>
+                        { self.view_skill_block() }
+                    </Container>
+                </Section>
+            </>
         }
     }
 }
