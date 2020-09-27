@@ -107,6 +107,7 @@ impl Model {
                     </Tile>
                     <Tile ctx=Parent size=TileSize::Eight>
                         <Tile classes=Some("notification is-primary") ctx=Child>
+                            //TODO: Fix overflow issue
                             <Box>
                                 { self.view_blockgrid() }
                             </Box>
