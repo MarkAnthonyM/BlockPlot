@@ -21,7 +21,7 @@ struct BlockplotDbConn(diesel::PgConnection);
 
 // rusty-rescuetime api testing route
 #[get("/testapi")]
-fn get_test() {
+fn get_test() -> Json<AnalyticData> {
     dotenv().ok();
     
     let api_key = env::var("API_KEY").unwrap();
@@ -38,7 +38,7 @@ fn get_test() {
 
     let response = AnalyticData::fetch(&api_key, query_parameters, format);
 
-    println!("{:#?}", response);
+    Json(response.unwrap())
 }
 
 fn main() {
