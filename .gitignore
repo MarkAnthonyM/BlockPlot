@@ -2,3 +2,4 @@
 /frontend/dist
 Cargo.lock
 .env
+Rocket.toml
