@@ -24,7 +24,7 @@ struct BlockplotDbConn(diesel::PgConnection);
 fn get_test() {
     dotenv().ok();
     
-    let api_key = env::var("API_KEY");
+    let api_key = env::var("API_KEY").unwrap();
     let format = String::from("json");
     
     let query_parameters = Parameters::new(
@@ -36,7 +36,7 @@ fn get_test() {
         None,
     );
 
-    let response = AnalyticData::fetch(api_key, query_parameters, format);
+    let response = AnalyticData::fetch(&api_key, query_parameters, format);
 
     println!("{:#?}", response);
 }
