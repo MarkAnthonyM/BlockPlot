@@ -42,5 +42,8 @@ fn get_test() {
 }
 
 fn main() {
-    println!("Hello, World!");
+    rocket::ignite()
+        .attach(BlockplotDbConn::fairing())
+        .mount("/", routes![get_test])
+        .launch();
 }
