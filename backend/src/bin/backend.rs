@@ -5,6 +5,9 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
+use dotenv::dotenv;
+use std::env;
+
 use rocket_contrib::databases::diesel;
 use rocket_contrib::json::Json;
 
@@ -19,6 +22,8 @@ struct BlockplotDbConn(diesel::PgConnection);
 // rusty-rescuetime api testing route
 #[get("/testapi")]
 fn get_test() {
+    dotenv().ok();
+    
     let api_key = env::var("API_KEY");
     let format = String::from("json");
     
