@@ -20,8 +20,8 @@ use rusty_rescuetime::parameters::PerspectiveOptions::Rank;
 struct BlockplotDbConn(diesel::PgConnection);
 
 // rusty-rescuetime api testing route
-#[get("/testapi")]
-fn get_test() -> Json<AnalyticData> {
+#[get("/times")]
+fn get_times() -> Json<AnalyticData> {
     dotenv().ok();
     
     let api_key = env::var("API_KEY").unwrap();
@@ -44,6 +44,6 @@ fn get_test() -> Json<AnalyticData> {
 fn main() {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
-        .mount("/", routes![get_test])
+        .mount("/", routes![get_times])
         .launch();
 }
