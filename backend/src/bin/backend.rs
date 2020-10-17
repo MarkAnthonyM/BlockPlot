@@ -10,6 +10,7 @@ use std::env;
 
 use rocket_contrib::databases::diesel;
 use rocket_contrib::json::Json;
+use rocket_cors::{ AllowedHeaders, AllowedOrigins, Error };
 
 use rusty_rescuetime::analytic_data::AnalyticData;
 use rusty_rescuetime::parameters::Parameters;
