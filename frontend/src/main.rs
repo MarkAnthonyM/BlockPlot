@@ -6,6 +6,8 @@ use ybc::TileCtx::{ Ancestor, Child, Parent };
 use ybc::TileSize;
 
 use yew::prelude::*;
+use yew::services::fetch::{ FetchService, FetchTask, Request, Response };
+use yew::format::{ Nothing, Json};
 
 enum Msg { }
 
@@ -155,6 +157,21 @@ impl Component for Model {
             </>
         }
     }
+}
+
+//TODO: Figure out the proper way to make get requests
+fn api_test() {
+    let request = Request::get("http://localhost:8000/times").body(Nothing).unwrap();
+    let callback = link.callback(|response: Response<Json<Result<Data, Error>>>| {
+        if let (meta, Json(Ok(body))) = response.into_parts() {
+            if meta.status.is_success() {
+                return Msg::FetchResourceComplete(body);
+            }
+        }
+        Msg::FetchResourceFailed
+    });
+
+    let task = FetchService::fetch(request, callback);
 }
 
 fn main() {
