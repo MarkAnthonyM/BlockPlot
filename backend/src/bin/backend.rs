@@ -42,9 +42,23 @@ fn get_times() -> Json<AnalyticData> {
     Json(response.unwrap())
 }
 
-fn main() {
+fn main() -> Result<(), Error> {
+    let allowed_origins = AllowedOrigins::all();
+
+    let cors = rocket_cors::CorsOptions {
+        allowed_origins,
+        //TODO: Swtich to more strict options
+        allowed_headers: AllowedHeaders::all(),
+        allow_credentials: true,
+        ..Default::default()
+    }
+        .to_cors()?;
+    
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
+        .attach(cors)
         .mount("/", routes![get_times])
         .launch();
+
+    Ok(())
 }
