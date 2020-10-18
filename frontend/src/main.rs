@@ -161,18 +161,10 @@ impl Component for Model {
 }
 
 //TODO: Figure out the proper way to make get requests
-fn api_test() {
+fn api_test(callback: Callback<Response<Json<Result<T, Error>>>>) -> FetchTask {
     let request = Request::get("http://localhost:8000/times").body(Nothing).unwrap();
-    let callback = link.callback(|response: Response<Json<Result<Data, Error>>>| {
-        if let (meta, Json(Ok(body))) = response.into_parts() {
-            if meta.status.is_success() {
-                return Msg::FetchResourceComplete(body);
-            }
-        }
-        Msg::FetchResourceFailed
-    });
 
-    let task = FetchService::fetch(request, callback);
+    FetchService::fetch(request, callback).unwrap()
 }
 
 fn main() {
