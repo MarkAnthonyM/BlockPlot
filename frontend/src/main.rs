@@ -25,7 +25,8 @@ enum Msg {
 
 struct Model {
     // "ComponentLink is like a reference to a component"
-    _link: ComponentLink<Self>,
+    state: State,
+    link: ComponentLink<Self>,
 }
 
 struct State {
