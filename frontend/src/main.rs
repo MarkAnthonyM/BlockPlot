@@ -15,6 +15,7 @@ use yew::services::fetch::{ FetchService, FetchTask, Request, Response };
 enum Msg {
     GetTimeSheets,
     GetTimeSheetsSuccess(Vec<AnalyticData>),
+    GetTimesheetsError(Error),
 }
 
 struct Model {
