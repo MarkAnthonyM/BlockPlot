@@ -1,5 +1,7 @@
 #![recursion_limit = "256"]
 
+use anyhow::Error;
+
 use ybc::{ Box, Container, Navbar, NavbarItem, Section, Tile };
 use ybc::NavbarItemTag::A;
 use ybc::TileCtx::{ Ancestor, Child, Parent };
