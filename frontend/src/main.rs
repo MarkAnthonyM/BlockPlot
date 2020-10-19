@@ -12,7 +12,9 @@ use yew::format::{ Nothing, Json};
 use yew::prelude::*;
 use yew::services::fetch::{ FetchService, FetchTask, Request, Response };
 
-enum Msg { }
+enum Msg {
+    GetTimeSheets,
+}
 
 struct Model {
     // "ComponentLink is like a reference to a component"
