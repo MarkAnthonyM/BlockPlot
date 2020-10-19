@@ -6,3 +6,11 @@ use yew::services::fetch::{ FetchService, FetchTask, Request, Response };
 
 pub type FetchResponse<T> = Response<Json<Result<T, Error>>>;
 type FetchCallback<T> = Callback<FetchResponse<T>>;
+
+pub fn get_timesheets(callback: FetchCallback<Vec<AnalyticData>>) -> FetchTask {
+    let request = Request::get("http://localhost:8080/times")
+        .body(Nothing)
+        .unwrap();
+    
+    FetchService::fetch(request, callback).unwrap()
+}
