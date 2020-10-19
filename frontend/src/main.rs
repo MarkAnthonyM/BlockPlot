@@ -166,8 +166,33 @@ impl Component for Model {
         }
     }
 
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
-        true
+    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+        match msg {
+            Msg::GetTimesheets => {
+                self.state.get_timesheets_loaded = false;
+                let handler =
+                    self.link
+                        .callback(move |response: api::FetchResponse<Vec<AnalyticData>>| {
+                            let (_, Json(data)) = response.into_parts();
+                            match data {
+                                Ok(timesheets) => Msg::GetTimesheetsSuccess(timesheets),
+                                Err(error) => Msg::GetTimesheetsError(error),
+                            }
+                        });
+                self.task = Some(api::get_timesheets(handler));
+                true
+            },
+            Msg::GetTimesheetsError(error) => {
+                self.state.get_timesheets_error = Some(error);
+                self.state.get_timesheets_loaded = true;
+                true
+            },
+            Msg::GetTimesheetsSuccess(timesheets) => {
+                self.state.timesheets = timesheets;
+                self.state.get_timesheets_loaded = true;
+                true
+            },
+        }
     }
 
     fn change(&mut self, _prop: Self::Properties) -> ShouldRender {
