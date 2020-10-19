@@ -22,6 +22,15 @@ enum QueryKind {
     SizeSixString(SizeSix<String>),
 }
 
+// Struct represents individual cell data related to the row_headers field of the AnalyticData struct.
+#[derive(Debug, Deserialize, Serialize)]
+struct SizeFour<T, U> {
+    perspective: T,
+    time_spent: i32,
+    number_of_people: i32,
+    restrict_kind: U,
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 struct SizeSeven<T> {
     perspective: T,
