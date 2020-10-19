@@ -171,13 +171,6 @@ impl Component for Model {
     }
 }
 
-//TODO: Figure out the proper way to make get requests
-fn api_test(callback: Callback<Response<Json<Result<T, Error>>>>) -> FetchTask {
-    let request = Request::get("http://localhost:8000/times").body(Nothing).unwrap();
-
-    FetchService::fetch(request, callback).unwrap()
-}
-
 fn main() {
     yew::start_app::<Model>();
 }
