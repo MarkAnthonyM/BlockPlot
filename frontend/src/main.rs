@@ -150,9 +150,19 @@ impl Component for Model {
     type Message = Msg;
     type Properties = ();
 
-    fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
+    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        let timesheets = vec![];
+
+        link.send_message(Msg::GetTimesheets);
+        
         Self {
-            _link,
+            state: State {
+                timesheets,
+                get_timesheets_error: None,
+                get_timesheets_loaded: false,
+            },
+            link,
+            task: None,
         }
     }
 
