@@ -27,6 +27,7 @@ struct Model {
     // "ComponentLink is like a reference to a component"
     state: State,
     link: ComponentLink<Self>,
+    task: Option<FetchTask>,
 }
 
 struct State {
