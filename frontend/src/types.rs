@@ -21,3 +21,13 @@ enum QueryKind {
     SizeSixInt(SizeSix<i32>),
     SizeSixString(SizeSix<String>),
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+struct SizeSix<T> {
+    perspective: T,
+    time_spent: i32,
+    number_of_people: i32,
+    activity: String,
+    category: String,
+    productivity: i32,
+}
