@@ -28,6 +28,12 @@ struct Model {
     _link: ComponentLink<Self>,
 }
 
+struct State {
+    timesheets: Vec<AnalyticData>,
+    get_timesheets_error: Option<Error>,
+    get_timesheets_loaded: bool,
+}
+
 impl Model {
     // Create calender grid element
     fn view_blockgrid(&self) -> Html {
