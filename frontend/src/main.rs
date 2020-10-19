@@ -13,8 +13,8 @@ use yew::prelude::*;
 use yew::services::fetch::{ FetchService, FetchTask, Request, Response };
 
 enum Msg {
-    GetTimeSheets,
-    GetTimeSheetsSuccess(Vec<AnalyticData>),
+    GetTimesheets,
+    GetTimesheetsSuccess(Vec<AnalyticData>),
     GetTimesheetsError(Error),
 }
 
