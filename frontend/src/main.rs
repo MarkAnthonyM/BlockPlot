@@ -1,5 +1,9 @@
 #![recursion_limit = "256"]
 
+mod types;
+
+use types::AnalyticData;
+
 use anyhow::Error;
 
 use ybc::{ Box, Container, Navbar, NavbarItem, Section, Tile };
