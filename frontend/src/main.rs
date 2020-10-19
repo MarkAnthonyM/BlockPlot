@@ -1,6 +1,7 @@
 #![recursion_limit = "256"]
 
 mod types;
+mod api;
 
 use types::AnalyticData;
 
