@@ -187,7 +187,7 @@ impl Component for Model {
                 true
             },
             Msg::GetTimesheetsSuccess(timesheets) => {
-                self.state.timesheets = timesheets;
+                self.state.timesheets = vec![timesheets];
                 self.state.get_timesheets_loaded = true;
                 true
             },
