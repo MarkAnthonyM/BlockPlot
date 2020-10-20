@@ -11,7 +11,7 @@ pub struct AnalyticData {
 //TODO: Current method of deserialization feels too messy. Try to find A more concise way to work with json data
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(untagged)]
-enum QueryKind {
+pub enum QueryKind {
     SizeFourInt(SizeFour<i32, i32>),
     SizeFourMixedInt(SizeFour<i32, String>),
     SizeFourMixedString(SizeFour<String, i32>),
