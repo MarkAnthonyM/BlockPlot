@@ -32,7 +32,7 @@ struct SizeFour<T, U> {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct SizeSeven<T> {
+pub struct SizeSeven<T> {
     perspective: T,
     time_spent: i32,
     number_of_people: i32,
