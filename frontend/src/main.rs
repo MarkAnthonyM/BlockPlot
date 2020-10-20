@@ -171,7 +171,7 @@ impl Component for Model {
                 self.state.get_timesheets_loaded = false;
                 let handler =
                     self.link
-                        .callback(move |response: api::FetchResponse<Vec<AnalyticData>>| {
+                        .callback(move |response: api::FetchResponse<AnalyticData>| {
                             let (_, Json(data)) = response.into_parts();
                             match data {
                                 Ok(timesheets) => Msg::GetTimesheetsSuccess(timesheets),
