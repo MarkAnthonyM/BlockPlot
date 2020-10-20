@@ -18,7 +18,7 @@ use yew::services::fetch::FetchTask;
 
 enum Msg {
     GetTimesheets,
-    GetTimesheetsSuccess(Vec<AnalyticData>),
+    GetTimesheetsSuccess(AnalyticData),
     GetTimesheetsError(Error),
 }
 
