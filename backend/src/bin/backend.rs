@@ -14,7 +14,10 @@ use rocket_cors::{ AllowedHeaders, AllowedOrigins, Error };
 
 use rusty_rescuetime::analytic_data::AnalyticData;
 use rusty_rescuetime::parameters::Parameters;
-use rusty_rescuetime::parameters::PerspectiveOptions::Rank;
+use rusty_rescuetime::parameters::PerspectiveOptions::{ Interval, Rank };
+use rusty_rescuetime::parameters::ResolutionOptions::Day;
+use rusty_rescuetime::parameters::RestrictData::Thing;
+use rusty_rescuetime::parameters::RestrictOptions::Overview;
 
 // Rocket connection pool
 #[database("postgres_blockplot")]
@@ -42,6 +45,27 @@ fn get_times() -> Json<AnalyticData> {
     Json(response.unwrap())
 }
 
+#[get("/api/v1/categories/software_development")]
+fn get_categories() -> Json<AnalyticData> {
+    dotenv().ok();
+
+    let api_key = env::var("API_KEY").unwrap();
+    let format = String::from("json");
+
+    let query_parameters = Parameters::new(
+        Some(Interval),
+        Some(Day),
+        None,
+        Some(Overview),
+        Some(Thing("software development")),
+        None,
+    );
+
+    let response = AnalyticData::fetch(&api_key, query_parameters, format);
+
+    Json(response.unwrap())
+}
+
 fn main() -> Result<(), Error> {
     let allowed_origins = AllowedOrigins::all();
 
@@ -57,7 +81,7 @@ fn main() -> Result<(), Error> {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
-        .mount("/", routes![get_times])
+        .mount("/", routes![get_times, get_categories])
         .launch();
 
     Ok(())
