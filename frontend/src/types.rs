@@ -33,13 +33,13 @@ pub struct SizeFour<T, U> {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SizeSeven<T> {
-    perspective: T,
-    time_spent: i32,
-    number_of_people: i32,
-    activity: String,
-    document: String,
-    category: String,
-    productivity: i32,
+    pub perspective: T,
+    pub time_spent: i32,
+    pub number_of_people: i32,
+    pub activity: String,
+    pub document: String,
+    pub category: String,
+    pub productivity: i32,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
