@@ -16,7 +16,7 @@ pub fn get_timesheets(callback: FetchCallback<AnalyticData>) -> FetchTask {
 }
 
 pub fn get_dev_timesheets(callback: FetchCallback<AnalyticData>) -> FetchTask {
-    let request = Request::get("http://localhost:8000/api/v1/categories/software_developement")
+    let request = Request::get("http://localhost:8000/api/v1/categories/software_development")
         .body(Nothing)
         .unwrap();
 
