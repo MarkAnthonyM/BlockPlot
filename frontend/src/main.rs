@@ -17,10 +17,10 @@ use yew::prelude::*;
 use yew::services::fetch::FetchTask;
 
 enum Msg {
-    GetTimesheets,
-    GetDevTimesheets,
-    GetTimesheetsSuccess(AnalyticData),
-    GetTimesheetsError(Error),
+    GetSkillBlocks,
+    GetDevSkillBlock,
+    GetSkillBlocksSuccess(AnalyticData),
+    GetSkillBlocksError(Error),
 }
 
 struct Model {
@@ -32,8 +32,8 @@ struct Model {
 
 struct State {
     skill_blocks: Vec<SkillBlock>,
-    get_timesheets_error: Option<Error>,
-    get_timesheets_loaded: bool,
+    get_skillblocks_error: Option<Error>,
+    get_skillblocks_loaded: bool,
 }
 
 impl Model {
@@ -151,15 +151,15 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let timesheets = vec![];
+        let skill_blocks = vec![];
 
-        link.send_message(Msg::GetTimesheets);
+        link.send_message(Msg::GetDevSkillBlock);
         
         Self {
             state: State {
-                timesheets,
-                get_timesheets_error: None,
-                get_timesheets_loaded: false,
+                skill_blocks,
+                get_skillblocks_error: None,
+                get_skillblocks_loaded: false,
             },
             link,
             task: None,
@@ -168,42 +168,52 @@ impl Component for Model {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::GetTimesheets => {
-                self.state.get_timesheets_loaded = false;
+            Msg::GetSkillBlocks => {
+                self.state.get_skillblocks_loaded = false;
                 let handler =
                     self.link
                         .callback(move |response: api::FetchResponse<AnalyticData>| {
                             let (_, Json(data)) = response.into_parts();
                             match data {
-                                Ok(timesheets) => Msg::GetTimesheetsSuccess(timesheets),
-                                Err(error) => Msg::GetTimesheetsError(error),
+                                Ok(skillblocks) => Msg::GetSkillBlocksSuccess(skillblocks),
+                                Err(error) => Msg::GetSkillBlocksError(error),
                             }
                         });
-                self.task = Some(api::get_timesheets(handler));
+                self.task = Some(api::get_skillblocks(handler));
                 true
             },
-            Msg::GetDevTimesheets => {
-                self.state.get_timesheets_loaded = false;
+            Msg::GetDevSkillBlock => {
+                self.state.get_skillblocks_loaded = false;
                 let handler =
                     self.link
                         .callback(move |response: api::FetchResponse<AnalyticData>| {
                             let (_, Json(data)) = response.into_parts();
                             match data {
-                                Ok(timesheets) => Msg::GetTimesheetsSuccess(timesheets),
-                                Err(error) => Msg::GetTimesheetsError(error),
+                                Ok(skillblocks) => Msg::GetSkillBlocksSuccess(skillblocks),
+                                Err(error) => Msg::GetSkillBlocksError(error),
                             }
                         });
-                self.task = Some(api::get_dev_timesheets(handler));
+                self.task = Some(api::get_dev_skillblocks(handler));
                 true
             },
-            Msg::GetTimesheetsError(error) => {
-                self.state.get_timesheets_error = Some(error);
-                self.state.get_timesheets_loaded = true;
+            Msg::GetSkillBlocksError(error) => {
+                self.state.get_skillblocks_error = Some(error);
+                self.state.get_skillblocks_loaded = true;
                 true
             },
-            Msg::GetTimesheetsSuccess(timesheets) => {
-                self.state.timesheets = vec![timesheets];
-                self.state.get_timesheets_loaded = true;
+            Msg::GetSkillBlocksSuccess(skillblocks) => {
+                let skill_block = SkillBlock {
+                    category: String::from("This is a test category"),
+                    description: String::from("This is a test description"),
+                    name: String::from("This is a test name"),
+                    recent_time_data: skillblocks,
+                    block_color_lite: String::from("This is a test color"),
+                    block_color_regular: String::from("This is a test color"),
+                    block_color_deep: String::from("This is a test color"),
+                };
+
+                self.state.skill_blocks = vec![skill_block];
+                self.state.get_skillblocks_loaded = true;
                 true
             },
         }
