@@ -3,7 +3,7 @@
 mod types;
 mod api;
 
-use types::AnalyticData;
+use types::{ AnalyticData, SkillBlock };
 
 use anyhow::Error;
 
@@ -31,7 +31,7 @@ struct Model {
 }
 
 struct State {
-    timesheets: Vec<AnalyticData>,
+    skill_blocks: Vec<SkillBlock>,
     get_timesheets_error: Option<Error>,
     get_timesheets_loaded: bool,
 }
