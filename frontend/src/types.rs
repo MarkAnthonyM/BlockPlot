@@ -53,11 +53,11 @@ pub struct SizeSix<T> {
 }
 
 pub struct SkillBlock {
-    category: String,
-    description: String,
-    name: String,
-    recent_time_data: AnalyticData,
-    block_color_lite: String,
-    block_color_regular: String,
-    block_color_deep: String,
+    pub category: String,
+    pub description: String,
+    pub name: String,
+    pub recent_time_data: AnalyticData,
+    pub block_color_lite: String,
+    pub block_color_regular: String,
+    pub block_color_deep: String,
 }
