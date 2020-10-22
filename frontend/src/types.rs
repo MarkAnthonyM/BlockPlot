@@ -51,3 +51,13 @@ pub struct SizeSix<T> {
     pub category: String,
     pub productivity: i32,
 }
+
+struct SkillBlock {
+    category: String,
+    description: String,
+    name: String,
+    recent_time_data: AnalyticData,
+    block_color_lite: String,
+    block_color_regular: String,
+    block_color_deep: String,
+}
