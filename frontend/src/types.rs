@@ -52,7 +52,7 @@ pub struct SizeSix<T> {
     pub productivity: i32,
 }
 
-struct SkillBlock {
+pub struct SkillBlock {
     category: String,
     description: String,
     name: String,
