@@ -1,5 +1,7 @@
 use serde::{ Deserialize, Serialize };
 
+//TODO: Currently declaring structs for json data deserialization twice.
+// Should used data types from Rusty-RescueTime when possible  
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AnalyticData {
     pub notes: String,
