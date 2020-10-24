@@ -52,6 +52,8 @@ pub struct SizeSix<T> {
     pub productivity: i32,
 }
 
+// Contains information about time data, information related to time data for a given category,
+// and color information used to fill blocks  
 pub struct SkillBlock {
     pub category: String,
     pub description: String,
