@@ -16,7 +16,7 @@ use rusty_rescuetime::analytic_data::AnalyticData;
 use rusty_rescuetime::parameters::Parameters;
 use rusty_rescuetime::parameters::PerspectiveOptions::{ Interval, Rank };
 use rusty_rescuetime::parameters::ResolutionOptions::Day;
-use rusty_rescuetime::parameters::RestrictData::Thing;
+use rusty_rescuetime::parameters::RestrictData::{ Date, Thing };
 use rusty_rescuetime::parameters::RestrictOptions::Overview;
 
 // Rocket connection pool
@@ -55,7 +55,7 @@ fn get_categories() -> Json<AnalyticData> {
     let query_parameters = Parameters::new(
         Some(Interval),
         Some(Day),
-        None,
+        Some(Date("2020-09-23", "2020-10-23")),
         Some(Overview),
         Some(Thing("software development")),
         None,
