@@ -42,6 +42,8 @@ impl Model {
         let mut week_elements = Vec::new();
         
         // Loop for every week in one year
+        //TODO: Currently creating a entire year starting from jan 1st. Decide whether it
+        // should continue being this way, or if year should span given present day
         for x in 0..52 {
             // Create empty vector of blocks representing days of a week
             let mut day_elements = Vec::new();
