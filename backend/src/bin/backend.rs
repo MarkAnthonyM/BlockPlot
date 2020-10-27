@@ -45,6 +45,7 @@ fn get_times() -> Json<AnalyticData> {
     Json(response.unwrap())
 }
 
+//TODO: Figure out if time data should be restructured in a different format for the frontend
 #[get("/api/v1/categories/software_development")]
 fn get_categories() -> Json<AnalyticData> {
     dotenv().ok();
