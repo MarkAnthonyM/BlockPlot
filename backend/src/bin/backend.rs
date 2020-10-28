@@ -46,6 +46,7 @@ fn get_times() -> Json<AnalyticData> {
 }
 
 //TODO: Figure out if time data should be restructured in a different format for the frontend
+//TODO: Explore whether a hashmap of time data should be processed and returned as json
 #[get("/api/v1/categories/software_development")]
 fn get_categories() -> Json<AnalyticData> {
     dotenv().ok();
