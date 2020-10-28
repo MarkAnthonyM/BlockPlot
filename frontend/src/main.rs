@@ -37,6 +37,7 @@ struct State {
 
 impl Model {
     // Create calender grid element
+    //TODO: Explore whether a library like d3.js can be used here
     fn view_blockgrid(&self) -> Html {
         // create empty vector representing weeks out of a year
         let mut week_elements = Vec::new();
