@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0.33"
+chrono = "0.4.19"
 serde = { version = "1.0.117", features = ["derive"] }
 ybc = "*"
 yew = "0.17.3"
