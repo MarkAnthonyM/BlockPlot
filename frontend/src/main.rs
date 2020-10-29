@@ -7,6 +7,9 @@ use types::{ AnalyticData, SkillBlock };
 
 use anyhow::Error;
 
+use chrono::prelude::*;
+use chrono::Duration;
+
 use ybc::{ Box, Container, Navbar, NavbarItem, Section, Tile };
 use ybc::NavbarItemTag::A;
 use ybc::TileCtx::{ Ancestor, Child, Parent };
@@ -41,6 +44,16 @@ impl Model {
     fn view_blockgrid(&self) -> Html {
         // create empty vector representing weeks out of a year
         let mut week_elements = Vec::new();
+
+        // Create vector of timestamps for one year
+        let year_start = Utc.ymd(2020, 1, 1);
+        let year_end = Utc.ymd(2020, 12, 31);
+        let mut selected_day = year_start;
+        let mut year = Vec::new();
+        while selected_day <= year_end {
+            year.push(selected_day);
+            selected_day = selected_day + Duration::days(1);
+        }
         
         // Loop for every week in one year
         //TODO: Currently creating a entire year starting from jan 1st. Decide whether it
