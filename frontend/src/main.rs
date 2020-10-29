@@ -45,8 +45,11 @@ impl Model {
         // create empty vector representing weeks out of a year
         let mut week_elements = Vec::new();
 
+        // create empty vector representing days of a week
+        let mut day_elements = Vec::new();
+
         // Create vector of timestamps for one year
-        let year_start = Utc.ymd(2020, 1, 1);
+        let year_start = Utc.ymd(2020, 1, 5);
         let year_end = Utc.ymd(2020, 12, 31);
         let mut selected_day = year_start;
         let mut year = Vec::new();
@@ -54,33 +57,31 @@ impl Model {
             year.push(selected_day);
             selected_day = selected_day + Duration::days(1);
         }
-        
-        // Loop for every week in one year
-        //TODO: Currently creating a entire year starting from jan 1st. Decide whether it
-        // should continue being this way, or if year should span given present day
-        for x in 0..52 {
-            // Create empty vector of blocks representing days of a week
-            let mut day_elements = Vec::new();
 
-            // Loop for everyday in one week
-            for y in 0..7 {
-                // Create <rect> element representing a day
-                //TODO: Add data-date attribute
-                let element = html! {
-                    <rect width="11" height="11" y=y * 15 rx=2 ry=2 fill="#dadada" style="outline: 1px solid #1b1f230a; outline-offset: -1px;"></rect>
-                };
-                
-                day_elements.push(element);
+        // Iterate through vector of timestamps and build grid item
+        for day in year {
+            let weekday = day.weekday();
+            let iso_week = day.iso_week().week0();
+            let formatted_date = day.format("%Y-%m-%d");
+            if weekday == Weekday::Sun {
+                if day_elements.len() != 0 {
+                    // Create <g> element representing a week
+                    let week_element = html! {
+                        <g transform=format!("translate({}, 0)", iso_week * 14)>
+                            { day_elements.into_iter().collect::<Html>() }
+                        </g>
+                    };
+                    week_elements.push(week_element);
+    
+                    day_elements = Vec::new();
+                }
             }
 
-            // Create <g> element representing a week
-            let element = html! {
-                <g transform=format!("translate({}, 0)", x * 14)>
-                    { day_elements.into_iter().collect::<Html>() }
-                </g>
+            // Create <rect> element representing a day
+            let day_element = html! {
+                <rect width="11" height="11" y=weekday.num_days_from_sunday() * 15 rx=2 ry=2 fill="#dadada" style="outline: 1px solid #1b1f230a; outline-offset: -1px;" date-data=formatted_date></rect>
             };
-
-            week_elements.push(element)
+            day_elements.push(day_element);
         }
 
         // Create svg container, collect grid elements and append to <g> tag
