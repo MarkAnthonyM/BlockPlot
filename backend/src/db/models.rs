@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-struct TimeData {
+pub struct TimeData {
     category: String,
     time_data: HashMap<String, u64>,
 }
