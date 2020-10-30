@@ -5,6 +5,8 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
+use backend::db::models;
+
 use dotenv::dotenv;
 use std::env;
 
