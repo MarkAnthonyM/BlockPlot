@@ -8,13 +8,14 @@ extern crate rocket_contrib;
 use backend::db::models;
 
 use dotenv::dotenv;
+use std::collections::HashMap;
 use std::env;
 
 use rocket_contrib::databases::diesel;
 use rocket_contrib::json::Json;
 use rocket_cors::{ AllowedHeaders, AllowedOrigins, Error };
 
-use rusty_rescuetime::analytic_data::AnalyticData;
+use rusty_rescuetime::analytic_data::{ AnalyticData, QueryKind };
 use rusty_rescuetime::parameters::Parameters;
 use rusty_rescuetime::parameters::PerspectiveOptions::{ Interval, Rank };
 use rusty_rescuetime::parameters::ResolutionOptions::Day;
@@ -50,7 +51,7 @@ fn get_times() -> Json<AnalyticData> {
 //TODO: Figure out if time data should be restructured in a different format for the frontend
 //TODO: Explore whether a hashmap of time data should be processed and returned as json
 #[get("/api/v1/categories/software_development")]
-fn get_categories() -> Json<AnalyticData> {
+fn get_categories() -> Json<models::TimeData> {
     dotenv().ok();
 
     let api_key = env::var("API_KEY").unwrap();
@@ -65,9 +66,24 @@ fn get_categories() -> Json<AnalyticData> {
         None,
     );
 
-    let response = AnalyticData::fetch(&api_key, query_parameters, format);
+    let payload = AnalyticData::fetch(&api_key, query_parameters, format).unwrap();
 
-    Json(response.unwrap())
+    let mut response = models::TimeData {
+        category: String::from("software_development"),
+        time_data: HashMap::new(),
+    };
+    
+    for query in payload.rows {
+        if let QueryKind::SizeSixString(value) = query {
+            if let Some(x) = response.time_data.get_mut(&value.perspective) {
+                *x += value.time_spent;
+            } else {
+                response.time_data.insert(value.perspective, value.time_spent);
+            }
+        }
+    }
+
+    Json(response)
 }
 
 fn main() -> Result<(), Error> {
