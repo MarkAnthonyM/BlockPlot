@@ -1,3 +1,5 @@
+
+use std::collections::HashMap;
 use serde::{ Deserialize, Serialize };
 
 //TODO: Currently declaring structs for json data deserialization twice.
@@ -64,4 +66,11 @@ pub struct SkillBlock {
     pub block_color_lite: String,
     pub block_color_regular: String,
     pub block_color_deep: String,
+}
+
+//TODO: Find way to deserialize with Chrono datetime type
+#[derive(Deserialize, Serialize)]
+struct TimeData {
+    category: String,
+    time_data: HashMap<String, i32>,
 }
