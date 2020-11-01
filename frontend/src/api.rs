@@ -1,4 +1,4 @@
-use crate::types::AnalyticData;
+use crate::types::TimeData;
 use anyhow::Error;
 use yew::callback::Callback;
 use yew::format::{ Json, Nothing };
@@ -7,7 +7,7 @@ use yew::services::fetch::{ FetchService, FetchTask, Request, Response };
 pub type FetchResponse<T> = Response<Json<Result<T, Error>>>;
 type FetchCallback<T> = Callback<FetchResponse<T>>;
 
-pub fn get_skillblocks(callback: FetchCallback<AnalyticData>) -> FetchTask {
+pub fn get_skillblocks(callback: FetchCallback<TimeData>) -> FetchTask {
     let request = Request::get("http://localhost:8000/times")
         .body(Nothing)
         .unwrap();
@@ -15,7 +15,7 @@ pub fn get_skillblocks(callback: FetchCallback<AnalyticData>) -> FetchTask {
     FetchService::fetch(request, callback).unwrap()
 }
 
-pub fn get_dev_skillblocks(callback: FetchCallback<AnalyticData>) -> FetchTask {
+pub fn get_dev_skillblocks(callback: FetchCallback<TimeData>) -> FetchTask {
     let request = Request::get("http://localhost:8000/api/v1/categories/software_development")
         .body(Nothing)
         .unwrap();
