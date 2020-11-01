@@ -62,7 +62,7 @@ pub struct SkillBlock {
     pub category: String,
     pub description: String,
     pub name: String,
-    pub recent_time_data: AnalyticData,
+    pub recent_time_data: TimeData,
     pub block_color_lite: String,
     pub block_color_regular: String,
     pub block_color_deep: String,
