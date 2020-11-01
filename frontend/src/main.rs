@@ -3,7 +3,7 @@
 mod types;
 mod api;
 
-use types::{ AnalyticData, SkillBlock };
+use types::{ TimeData, SkillBlock };
 
 use anyhow::Error;
 
@@ -22,7 +22,7 @@ use yew::services::fetch::FetchTask;
 enum Msg {
     GetSkillBlocks,
     GetDevSkillBlock,
-    GetSkillBlocksSuccess(AnalyticData),
+    GetSkillBlocksSuccess(TimeData),
     GetSkillBlocksError(Error),
 }
 
@@ -188,7 +188,7 @@ impl Component for Model {
                 self.state.get_skillblocks_loaded = false;
                 let handler =
                     self.link
-                        .callback(move |response: api::FetchResponse<AnalyticData>| {
+                        .callback(move |response: api::FetchResponse<TimeData>| {
                             let (_, Json(data)) = response.into_parts();
                             match data {
                                 Ok(skillblocks) => Msg::GetSkillBlocksSuccess(skillblocks),
@@ -202,7 +202,7 @@ impl Component for Model {
                 self.state.get_skillblocks_loaded = false;
                 let handler =
                     self.link
-                        .callback(move |response: api::FetchResponse<AnalyticData>| {
+                        .callback(move |response: api::FetchResponse<TimeData>| {
                             let (_, Json(data)) = response.into_parts();
                             match data {
                                 Ok(skillblocks) => Msg::GetSkillBlocksSuccess(skillblocks),
