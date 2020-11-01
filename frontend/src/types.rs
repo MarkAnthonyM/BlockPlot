@@ -70,7 +70,7 @@ pub struct SkillBlock {
 
 //TODO: Find way to deserialize with Chrono datetime type
 #[derive(Deserialize, Serialize)]
-struct TimeData {
-    category: String,
-    time_data: HashMap<String, i32>,
+pub struct TimeData {
+    pub category: String,
+    pub time_data: HashMap<String, i32>,
 }
