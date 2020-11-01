@@ -1,4 +1,4 @@
-
+use chrono::NaiveDateTime;
 use std::collections::HashMap;
 use serde::{ Deserialize, Serialize };
 
@@ -72,5 +72,5 @@ pub struct SkillBlock {
 #[derive(Deserialize, Serialize)]
 pub struct TimeData {
     pub category: String,
-    pub time_data: HashMap<String, i32>,
+    pub time_data: HashMap<NaiveDateTime, i32>,
 }
