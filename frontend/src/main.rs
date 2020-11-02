@@ -3,7 +3,7 @@
 mod types;
 mod api;
 
-use types::{ TimeData, SkillBlock };
+use types::{ Color, TimeData, SkillBlock };
 
 use anyhow::Error;
 
@@ -41,56 +41,102 @@ struct State {
 impl Model {
     // Create calender grid element
     fn view_blockgrid(&self) -> Html {
-        // create empty vector representing weeks out of a year
-        let mut week_elements = Vec::new();
+        let mut html_element = html! {
+            <>
+            </>
+        };
 
-        // create empty vector representing days of a week
-        let mut day_elements = Vec::new();
+        for block in &self.state.skill_blocks {
+            // create empty vector representing weeks out of a year
+            let mut week_elements = Vec::new();
+    
+            // create empty vector representing days of a week
+            let mut day_elements = Vec::new();
+    
+            // Create vector of timestamps for one year
+            let current_date = Utc::now().date().naive_utc();
+            let (current_year, current_month, current_day) = (
+                current_date.year(),
+                current_date.month(),
+                current_date.day()
+            );
+            let year_start = NaiveDateTime::new(
+                NaiveDate::from_ymd(current_year - 1, current_month, current_day + 1),
+                NaiveTime::from_hms(0, 0, 0)
+            );
+            let year_end = NaiveDateTime::new(
+                NaiveDate::from_ymd(current_year, current_month, current_day),
+                NaiveTime::from_hms(0, 0, 0)
+            );
+            let mut selected_day = year_start;
+            let mut year = Vec::new();
+            while selected_day <= year_end {
+                year.push(selected_day);
+                selected_day = selected_day + Duration::days(1);
+            }
+    
+            // Iterate through vector of timestamps and build grid item
+            for day in &year {
+                let mut color = Color::NEUTRAL;
+                let weekday = day.weekday();
+                let formatted_date = day.format("%Y-%m-%d");
+                if weekday == Weekday::Sun {
+                    if day_elements.len() != 0 {
+                        // Create <g> element representing a week
+                        let week_element = html! {
+                            <g transform=format!("translate({}, 0)", week_elements.len() * 14)>
+                                { day_elements.into_iter().collect::<Html>() }
+                            </g>
+                        };
+                        week_elements.push(week_element);
+        
+                        day_elements = Vec::new();
+                    }
+                }
 
-        // Create vector of timestamps for one year
-        let year_start = Utc.ymd(2020, 1, 5);
-        let year_end = Utc.ymd(2020, 12, 31);
-        let mut selected_day = year_start;
-        let mut year = Vec::new();
-        while selected_day <= year_end {
-            year.push(selected_day);
-            selected_day = selected_day + Duration::days(1);
-        }
+                if let Some(value) = block.recent_time_data.time_data.get(&day) {
+                    let minutes = value / 60;
+                    match minutes {
+                        0 => color = Color::NEUTRAL,
+                        1..=15 => color = Color::LIGHT,
+                        16..=30 => color = Color::LIGHTMEDIUM,
+                        31..=45 => color = Color::MEDIUM,
+                        46..=60 => color = Color::MEDIUMHIGH,
+                        _ => color = Color::HIGH,
+                    }
+                }
+                
+                // Create <rect> element representing a day
+                let day_element = html! {
+                    <rect width="11" height="11" y=weekday.num_days_from_sunday() * 15 rx=2 ry=2 fill=color style="outline: 1px solid #1b1f230a; outline-offset: -1px;" date-data=formatted_date></rect>
+                };
+                day_elements.push(day_element);
 
-        // Iterate through vector of timestamps and build grid item
-        for day in year {
-            let weekday = day.weekday();
-            let iso_week = day.iso_week().week0();
-            let formatted_date = day.format("%Y-%m-%d");
-            if weekday == Weekday::Sun {
-                if day_elements.len() != 0 {
-                    // Create <g> element representing a week
+                // Create tags for data of most recent weekdays 
+                if day == year.last().unwrap() {
                     let week_element = html! {
-                        <g transform=format!("translate({}, 0)", iso_week * 14)>
+                        <g transform=format!("translate({}, 0)", week_elements.len() * 14)>
                             { day_elements.into_iter().collect::<Html>() }
                         </g>
                     };
+
                     week_elements.push(week_element);
-    
+
                     day_elements = Vec::new();
                 }
             }
-
-            // Create <rect> element representing a day
-            let day_element = html! {
-                <rect width="11" height="11" y=weekday.num_days_from_sunday() * 15 rx=2 ry=2 fill="#dadada" style="outline: 1px solid #1b1f230a; outline-offset: -1px;" date-data=formatted_date></rect>
+    
+            // Create svg container, collect grid elements and append to <g> tag
+            html_element = html! {
+                <svg width="780" height="128">
+                    <g transform="translate(20, 20)">
+                        { week_elements.into_iter().collect::<Html>() }
+                    </g>
+                </svg>
             };
-            day_elements.push(day_element);
         }
 
-        // Create svg container, collect grid elements and append to <g> tag
-        html! {
-            <svg width="750" height="128">
-                <g transform="translate(20, 20)">
-                    { week_elements.into_iter().collect::<Html>() }
-                </g>
-            </svg>
-        }
+        html_element
     }
 
     // Contruct navbar at top of page
