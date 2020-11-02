@@ -12,6 +12,20 @@ pub struct AnalyticData {
 
 }
 
+// Struct represents different color options for heatmap shading
+//TODO: Explore enum equivalent
+#[non_exhaustive]
+pub struct Color;
+
+impl Color {
+    pub const Neutral: &'static str = "#dadada";
+    pub const Light: &'static str = "#FFCDB2";
+    pub const LightMedium: &'static str = "#FFB4A2";
+    pub const Medium: &'static str = "#E5989B";
+    pub const MediumHigh: &'static str = "#B5838D";
+    pub const High: &'static str = "#8D535D";
+}
+
 //TODO: Current method of deserialization feels too messy. Try to find A more concise way to work with json data
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(untagged)]
