@@ -54,7 +54,7 @@ impl Model {
             let mut day_elements = Vec::new();
     
             // Create vector of timestamps for one year
-            let current_date = Utc::now().date().naive_utc();
+            let current_date = Local::now().date().naive_utc();
             let (current_year, current_month, current_day) = (
                 current_date.year(),
                 current_date.month(),
