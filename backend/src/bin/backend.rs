@@ -11,6 +11,8 @@ use dotenv::dotenv;
 use std::collections::HashMap;
 use std::env;
 
+use rocket::request::Form;
+
 use rocket_contrib::databases::diesel;
 use rocket_contrib::json::Json;
 use rocket_cors::{ AllowedHeaders, AllowedOrigins, Error };
@@ -48,21 +50,28 @@ fn get_times() -> Json<AnalyticData> {
     Json(response.unwrap())
 }
 
+#[derive(FromForm)]
+struct Dates {
+    begin_date: String,
+    end_date: String,
+}
+
 //TODO: Figure out if time data should be restructured in a different format for the frontend
 //TODO: Explore whether a hashmap of time data should be processed and returned as json
-#[get("/api/v1/categories/software_development")]
-fn get_categories() -> Json<models::TimeData> {
+#[get("/api/categories/<category>?<dates..>")]
+fn get_categories(category: String, dates: Form<Dates>) -> Json<models::TimeData> {
     dotenv().ok();
-
+    
     let api_key = env::var("API_KEY").unwrap();
     let format = String::from("json");
-
+    
     let query_parameters = Parameters::new(
         Some(Interval),
         Some(Day),
-        Some(Date("2020-09-23", "2020-10-23")),
+        //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+        Some(Date(dates.begin_date.clone(), dates.end_date.clone())),
         Some(Overview),
-        Some(Thing("software development")),
+        Some(Thing(category)),
         None,
     );
 
