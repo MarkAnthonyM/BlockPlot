@@ -56,7 +56,8 @@ impl User {
                 current_date.day()
             );
             let year_start = NaiveDateTime::new(
-                NaiveDate::from_ymd(current_year - 1, current_month, current_day + 1),
+                //TODO: Figure out how to properly render very first calender day with time data
+                NaiveDate::from_ymd(current_year - 1, current_month, current_day),
                 NaiveTime::from_hms(0, 0, 0)
             );
             let year_end = NaiveDateTime::new(
