@@ -35,102 +35,95 @@ struct State {
 
 impl User {
     // Create calender grid element
-    fn view_blockgrid(&self) -> Html {
-        let mut html_element = html! {
-            <>
-            </>
-        };
+    fn view_blockgrid(&self, time_block: &SkillBlock) -> Html {
+        // create empty vector representing weeks out of a year
+        let mut week_elements = Vec::new();
 
-        for block in &self.state.skill_blocks {
-            // create empty vector representing weeks out of a year
-            let mut week_elements = Vec::new();
-    
-            // create empty vector representing days of a week
-            let mut day_elements = Vec::new();
-    
-            // Create vector of timestamps for one year
-            let current_date = Local::now().date().naive_utc();
-            let (current_year, current_month, current_day) = (
-                current_date.year(),
-                current_date.month(),
-                current_date.day()
-            );
-            let year_start = NaiveDateTime::new(
-                //TODO: Figure out how to properly render very first calender day with time data
-                NaiveDate::from_ymd(current_year - 1, current_month, current_day),
-                NaiveTime::from_hms(0, 0, 0)
-            );
-            let year_end = NaiveDateTime::new(
-                NaiveDate::from_ymd(current_year, current_month, current_day),
-                NaiveTime::from_hms(0, 0, 0)
-            );
-            let mut selected_day = year_start;
-            let mut year = Vec::new();
-            while selected_day <= year_end {
-                year.push(selected_day);
-                selected_day = selected_day + Duration::days(1);
-            }
-    
-            // Iterate through vector of timestamps and build grid item
-            for day in &year {
-                let mut color = Color::NEUTRAL;
-                let weekday = day.weekday();
-                let formatted_date = day.format("%Y-%m-%d");
-                if weekday == Weekday::Sun {
-                    if day_elements.len() != 0 {
-                        // Create <g> element representing a week
-                        let week_element = html! {
-                            <g transform=format!("translate({}, 0)", week_elements.len() * 14)>
-                                { day_elements.into_iter().collect::<Html>() }
-                            </g>
-                        };
-                        week_elements.push(week_element);
-        
-                        day_elements = Vec::new();
-                    }
-                }
+        // create empty vector representing days of a week
+        let mut day_elements = Vec::new();
 
-                if let Some(value) = block.recent_time_data.time_data.get(&day) {
-                    let minutes = value / 60;
-                    match minutes {
-                        0 => color = Color::NEUTRAL,
-                        1..=15 => color = Color::LIGHT,
-                        16..=30 => color = Color::LIGHTMEDIUM,
-                        31..=45 => color = Color::MEDIUM,
-                        46..=60 => color = Color::MEDIUMHIGH,
-                        _ => color = Color::HIGH,
-                    }
-                }
-                
-                // Create <rect> element representing a day
-                let day_element = html! {
-                    <rect width="11" height="11" y=weekday.num_days_from_sunday() * 15 rx=2 ry=2 fill=color style="outline: 1px solid #1b1f230a; outline-offset: -1px;" date-data=formatted_date></rect>
-                };
-                day_elements.push(day_element);
+        // Create vector of timestamps for one year
+        let current_date = Local::now().date().naive_utc();
+        let (current_year, current_month, current_day) = (
+            current_date.year(),
+            current_date.month(),
+            current_date.day()
+        );
+        let year_start = NaiveDateTime::new(
+            //TODO: Figure out how to properly render very first calender day with time data
+            NaiveDate::from_ymd(current_year - 1, current_month, current_day),
+            NaiveTime::from_hms(0, 0, 0)
+        );
+        let year_end = NaiveDateTime::new(
+            NaiveDate::from_ymd(current_year, current_month, current_day),
+            NaiveTime::from_hms(0, 0, 0)
+        );
+        let mut selected_day = year_start;
+        let mut year = Vec::new();
+        while selected_day <= year_end {
+            year.push(selected_day);
+            selected_day = selected_day + Duration::days(1);
+        }
 
-                // Create tags for data of most recent weekdays 
-                if day == year.last().unwrap() {
+        // Iterate through vector of timestamps and build grid item
+        for day in &year {
+            let mut color = Color::NEUTRAL;
+            let weekday = day.weekday();
+            let formatted_date = day.format("%Y-%m-%d");
+            if weekday == Weekday::Sun {
+                if day_elements.len() != 0 {
+                    // Create <g> element representing a week
                     let week_element = html! {
                         <g transform=format!("translate({}, 0)", week_elements.len() * 14)>
                             { day_elements.into_iter().collect::<Html>() }
                         </g>
                     };
-
                     week_elements.push(week_element);
-
+    
                     day_elements = Vec::new();
                 }
             }
-    
-            // Create svg container, collect grid elements and append to <g> tag
-            html_element = html! {
-                <svg width="780" height="128">
-                    <g transform="translate(20, 20)">
-                        { week_elements.into_iter().collect::<Html>() }
-                    </g>
-                </svg>
+
+            if let Some(value) = time_block.recent_time_data.time_data.get(&day) {
+                let minutes = value / 60;
+                match minutes {
+                    0 => color = Color::NEUTRAL,
+                    1..=15 => color = Color::LIGHT,
+                    16..=30 => color = Color::LIGHTMEDIUM,
+                    31..=45 => color = Color::MEDIUM,
+                    46..=60 => color = Color::MEDIUMHIGH,
+                    _ => color = Color::HIGH,
+                }
+            }
+            
+            // Create <rect> element representing a day
+            let day_element = html! {
+                <rect width="11" height="11" y=weekday.num_days_from_sunday() * 15 rx=2 ry=2 fill=color style="outline: 1px solid #1b1f230a; outline-offset: -1px;" date-data=formatted_date></rect>
             };
+            day_elements.push(day_element);
+
+            // Create tags for data of most recent weekdays 
+            if day == year.last().unwrap() {
+                let week_element = html! {
+                    <g transform=format!("translate({}, 0)", week_elements.len() * 14)>
+                        { day_elements.into_iter().collect::<Html>() }
+                    </g>
+                };
+
+                week_elements.push(week_element);
+
+                day_elements = Vec::new();
+            }
         }
+
+        // Create svg container, collect grid elements and append to <g> tag
+        let html_element = html! {
+            <svg width="780" height="128">
+                <g transform="translate(20, 20)">
+                    { week_elements.into_iter().collect::<Html>() }
+                </g>
+            </svg>
+        };
 
         html_element
     }
@@ -176,9 +169,11 @@ impl User {
     }
 
     // Create skill block item.
-    fn view_skill_block(&self) -> Html {
-        html! {
-            <>
+    fn view_skill_blocks(&self) -> Html {
+        let mut block_elements = Vec::new();
+
+        for block in &self.state.skill_blocks {
+            let block_element = html! {
                 <Tile ctx=Ancestor>
                     <Tile ctx=Parent size=TileSize::Two>
                         <Tile classes=Some("notification is-primary") ctx=Child>
@@ -189,7 +184,7 @@ impl User {
                         <Tile classes=Some("notification is-primary") ctx=Child>
                             //TODO: Fix overflow issue
                             <Box>
-                                { self.view_blockgrid() }
+                                { self.view_blockgrid(block) }
                             </Box>
                         </Tile>
                     </Tile>
@@ -199,7 +194,15 @@ impl User {
                         </Tile>
                     </Tile>
                 </Tile>
-            </>
+            };
+
+            block_elements.push(block_element);
+        }
+
+        html! {
+            <Container>
+                { block_elements.into_iter().collect::<Html>() }
+            </Container>
         }
     }
 }
@@ -273,9 +276,7 @@ impl Component for User {
             <>
                 { self.view_navbar() }
                 <Section>
-                    <Container>
-                        { self.view_skill_block() }
-                    </Container>
+                    { self.view_skill_blocks() }
                 </Section>
             </>
         }
