@@ -9,14 +9,6 @@ use yew::services::fetch::{ FetchService, FetchTask, Request, Response };
 pub type FetchResponse<T> = Response<Json<Result<T, Error>>>;
 type FetchCallback<T> = Callback<FetchResponse<T>>;
 
-pub fn get_skillblocks(callback: FetchCallback<TimeData>) -> FetchTask {
-    let request = Request::get("http://localhost:8000/times")
-        .body(Nothing)
-        .unwrap();
-    
-    FetchService::fetch(request, callback).unwrap()
-}
-
 pub fn get_dev_skillblocks(callback: FetchCallback<TimeData>) -> FetchTask {
     let category = "software%20development";
     let end_date = Local::now().date().naive_utc();
