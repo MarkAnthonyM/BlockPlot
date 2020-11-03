@@ -25,7 +25,7 @@ enum Msg {
     GetSkillBlocksError(Error),
 }
 
-struct Model {
+struct User {
     state: State,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
