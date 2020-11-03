@@ -20,7 +20,6 @@ use yew::prelude::*;
 use yew::services::fetch::FetchTask;
 
 enum Msg {
-    GetSkillBlocks,
     GetDevSkillBlock,
     GetSkillBlocksSuccess(TimeData),
     GetSkillBlocksError(Error),
@@ -230,20 +229,6 @@ impl Component for Model {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::GetSkillBlocks => {
-                self.state.get_skillblocks_loaded = false;
-                let handler =
-                    self.link
-                        .callback(move |response: api::FetchResponse<TimeData>| {
-                            let (_, Json(data)) = response.into_parts();
-                            match data {
-                                Ok(skillblocks) => Msg::GetSkillBlocksSuccess(skillblocks),
-                                Err(error) => Msg::GetSkillBlocksError(error),
-                            }
-                        });
-                self.task = Some(api::get_skillblocks(handler));
-                true
-            },
             Msg::GetDevSkillBlock => {
                 self.state.get_skillblocks_loaded = false;
                 let handler =
