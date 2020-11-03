@@ -28,28 +28,6 @@ use rusty_rescuetime::parameters::RestrictOptions::Overview;
 #[database("postgres_blockplot")]
 struct BlockplotDbConn(diesel::PgConnection);
 
-// rusty-rescuetime api testing route
-#[get("/times")]
-fn get_times() -> Json<AnalyticData> {
-    dotenv().ok();
-    
-    let api_key = env::var("API_KEY").unwrap();
-    let format = String::from("json");
-    
-    let query_parameters = Parameters::new(
-        Some(Rank),
-        None,
-        None,
-        None,
-        None,
-        None,
-    );
-
-    let response = AnalyticData::fetch(&api_key, query_parameters, format);
-
-    Json(response.unwrap())
-}
-
 #[derive(FromForm)]
 struct Dates {
     begin_date: String,
@@ -110,7 +88,7 @@ fn main() -> Result<(), Error> {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
-        .mount("/", routes![get_times, get_categories])
+        .mount("/", routes![get_categories])
         .launch();
 
     Ok(())
