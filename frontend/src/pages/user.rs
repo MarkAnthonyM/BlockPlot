@@ -1,14 +1,10 @@
-#![recursion_limit = "256"]
-
-mod types;
-mod api;
-
-use types::{ Color, TimeData, SkillBlock };
-
 use anyhow::Error;
 
 use chrono::prelude::*;
 use chrono::Duration;
+
+use crate::api;
+use crate::types::{ Color, TimeData, SkillBlock };
 
 use ybc::{ Box, Container, Navbar, NavbarItem, Section, Tile };
 use ybc::NavbarItemTag::A;
@@ -19,13 +15,13 @@ use yew::format::Json;
 use yew::prelude::*;
 use yew::services::fetch::FetchTask;
 
-enum Msg {
+pub enum Msg {
     GetDevSkillBlock,
     GetSkillBlocksSuccess(TimeData),
     GetSkillBlocksError(Error),
 }
 
-struct User {
+pub struct User {
     state: State,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
@@ -37,7 +33,7 @@ struct State {
     get_skillblocks_loaded: bool,
 }
 
-impl Model {
+impl User {
     // Create calender grid element
     fn view_blockgrid(&self) -> Html {
         let mut html_element = html! {
@@ -207,7 +203,7 @@ impl Model {
     }
 }
 
-impl Component for Model {
+impl Component for User {
     type Message = Msg;
     type Properties = ();
 
