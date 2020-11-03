@@ -18,8 +18,8 @@ pub fn get_skillblocks(callback: FetchCallback<TimeData>) -> FetchTask {
 }
 
 pub fn get_dev_skillblocks(callback: FetchCallback<TimeData>) -> FetchTask {
-    let category = "software_development";
-    let end_date = Utc::now().date().naive_utc();
+    let category = "software%20development";
+    let end_date = Local::now().date().naive_utc();
     let begin_date = NaiveDate::from_ymd(end_date.year() - 1, end_date.month(), end_date.day() + 1);
     let formatted_url = format!("http://localhost:8000/api/categories/{}?begin_date={}&end_date={}", category, begin_date, end_date);
     ConsoleService::log(&formatted_url);
