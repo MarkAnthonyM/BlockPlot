@@ -19,7 +19,7 @@ use rocket_cors::{ AllowedHeaders, AllowedOrigins, Error };
 
 use rusty_rescuetime::analytic_data::{ AnalyticData, QueryKind };
 use rusty_rescuetime::parameters::Parameters;
-use rusty_rescuetime::parameters::PerspectiveOptions::{ Interval, Rank };
+use rusty_rescuetime::parameters::PerspectiveOptions::Interval;
 use rusty_rescuetime::parameters::ResolutionOptions::Day;
 use rusty_rescuetime::parameters::RestrictData::{ Date, Thing };
 use rusty_rescuetime::parameters::RestrictOptions::Overview;
