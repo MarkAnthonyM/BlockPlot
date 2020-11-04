@@ -4,7 +4,7 @@ use chrono::prelude::*;
 use chrono::Duration;
 
 use crate::api;
-use crate::types::{ Color, TimeData, SkillBlock };
+use crate::types::{ Color, TimeData, SkillBlock, TimeWrapper };
 
 use ybc::{ Box, Container, Navbar, NavbarItem, Section, Tile };
 use ybc::NavbarItemTag::A;
@@ -17,7 +17,9 @@ use yew::services::fetch::FetchTask;
 
 pub enum Msg {
     GetDevSkillBlock,
-    GetSkillBlocksSuccess(TimeData),
+    // GetSkillBlocksSuccess(TimeData),
+    // Testing logic, may remove
+    GetSkillBlocksSuccess(TimeWrapper),
     GetSkillBlocksError(Error),
 }
 
@@ -51,7 +53,7 @@ impl User {
         );
         let year_start = NaiveDateTime::new(
             //TODO: Figure out how to properly render very first calender day with time data
-            NaiveDate::from_ymd(current_year - 1, current_month, current_day),
+            NaiveDate::from_ymd(current_year - 1, current_month, current_day - 1),
             NaiveTime::from_hms(0, 0, 0)
         );
         let year_end = NaiveDateTime::new(
@@ -229,11 +231,26 @@ impl Component for User {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            // Msg::GetDevSkillBlock => {
+            //     self.state.get_skillblocks_loaded = false;
+            //     let handler =
+            //         self.link
+            //             .callback(move |response: api::FetchResponse<TimeData>| {
+            //                 let (_, Json(data)) = response.into_parts();
+            //                 match data {
+            //                     Ok(skillblocks) => Msg::GetSkillBlocksSuccess(skillblocks),
+            //                     Err(error) => Msg::GetSkillBlocksError(error),
+            //                 }
+            //             });
+            //     self.task = Some(api::get_dev_skillblocks(handler));
+            //     true
+            // },
+            // Testing logic, may remove
             Msg::GetDevSkillBlock => {
                 self.state.get_skillblocks_loaded = false;
                 let handler =
                     self.link
-                        .callback(move |response: api::FetchResponse<TimeData>| {
+                        .callback(move |response: api::FetchResponse<TimeWrapper>| {
                             let (_, Json(data)) = response.into_parts();
                             match data {
                                 Ok(skillblocks) => Msg::GetSkillBlocksSuccess(skillblocks),
@@ -248,19 +265,38 @@ impl Component for User {
                 self.state.get_skillblocks_loaded = true;
                 true
             },
-            Msg::GetSkillBlocksSuccess(skillblocks) => {
-                let skill_block = SkillBlock {
-                    category: String::from("This is a test category"),
-                    description: String::from("This is a test description"),
-                    name: String::from("This is a test name"),
-                    recent_time_data: skillblocks,
-                    block_color_lite: String::from("This is a test color"),
-                    block_color_regular: String::from("This is a test color"),
-                    block_color_deep: String::from("This is a test color"),
-                };
+            // Testing logic, may remove
+            // Msg::GetSkillBlocksSuccess(skillblocks) => {
+            //     let skill_block = SkillBlock {
+            //         category: String::from("This is a test category"),
+            //         description: String::from("This is a test description"),
+            //         name: String::from("This is a test name"),
+            //         recent_time_data: skillblocks,
+            //         block_color_lite: String::from("This is a test color"),
+            //         block_color_regular: String::from("This is a test color"),
+            //         block_color_deep: String::from("This is a test color"),
+            //     };
 
-                self.state.skill_blocks = vec![skill_block];
-                self.state.get_skillblocks_loaded = true;
+            //     self.state.skill_blocks = vec![skill_block];
+            //     self.state.get_skillblocks_loaded = true;
+            //     true
+            // },
+            Msg::GetSkillBlocksSuccess(skillblocks) => {
+                for skillblock in skillblocks.data {
+                    let skill_block = SkillBlock {
+                        category: String::from("This is a test category"),
+                        description: String::from("This is a test description"),
+                        name: String::from("This is a test name"),
+                        recent_time_data: skillblock,
+                        block_color_lite: String::from("This is a test color"),
+                        block_color_regular: String::from("This is a test color"),
+                        block_color_deep: String::from("This is a test color"),
+                    };
+    
+                    self.state.skill_blocks.push(skill_block);
+                    self.state.get_skillblocks_loaded = true;
+                }
+
                 true
             },
         }
