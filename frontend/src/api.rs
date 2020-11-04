@@ -23,6 +23,7 @@ type FetchCallback<T> = Callback<FetchResponse<T>>;
 //     FetchService::fetch(request, callback).unwrap()
 // }
 
+// A testing request getter. Will probably remove at conclusion of tests
 pub fn get_dev_skillblocks(callback: FetchCallback<TimeWrapper>) -> FetchTask {
     let url = format!("http://localhost:8000/api/categories/multi");
     let request = Request::get(url)
