@@ -89,12 +89,11 @@ fn get_multi() -> Json<models::TimeWrapper> {
     for item in mock_categories {
         match item {
             "software_development" => {
-                println!("mock_1 launched!");
                 let query_parameters = Parameters::new(
                     Some(Interval),
                     Some(Day),
                     //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
-                    Some(Date(String::from("11-04-2019"), String::from("11-03-2020"))),
+                    Some(Date(String::from("2019-11-05"), String::from("2020-11-04"))),
                     Some(Overview),
                     Some(Thing(String::from("software%20development"))),
                     None,
@@ -120,7 +119,6 @@ fn get_multi() -> Json<models::TimeWrapper> {
                 time_vec.push(response);
             },
             "piano_practice" => {
-                println!("mock_2 launched!");
                 let query_parameters = Parameters::new(
                     Some(Interval),
                     Some(Day),
