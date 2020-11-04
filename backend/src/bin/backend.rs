@@ -22,7 +22,7 @@ use rusty_rescuetime::parameters::Parameters;
 use rusty_rescuetime::parameters::PerspectiveOptions::Interval;
 use rusty_rescuetime::parameters::ResolutionOptions::Day;
 use rusty_rescuetime::parameters::RestrictData::{ Date, Thing };
-use rusty_rescuetime::parameters::RestrictOptions::Overview;
+use rusty_rescuetime::parameters::RestrictOptions::{ Category, Overview };
 
 // Rocket connection pool
 #[database("postgres_blockplot")]
@@ -73,6 +73,96 @@ fn get_categories(category: String, dates: Form<Dates>) -> Json<models::TimeData
     Json(response)
 }
 
+// Test handler for multiple data requests
+#[get("/api/categories/multi")]
+fn get_multi() -> Json<models::TimeWrapper> {
+    dotenv().ok();
+    
+    let api_key = env::var("API_KEY").unwrap();
+    let format = String::from("json");
+    
+    let mut time_vec = Vec::new();
+    // let mock_categories = vec!["software%20development", "piano%20practice"];
+    // let mock_categories = vec![String::from("software%20development"), String::from("piano%20practice")];
+    let mock_categories = vec!["software_development", "piano_practice"];
+
+    for item in mock_categories {
+        match item {
+            "software_development" => {
+                println!("mock_1 launched!");
+                let query_parameters = Parameters::new(
+                    Some(Interval),
+                    Some(Day),
+                    //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                    Some(Date(String::from("11-04-2019"), String::from("11-03-2020"))),
+                    Some(Overview),
+                    Some(Thing(String::from("software%20development"))),
+                    None,
+                );
+            
+                let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+            
+                let mut response = models::TimeData {
+                    category: String::from("software_development"),
+                    time_data: HashMap::new(),
+                };
+                
+                for query in payload.rows {
+                    if let QueryKind::SizeSixString(value) = query {
+                        if let Some(x) = response.time_data.get_mut(&value.perspective) {
+                            *x += value.time_spent;
+                        } else {
+                            response.time_data.insert(value.perspective, value.time_spent);
+                        }
+                    }
+                }
+
+                time_vec.push(response);
+            },
+            "piano_practice" => {
+                println!("mock_2 launched!");
+                let query_parameters = Parameters::new(
+                    Some(Interval),
+                    Some(Day),
+                    //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                    Some(Date(String::from("2019-11-05"), String::from("2020-11-04"))),
+                    Some(Category),
+                    Some(Thing(String::from("piano%20practice"))),
+                    None,
+                );
+            
+                let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+            
+                let mut response = models::TimeData {
+                    category: String::from("piano_practice"),
+                    time_data: HashMap::new(),
+                };
+                
+                for query in payload.rows {
+                    if let QueryKind::SizeSixString(value) = query {
+                        if let Some(x) = response.time_data.get_mut(&value.perspective) {
+                            *x += value.time_spent;
+                        } else {
+                            response.time_data.insert(value.perspective, value.time_spent);
+                        }
+                    }
+                }
+
+                time_vec.push(response);
+            },
+            _=> {
+                println!("nothing!");
+            }
+        }
+    }
+
+    let wrapped_json = models::TimeWrapper {
+        data: time_vec,
+    };
+
+    Json(wrapped_json)
+}
+
 fn main() -> Result<(), Error> {
     let allowed_origins = AllowedOrigins::all();
 
@@ -88,7 +178,7 @@ fn main() -> Result<(), Error> {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
-        .mount("/", routes![get_categories])
+        .mount("/", routes![get_categories, get_multi])
         .launch();
 
     Ok(())
