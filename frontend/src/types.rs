@@ -88,3 +88,9 @@ pub struct TimeData {
     pub category: String,
     pub time_data: HashMap<NaiveDateTime, i32>,
 }
+
+// Prototype struct being used to test handling request with multiple TimeData response objects. May remove at the conclusion of tests
+#[derive(Deserialize, Serialize)]
+pub struct TimeWrapper {
+    pub data: Vec<TimeData>,
+}
