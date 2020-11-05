@@ -19,11 +19,11 @@ pub struct Color;
 
 impl Color {
     pub const NEUTRAL: &'static str = "#dadada";
-    pub const LIGHT: &'static str = "#FFCDB2";
-    pub const LIGHTMEDIUM: &'static str = "#FFB4A2";
-    pub const MEDIUM: &'static str = "#E5989B";
-    pub const MEDIUMHIGH: &'static str = "#B5838D";
-    pub const HIGH: &'static str = "#8D535D";
+    pub const LIGHT: &'static str = "#dac695";
+    pub const LIGHTMEDIUM: &'static str = "#f28a00";
+    pub const MEDIUM: &'static str = "#fd4600";
+    pub const MEDIUMHIGH: &'static str = "#f1230b";
+    pub const HIGH: &'static str = "#bc1c2a";
 }
 
 //TODO: Current method of deserialization feels too messy. Try to find A more concise way to work with json data
