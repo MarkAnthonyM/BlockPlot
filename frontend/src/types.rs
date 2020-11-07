@@ -41,6 +41,7 @@ pub enum QueryKind {
 }
 
 // Struct represents individual cell data related to the row_headers field of the AnalyticData struct.
+// May not need this struct
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SizeFour<T, U> {
     pub perspective: T,
