@@ -62,6 +62,7 @@ pub struct SizeSeven<T> {
     pub productivity: i32,
 }
 
+//struct may not be needed
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SizeSix<T> {
     pub perspective: T,
