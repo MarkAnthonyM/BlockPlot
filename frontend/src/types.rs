@@ -50,6 +50,7 @@ pub struct SizeFour<T, U> {
     pub restrict_kind: U,
 }
 
+// May not need this struct
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SizeSeven<T> {
     pub perspective: T,
