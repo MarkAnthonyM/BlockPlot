@@ -57,8 +57,8 @@ impl Component for Form {
 
                 true
             },
-            Msg::PostDataError => {
-                println!("Error posting data!");
+            Msg::PostDataError(error) => {
+                println!("Error posting data: {:?}", error);
 
                 true
             },
