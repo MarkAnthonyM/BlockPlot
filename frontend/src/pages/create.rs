@@ -4,6 +4,13 @@ struct Form {
     task: Option<FetchTask>,
 }
 
+// Might not be used. Seems similar to SkillBlock struct
+struct FormData {
+    category: String,
+    description: String,
+    skill_name: String,
+}
+
 pub enum Msg {
     PostData,
     PostDataSuccess,
