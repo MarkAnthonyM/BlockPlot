@@ -1,4 +1,4 @@
-struct Form {
+pub struct Form {
     state: State,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
