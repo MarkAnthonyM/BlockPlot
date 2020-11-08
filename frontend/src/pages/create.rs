@@ -34,17 +34,18 @@ impl Component for Form {
 
     fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         let mock_form_data = FormData {
-            name: "Test skill",
-            description: "This is a test description",
+            category: "This is a test category".to_string(),
+            description: "This is a test description".to_string(),
+            skill_name: "Test skill".to_string(),
         };
         
         Self {
             state: State {
                 form_data: mock_form_data,
                 post_form_error: None,
-                post_form_success: false,
+                post_form_loaded: false,
             },
-            _link,
+            link: _link,
             task: None,
         }
     }
