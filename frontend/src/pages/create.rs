@@ -18,7 +18,7 @@ pub enum Msg {
 }
 
 struct State {
-    form_data: FormData,
+    form_data: SkillBlock,
     post_form_error: Option<Error>,
     post_form_loaded: bool,
 }
