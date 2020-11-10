@@ -23,6 +23,7 @@ pub enum Msg {
     PostData,
     PostDataSuccess,
     PostDataError(Error),
+    SetText(String),
 }
 
 #[derive(Properties, Clone, Default, PartialEq)]
