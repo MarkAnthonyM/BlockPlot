@@ -38,9 +38,9 @@ struct State {
 
 impl Component for Form {
     type Message = Msg;
-    type Properties = ();
+    type Properties = Props;
 
-    fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
+    fn create(props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         let mock_form_data = FormData {
             category: "This is a test category".to_string(),
             description: "This is a test description".to_string(),
@@ -48,12 +48,13 @@ impl Component for Form {
         };
         
         Self {
+            link: _link,
             state: State {
                 form_data: mock_form_data,
                 post_form_error: None,
                 post_form_loaded: false,
             },
-            link: _link,
+            props,
             task: None,
         }
     }
