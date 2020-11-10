@@ -87,8 +87,14 @@ impl Component for Form {
         }
     }
 
-    fn change(&mut self, _prop: Self::Properties) -> ShouldRender {
-        false
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            self.state.form_data.skill_name = self.props.value.clone();
+            true
+        } else {
+            false
+        }
     }
 
     fn view(&self) -> Html {
