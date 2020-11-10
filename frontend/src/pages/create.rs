@@ -64,7 +64,8 @@ impl Component for Form {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::PostData => {
-                println!("Post some data!");
+                let text = std::mem::replace(&mut self.state.form_data.skill_name, self.props.value.clone());
+                self.props.onsubmit.emit(text);
 
                 true
             },
@@ -79,7 +80,7 @@ impl Component for Form {
                 true
             },
             Msg::SetText(text) => {
-                println!("Text Output: {:?}", text);
+                self.state.form_data.skill_name = text;
 
                 true
             },
