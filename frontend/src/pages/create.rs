@@ -25,6 +25,7 @@ pub enum Msg {
     PostDataError(Error),
 }
 
+#[derive(Properties, Clone, Default, PartialEq)]
 pub struct Props {
     pub value: String,
     pub onsubmit: Callback<String>,
