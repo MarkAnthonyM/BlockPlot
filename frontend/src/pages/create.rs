@@ -25,6 +25,11 @@ pub enum Msg {
     PostDataError(Error),
 }
 
+pub struct Props {
+    pub value: String,
+    pub onsubmit: Callback<String>,
+}
+
 struct State {
     form_data: FormData,
     post_form_error: Option<Error>,
