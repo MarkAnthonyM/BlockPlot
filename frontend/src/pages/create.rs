@@ -6,8 +6,9 @@ use yew::prelude::*;
 use yew::services::fetch::FetchTask;
 
 pub struct Form {
-    state: State,
     link: ComponentLink<Self>,
+    props: Props,
+    state: State,
     task: Option<FetchTask>,
 }
 
