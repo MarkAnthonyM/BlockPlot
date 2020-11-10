@@ -1,5 +1,7 @@
 use anyhow::Error;
 
+use ybc::{ Control, Field, Section };
+
 use yew::prelude::*;
 use yew::services::fetch::FetchTask;
 
@@ -76,9 +78,39 @@ impl Component for Form {
 
     fn view(&self) -> Html {
         html! {
-            <h1>
-                <p>{ "Hello, World!" }</p>
-            </h1>
+            <>
+                <main class="bd-main">
+                    <Section>
+                        <div class="colums">
+                            <div class="column is-half">
+                                <Field>
+                                    <label class="label">{ "Skill Name" }</label>
+                                    <Control>
+                                        <input class="input" placeholder="Text input"/>
+                                    </Control>
+                                </Field>
+                                <Field>
+                                    <label class="label">{ "Category" }</label>
+                                    <Control>
+                                        <div class="select">
+                                            <select>
+                                                <option>{ "Software Development" }</option>
+                                                <option>{ "References & Learning" }</option>
+                                            </select>
+                                        </div>
+                                    </Control>
+                                </Field>
+                                <Field>
+                                    <label class="label">{ "Description" }</label>
+                                    <Control>
+                                        <input class="input" placeholder="Skill Description"/>
+                                    </Control>
+                                </Field>
+                            </div>
+                        </div>
+                    </Section>
+                </main>
+            </>
         }
     }
 }
