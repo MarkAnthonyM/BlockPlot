@@ -78,6 +78,11 @@ impl Component for Form {
 
                 true
             },
+            Msg::SetText(text) => {
+                println!("Text Output: {:?}", text);
+
+                true
+            },
         }
     }
 
