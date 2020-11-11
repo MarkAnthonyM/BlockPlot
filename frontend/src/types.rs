@@ -13,6 +13,7 @@ pub struct AnalyticData {
 }
 
 // Might not be used. Seems similar to SkillBlock struct
+#[derive(Serialize)]
 pub struct FormData {
     pub category: String,
     pub description: String,
