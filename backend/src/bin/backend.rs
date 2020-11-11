@@ -161,6 +161,14 @@ fn get_multi() -> Json<models::TimeWrapper> {
     Json(wrapped_json)
 }
 
+#[post("/api/testpost", data = "<form_data>")]
+fn test_post(conn: BlockplotDbConn, form_data: Json<models::FormData>) -> String {
+    let cloned_data = form_data.clone();
+    let test_string = cloned_data.skill_name;
+
+    test_string
+}
+
 fn main() -> Result<(), Error> {
     let allowed_origins = AllowedOrigins::all();
 
