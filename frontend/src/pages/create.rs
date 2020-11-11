@@ -3,6 +3,7 @@ use anyhow::Error;
 use ybc::{ Control, Field, Section };
 
 use yew::prelude::*;
+use yew::services::console::ConsoleService;
 use yew::services::fetch::FetchTask;
 
 pub struct Form {
@@ -23,7 +24,9 @@ pub enum Msg {
     PostData,
     PostDataSuccess,
     PostDataError(Error),
-    SetText(String),
+    SetCategory(String),
+    SetDescription(String),
+    SetSkillName(String),
 }
 
 #[derive(Properties, Clone, Default, PartialEq)]
@@ -79,8 +82,24 @@ impl Component for Form {
 
                 true
             },
-            Msg::SetText(text) => {
+            Msg::SetCategory(text) => {
+                self.state.form_data.category = text;
+                let current_text = format!("{}", self.state.form_data.category);
+                ConsoleService::log(&current_text);
+
+                true
+            },
+            Msg::SetDescription(text) => {
+                self.state.form_data.description = text;
+                let current_text = format!("{}", self.state.form_data.description);
+                ConsoleService::log(&current_text);
+
+                true
+            }
+            Msg::SetSkillName(text) => {
                 self.state.form_data.skill_name = text;
+                let current_text = format!("{}", self.state.form_data.skill_name);
+                ConsoleService::log(&current_text);
 
                 true
             },
@@ -107,11 +126,15 @@ impl Component for Form {
                                 <Field>
                                     <label class="label">{ "Skill Name" }</label>
                                     <Control>
-                                        <input class="input" placeholder="Text input"/>
+                                        <input
+                                            class="input"
+                                            placeholder="Text input"
+                                            oninput=self.link.callback(|e: InputData| Msg::SetSkillName(e.value))
+                                        />
                                     </Control>
                                 </Field>
                                 <Field>
-                                    <label class="label">{ "Category" }</label>
+                                    <label class="label">{ "Skill Category" }</label>
                                     <Control>
                                         <div class="select">
                                             <select>
@@ -122,7 +145,7 @@ impl Component for Form {
                                     </Control>
                                 </Field>
                                 <Field>
-                                    <label class="label">{ "Description" }</label>
+                                    <label class="label">{ "Skill Description" }</label>
                                     <Control>
                                         <input class="input" placeholder="Skill Description"/>
                                     </Control>
