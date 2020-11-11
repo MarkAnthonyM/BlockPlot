@@ -5,8 +5,9 @@ use crate::types::FormData;
 use ybc::{ Control, Field, Section };
 
 use yew::prelude::*;
+use yew::format::Json;
 use yew::services::console::ConsoleService;
-use yew::services::fetch::FetchTask;
+use yew::services::fetch::{ FetchService, FetchTask, Request, Response };
 
 pub struct Form {
     link: ComponentLink<Self>,
@@ -16,6 +17,7 @@ pub struct Form {
 }
 
 pub enum Msg {
+    Ignore,
     PostData,
     PostDataSuccess,
     PostDataError(Error),
@@ -62,8 +64,37 @@ impl Component for Form {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::PostData => {
-                let text = std::mem::replace(&mut self.state.form_data.skill_name, self.props.value.clone());
-                self.props.onsubmit.emit(text);
+                // let text = std::mem::replace(&mut self.state.form_data.skill_name, self.props.value.clone());
+                // self.props.onsubmit.emit(text);
+                //TODO: Prototype method to submit form data. Try to find better method 
+                let handler =
+                    self.link
+                        .callback(move |response: Response<Result<String, Error>>| {
+                            let (_, data) = response.into_parts();
+                            match data {
+                                Ok(value) => {
+                                    ConsoleService::log(&value);
+                                },
+                                Err(error) => {
+                                    ConsoleService::log("Error with transmission");
+                                }
+                            }
+                            Msg::Ignore
+                        });
+                
+                let form_instance = FormData {
+                    category: self.state.form_data.category.clone(),
+                    description: self.state.form_data.description.clone(),
+                    skill_name: self.state.form_data.skill_name.clone(),
+                };
+                
+                let url = format!("http://localhost:8000/api/testpost");
+                let request = Request::post(url)
+                    .header("Content-Type", "application/json")
+                    .body(Json(&form_instance))
+                    .unwrap();
+                
+                self.task = FetchService::fetch(request, handler).ok();
 
                 true
             },
@@ -98,6 +129,7 @@ impl Component for Form {
 
                 true
             },
+            Msg::Ignore => { true }
         }
     }
 
@@ -148,6 +180,14 @@ impl Component for Form {
                                             oninput=self.link.callback(|e: InputData| Msg::SetDescription(e.value))
                                         />
                                     </Control>
+                                </Field>
+                                <Field>
+                                    <div class="control">
+                                        <button
+                                            class="button is-link"
+                                            onclick=self.link.callback(|_| Msg::PostData)>{ "Submit" }
+                                        </button>
+                                    </div>
                                 </Field>
                             </div>
                         </div>
