@@ -47,9 +47,9 @@ impl Component for Form {
 
     fn create(props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         let mock_form_data = FormData {
-            category: "This is a test category".to_string(),
+            category: "".to_string(),
             description: "This is a test description".to_string(),
-            skill_name: "Test skill".to_string(),
+            skill_name: "".to_string(),
         };
         
         Self {
