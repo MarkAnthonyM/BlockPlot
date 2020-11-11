@@ -1,5 +1,7 @@
 use anyhow::Error;
 
+use crate::types::FormData;
+
 use ybc::{ Control, Field, Section };
 
 use yew::prelude::*;
@@ -11,13 +13,6 @@ pub struct Form {
     props: Props,
     state: State,
     task: Option<FetchTask>,
-}
-
-// Might not be used. Seems similar to SkillBlock struct
-struct FormData {
-    category: String,
-    description: String,
-    skill_name: String,
 }
 
 pub enum Msg {
