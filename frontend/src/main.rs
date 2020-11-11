@@ -4,8 +4,8 @@ mod api;
 mod pages;
 mod types;
 
-use pages::User;
+use pages::Form;
 
 fn main() {
-    yew::start_app::<User>();
+    yew::start_app::<Form>();
 }
