@@ -12,9 +12,9 @@ pub struct TimeWrapper {
     pub data: Vec<TimeData>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct FormData {
-    category: String,
-    description: String,
-    skill_name: String,
+    pub category: String,
+    pub description: String,
+    pub skill_name: String,
 }
