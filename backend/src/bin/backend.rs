@@ -184,7 +184,7 @@ fn main() -> Result<(), Error> {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
-        .mount("/", routes![get_categories, get_multi])
+        .mount("/", routes![get_categories, get_multi, test_post])
         .launch();
 
     Ok(())
