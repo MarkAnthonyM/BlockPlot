@@ -147,7 +147,11 @@ impl Component for Form {
                                 <Field>
                                     <label class="label">{ "Skill Description" }</label>
                                     <Control>
-                                        <input class="input" placeholder="Skill Description"/>
+                                        <input
+                                            class="input"
+                                            placeholder="Skill Description"
+                                            oninput=self.link.callback(|e: InputData| Msg::SetDescription(e.value))
+                                        />
                                     </Control>
                                 </Field>
                             </div>
