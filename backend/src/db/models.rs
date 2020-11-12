@@ -18,3 +18,11 @@ pub struct FormData {
     pub description: String,
     pub skill_name: String,
 }
+
+#[derive(Deserialize, Serialize)]
+pub struct DbTimeData {
+    pub category: String,
+    pub description: String,
+    pub skill_name: String,
+    pub time_data: HashMap<String, i32>,
+}
