@@ -150,45 +150,47 @@ impl Component for Form {
                     <Section>
                         <div class="colums">
                             <div class="column is-half">
-                                <Field>
-                                    <label class="label">{ "Skill Name" }</label>
-                                    <Control>
-                                        <input
-                                            class="input"
-                                            placeholder="Text input"
-                                            oninput=self.link.callback(|e: InputData| Msg::SetSkillName(e.value))
-                                        />
-                                    </Control>
-                                </Field>
-                                <Field>
-                                    <label class="label">{ "Skill Category" }</label>
-                                    <Control>
-                                        <div class="select">
-                                            <select>
-                                                <option>{ "Software Development" }</option>
-                                                <option>{ "References & Learning" }</option>
-                                            </select>
+                                <form>
+                                    <Field>
+                                        <label class="label">{ "Skill Name" }</label>
+                                        <Control>
+                                            <input
+                                                class="input"
+                                                placeholder="Text input"
+                                                oninput=self.link.callback(|e: InputData| Msg::SetSkillName(e.value))
+                                            />
+                                        </Control>
+                                    </Field>
+                                    <Field>
+                                        <label class="label">{ "Skill Category" }</label>
+                                        <Control>
+                                            <div class="select">
+                                                <select>
+                                                    <option>{ "Software Development" }</option>
+                                                    <option>{ "References & Learning" }</option>
+                                                </select>
+                                            </div>
+                                        </Control>
+                                    </Field>
+                                    <Field>
+                                        <label class="label">{ "Skill Description" }</label>
+                                        <Control>
+                                            <input
+                                                class="input"
+                                                placeholder="Skill Description"
+                                                oninput=self.link.callback(|e: InputData| Msg::SetDescription(e.value))
+                                            />
+                                        </Control>
+                                    </Field>
+                                    <Field>
+                                        <div class="control">
+                                            <button
+                                                class="button is-link"
+                                                onclick=self.link.callback(|_| Msg::PostData)>{ "Submit" }
+                                            </button>
                                         </div>
-                                    </Control>
-                                </Field>
-                                <Field>
-                                    <label class="label">{ "Skill Description" }</label>
-                                    <Control>
-                                        <input
-                                            class="input"
-                                            placeholder="Skill Description"
-                                            oninput=self.link.callback(|e: InputData| Msg::SetDescription(e.value))
-                                        />
-                                    </Control>
-                                </Field>
-                                <Field>
-                                    <div class="control">
-                                        <button
-                                            class="button is-link"
-                                            onclick=self.link.callback(|_| Msg::PostData)>{ "Submit" }
-                                        </button>
-                                    </div>
-                                </Field>
+                                    </Field>
+                                </form>
                             </div>
                         </div>
                     </Section>
