@@ -174,9 +174,10 @@ impl Component for Form {
                                         <label class="label">{ "Skill Category" }</label>
                                         <Control>
                                             <div class="select">
-                                                <select onchange=onselect>
-                                                    <option value=0>{ "Software Development" }</option>
-                                                    <option value=1>{ "References & Learning" }</option>
+                                                <select onchange=onselect required=true>
+                                                    <option value="" disabled=true selected=true hidden=true>{ "Selected Category" }</option>
+                                                    <option value="software development">{ "Software Development" }</option>
+                                                    <option value="references & learning">{ "References & Learning" }</option>
                                                 </select>
                                             </div>
                                         </Control>
