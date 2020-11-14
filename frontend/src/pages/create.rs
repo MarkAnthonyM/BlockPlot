@@ -144,6 +144,15 @@ impl Component for Form {
     }
 
     fn view(&self) -> Html {
+        let onselect = self.link.callback(|event| match event {
+            ChangeData::Select(elem) => {
+                let value = elem.value();
+
+                Msg::SetCategory(value)
+            },
+            _ => unreachable!(),
+        });
+        
         html! {
             <>
                 <main class="bd-main">
@@ -165,7 +174,7 @@ impl Component for Form {
                                         <label class="label">{ "Skill Category" }</label>
                                         <Control>
                                             <div class="select">
-                                                <select>
+                                                <select onchange=onselect>
                                                     <option>{ "Software Development" }</option>
                                                     <option>{ "References & Learning" }</option>
                                                 </select>
