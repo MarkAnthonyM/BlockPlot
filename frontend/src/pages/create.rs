@@ -175,8 +175,8 @@ impl Component for Form {
                                         <Control>
                                             <div class="select">
                                                 <select onchange=onselect>
-                                                    <option>{ "Software Development" }</option>
-                                                    <option>{ "References & Learning" }</option>
+                                                    <option value=0>{ "Software Development" }</option>
+                                                    <option value=1>{ "References & Learning" }</option>
                                                 </select>
                                             </div>
                                         </Control>
