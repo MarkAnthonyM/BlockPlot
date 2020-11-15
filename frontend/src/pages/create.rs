@@ -111,7 +111,6 @@ impl Component for Form {
             Msg::SetCategory(text) => {
                 self.state.form_data.category = text;
                 let current_text = format!("{}", self.state.form_data.category);
-                ConsoleService::log(&current_text);
 
                 true
             },
