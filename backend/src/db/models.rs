@@ -13,7 +13,7 @@ pub struct TimeWrapper {
     pub data: Vec<TimeData>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(FromForm)]
 pub struct FormData {
     pub category: String,
     pub description: String,
