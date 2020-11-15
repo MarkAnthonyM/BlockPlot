@@ -6,6 +6,7 @@ extern crate rocket;
 extern crate rocket_contrib;
 
 use backend::db::models;
+use backend::db::operations::create_skillblock;
 
 use dotenv::dotenv;
 use std::collections::HashMap;
@@ -161,12 +162,18 @@ fn get_multi() -> Json<models::TimeWrapper> {
     Json(wrapped_json)
 }
 
+// Handle form post request and store form data into database
 #[post("/api/testpost", data = "<form_data>")]
-fn test_post(conn: BlockplotDbConn, form_data: Json<models::FormData>) -> String {
-    let cloned_data = form_data.clone();
-    let test_string = cloned_data.skill_name;
+fn test_post(conn: BlockplotDbConn, form_data: Form<models::FormData>) -> String {
+    let db_skillblock = models::NewSkillblock {
+        category: form_data.category.to_string(),
+        skill_description: form_data.description.to_string(),
+        skill_name: form_data.skill_name.to_string(),
+    };
 
-    test_string
+    create_skillblock(&conn, db_skillblock);
+
+    String::from("Success!")
 }
 
 fn main() -> Result<(), Error> {
