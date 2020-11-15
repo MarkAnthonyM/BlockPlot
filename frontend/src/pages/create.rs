@@ -120,8 +120,6 @@ impl Component for Form {
             }
             Msg::SetSkillName(text) => {
                 self.state.form_data.skill_name = text;
-                let current_text = format!("{}", self.state.form_data.skill_name);
-                ConsoleService::log(&current_text);
 
                 true
             },
