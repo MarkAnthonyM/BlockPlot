@@ -115,8 +115,6 @@ impl Component for Form {
             },
             Msg::SetDescription(text) => {
                 self.state.form_data.description = text;
-                let current_text = format!("{}", self.state.form_data.description);
-                ConsoleService::log(&current_text);
 
                 true
             }
