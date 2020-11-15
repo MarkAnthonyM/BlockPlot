@@ -159,12 +159,13 @@ impl Component for Form {
                     <Section>
                         <div class="colums">
                             <div class="column is-half">
-                                <form>
+                                <form action="http://localhost:8000/api/testpost" method="POST">
                                     <Field>
                                         <label class="label">{ "Skill Name" }</label>
                                         <Control>
                                             <input
                                                 class="input"
+                                                name="skill_name"
                                                 placeholder="Text input"
                                                 oninput=self.link.callback(|e: InputData| Msg::SetSkillName(e.value))
                                             />
@@ -174,7 +175,7 @@ impl Component for Form {
                                         <label class="label">{ "Skill Category" }</label>
                                         <Control>
                                             <div class="select">
-                                                <select onchange=onselect required=true>
+                                                <select onchange=onselect required=true name="category">
                                                     <option value="" disabled=true selected=true hidden=true>{ "Selected Category" }</option>
                                                     <option value="software development">{ "Software Development" }</option>
                                                     <option value="references & learning">{ "References & Learning" }</option>
@@ -187,6 +188,7 @@ impl Component for Form {
                                         <Control>
                                             <input
                                                 class="input"
+                                                name="description"
                                                 placeholder="Skill Description"
                                                 oninput=self.link.callback(|e: InputData| Msg::SetDescription(e.value))
                                             />
@@ -196,7 +198,7 @@ impl Component for Form {
                                         <div class="control">
                                             <button
                                                 class="button is-link"
-                                                onclick=self.link.callback(|_| Msg::PostData)>{ "Submit" }
+                                                onsubmit=self.link.callback(|_| Msg::PostData)>{ "Submit" }
                                             </button>
                                         </div>
                                     </Field>
