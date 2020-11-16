@@ -15,6 +15,7 @@ pub enum Msg {
     PostData,
     PostDataSuccess,
     PostDataError(Error),
+    ToggleCategory,
 }
 
 #[derive(Properties, Clone, Default, PartialEq)]
@@ -154,6 +155,11 @@ impl Component for Form {
             },
             Msg::PostDataSuccess => {
                 println!("Success posting data!");
+
+                true
+            },
+            Msg::ToggleCategory => {
+                self.state.toggle_category = !self.state.toggle_category;
 
                 true
             },
