@@ -27,7 +27,7 @@ pub struct Skillblock {
     pub category: String,
     pub description: String,
     pub skill_name: String,
-    pub user_name: String,
+    pub username: String,
 }
 
 // Struct for database bound information
