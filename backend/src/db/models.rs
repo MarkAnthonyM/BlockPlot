@@ -16,6 +16,7 @@ pub struct TimeWrapper {
 #[derive(FromForm)]
 pub struct FormData {
     pub category: String,
+    pub offline_category: bool,
     pub description: String,
     pub skill_name: String,
     pub username: String,
