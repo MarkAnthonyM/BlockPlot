@@ -25,10 +25,11 @@ pub struct FormData {
 #[derive(Queryable, Deserialize, Serialize)]
 pub struct Skillblock {
     pub id: i32,
-    pub category: String,
-    pub description: String,
-    pub skill_name: String,
     pub username: String,
+    pub category: String,
+    pub offline_category: bool,
+    pub skill_name: String,
+    pub description: String,
 }
 
 // Struct for database bound information
