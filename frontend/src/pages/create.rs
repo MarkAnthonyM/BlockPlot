@@ -43,13 +43,14 @@ impl Form {
     fn offline_category_view(&self) -> Html {
         html! {
             <Field>
-                <label class="label">{ "Category Offline?" }</label>
-                <Control>
+            <Control>
+                <label class="checkbox">
                     <input
                         type="checkbox"
-                        class="input"
                         name="offline_category"
                     />
+                    { "Category Offline?" }
+                </label>
                 </Control>
             </Field>
         }
