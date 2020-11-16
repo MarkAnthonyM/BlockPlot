@@ -47,7 +47,9 @@ impl Component for Form {
         let mock_form_data = FormData {
             category: "".to_string(),
             description: "".to_string(),
+            offline: false,
             skill_name: "".to_string(),
+            username: "".to_string(),
         };
         
         Self {
@@ -86,7 +88,9 @@ impl Component for Form {
                 let form_instance = FormData {
                     category: self.state.form_data.category.clone(),
                     description: self.state.form_data.description.clone(),
+                    offline: false,
                     skill_name: self.state.form_data.skill_name.clone(),
+                    username: String::from("test user name"),
                 };
                 
                 let url = format!("http://localhost:8000/api/testpost");
