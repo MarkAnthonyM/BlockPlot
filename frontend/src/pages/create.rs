@@ -40,6 +40,21 @@ struct State {
 }
 
 impl Form {
+    fn offline_category_view(&self) -> Html {
+        html! {
+            <Field>
+                <label class="label">{ "Category Offline?" }</label>
+                <Control>
+                    <input
+                        type="checkbox"
+                        class="input"
+                        name="offline_category"
+                    />
+                </Control>
+            </Field>
+        }
+    }
+    
     fn skill_category_view(&self) -> Html {
         let onselect = self.link.callback(|event| match event {
             ChangeData::Select(elem) => {
