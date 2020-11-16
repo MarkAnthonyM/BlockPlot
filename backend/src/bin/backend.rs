@@ -117,7 +117,10 @@ fn get_multi(conn: BlockplotDbConn) -> Json<models::TimeWrapper> {
         let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
         
         let mut response = models::TimeData {
+            username: skillblock.username,
             category: skillblock.category,
+            skill_name: skillblock.skill_name,
+            skill_description: skillblock.description,
             time_data: HashMap::new(),
         };
         
