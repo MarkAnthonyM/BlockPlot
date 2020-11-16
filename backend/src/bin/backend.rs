@@ -83,8 +83,6 @@ fn get_multi() -> Json<models::TimeWrapper> {
     let format = String::from("json");
     
     let mut time_vec = Vec::new();
-    // let mock_categories = vec!["software%20development", "piano%20practice"];
-    // let mock_categories = vec![String::from("software%20development"), String::from("piano%20practice")];
     let mock_categories = vec!["software_development", "piano_practice"];
 
     for item in mock_categories {
@@ -166,7 +164,9 @@ fn get_multi() -> Json<models::TimeWrapper> {
 #[post("/api/testpost", data = "<form_data>")]
 fn test_post(conn: BlockplotDbConn, form_data: Form<models::FormData>) -> String {
     let db_skillblock = models::NewSkillblock {
+        username: form_data.username.to_string(),
         category: form_data.category.to_string(),
+        offline_category: form_data.offline_category,
         skill_description: form_data.description.to_string(),
         skill_name: form_data.skill_name.to_string(),
     };
