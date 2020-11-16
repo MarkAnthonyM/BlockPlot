@@ -47,19 +47,34 @@ impl Form {
     }
     
     fn skill_category_view(&self) -> Html {
-        html! {
-            <Field>
-                <label class="label">{ "Skill Category" }</label>
-                <Control>
-                    <div class="select">
-                        <select required=true name="category">
-                            <option value="" disabled=true selected=true hidden=true>{ "Selected Category" }</option>
-                            <option value="software development">{ "Software Development" }</option>
-                            <option value="references & learning">{ "References & Learning" }</option>
-                        </select>
-                    </div>
-                </Control>
-            </Field>
+        if !self.state.toggle_category {
+            html! {
+                <Field>
+                    <label class="label">{ "Skill Category" }</label>
+                    <Control>
+                        <div class="select">
+                            <select required=true name="category">
+                                <option value="" disabled=true selected=true hidden=true>{ "Selected Category" }</option>
+                                <option value="software development">{ "Software Development" }</option>
+                                <option value="references & learning">{ "References & Learning" }</option>
+                            </select>
+                        </div>
+                    </Control>
+                </Field>
+            }
+        } else {
+            html! {
+                <Field>
+                    <label class="label">{ "Offline Category Name" }</label>
+                    <Control>
+                        <input
+                            class="input"
+                            name="offline_category"
+                            placeholder="Offline Category Input"
+                        />
+                    </Control>
+                </Field>
+            }
         }
     }
 
