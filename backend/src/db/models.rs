@@ -18,6 +18,7 @@ pub struct FormData {
     pub category: String,
     pub description: String,
     pub skill_name: String,
+    pub username: String,
 }
 
 // Struct for querying database infromation
