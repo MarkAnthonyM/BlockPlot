@@ -6,7 +6,7 @@ extern crate rocket;
 extern crate rocket_contrib;
 
 use backend::db::models;
-use backend::db::operations::create_skillblock;
+use backend::db::operations::{ create_skillblock, query_skillblock };
 
 use dotenv::dotenv;
 use std::collections::HashMap;
@@ -76,81 +76,63 @@ fn get_categories(category: String, dates: Form<Dates>) -> Json<models::TimeData
 
 // Test handler for multiple data requests
 #[get("/api/categories/multi")]
-fn get_multi() -> Json<models::TimeWrapper> {
+fn get_multi(conn: BlockplotDbConn) -> Json<models::TimeWrapper> {
     dotenv().ok();
     
     let api_key = env::var("API_KEY").unwrap();
     let format = String::from("json");
     
+    // Vector holds datastructures to be passed back to frontend
     let mut time_vec = Vec::new();
-    let mock_categories = vec!["software_development", "piano_practice"];
+    let categories = query_skillblock(&conn);
 
-    for item in mock_categories {
-        match item {
-            "software_development" => {
-                let query_parameters = Parameters::new(
-                    Some(Interval),
-                    Some(Day),
-                    //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
-                    Some(Date(String::from("2019-11-05"), String::from("2020-11-04"))),
-                    Some(Overview),
-                    Some(Thing(String::from("software%20development"))),
-                    None,
-                );
-            
-                let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
-            
-                let mut response = models::TimeData {
-                    category: String::from("software_development"),
-                    time_data: HashMap::new(),
-                };
-                
-                for query in payload.rows {
-                    if let QueryKind::SizeSixString(value) = query {
-                        if let Some(x) = response.time_data.get_mut(&value.perspective) {
-                            *x += value.time_spent;
-                        } else {
-                            response.time_data.insert(value.perspective, value.time_spent);
-                        }
-                    }
+    // loop through gathered database records and use information to make
+    // query calls to rescuetime api for time data
+    for skillblock in categories {
+        let query_parameters;
+        
+        // Check for needed type of restrict_kind parameter
+        if skillblock.offline_category {
+            query_parameters = Parameters::new(
+                Some(Interval),
+                Some(Day),
+                //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                Some(Date(String::from("2019-11-17"), String::from("2020-11-16"))),
+                Some(Category),
+                Some(Thing(skillblock.category.to_string())),
+                None,
+            );
+        } else {
+            query_parameters = Parameters::new(
+                Some(Interval),
+                Some(Day),
+                //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                Some(Date(String::from("2019-11-17"), String::from("2020-11-16"))),
+                Some(Overview),
+                Some(Thing(skillblock.category.to_string())),
+                None,
+            );
+        }
+
+        let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+        
+        let mut response = models::TimeData {
+            category: skillblock.category,
+            time_data: HashMap::new(),
+        };
+        
+        // Create hash key/values and sum total time for given category
+        for query in payload.rows {
+            if let QueryKind::SizeSixString(value) = query {
+                if let Some(x) = response.time_data.get_mut(&value.perspective) {
+                    *x += value.time_spent;
+                } else {
+                    response.time_data.insert(value.perspective, value.time_spent);
                 }
-
-                time_vec.push(response);
-            },
-            "piano_practice" => {
-                let query_parameters = Parameters::new(
-                    Some(Interval),
-                    Some(Day),
-                    //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
-                    Some(Date(String::from("2019-11-05"), String::from("2020-11-04"))),
-                    Some(Category),
-                    Some(Thing(String::from("piano%20practice"))),
-                    None,
-                );
-            
-                let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
-            
-                let mut response = models::TimeData {
-                    category: String::from("piano_practice"),
-                    time_data: HashMap::new(),
-                };
-                
-                for query in payload.rows {
-                    if let QueryKind::SizeSixString(value) = query {
-                        if let Some(x) = response.time_data.get_mut(&value.perspective) {
-                            *x += value.time_spent;
-                        } else {
-                            response.time_data.insert(value.perspective, value.time_spent);
-                        }
-                    }
-                }
-
-                time_vec.push(response);
-            },
-            _=> {
-                println!("nothing!");
             }
         }
+
+        time_vec.push(response);
     }
 
     let wrapped_json = models::TimeWrapper {
