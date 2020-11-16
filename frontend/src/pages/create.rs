@@ -40,6 +40,32 @@ struct State {
 }
 
 impl Form {
+    fn skill_category_view(&self) -> Html {
+        let onselect = self.link.callback(|event| match event {
+            ChangeData::Select(elem) => {
+                let value = elem.value();
+
+                Msg::SetCategory(value)
+            },
+            _ => unreachable!(),
+        });
+        
+        html! {
+            <Field>
+                <label class="label">{ "Skill Category" }</label>
+                <Control>
+                    <div class="select">
+                        <select onchange=onselect required=true name="category">
+                            <option value="" disabled=true selected=true hidden=true>{ "Selected Category" }</option>
+                            <option value="software development">{ "Software Development" }</option>
+                            <option value="references & learning">{ "References & Learning" }</option>
+                        </select>
+                    </div>
+                </Control>
+            </Field>
+        }
+    }
+    
     fn username_view(&self) -> Html {
         html! {
             <Field>
