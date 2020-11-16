@@ -239,15 +239,6 @@ impl Component for Form {
     }
 
     fn view(&self) -> Html {
-        let onselect = self.link.callback(|event| match event {
-            ChangeData::Select(elem) => {
-                let value = elem.value();
-
-                Msg::SetCategory(value)
-            },
-            _ => unreachable!(),
-        });
-        
         html! {
             <>
                 <main class="bd-main">
