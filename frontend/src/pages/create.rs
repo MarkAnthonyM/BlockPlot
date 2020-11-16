@@ -24,6 +24,7 @@ pub enum Msg {
     SetCategory(String),
     SetDescription(String),
     SetSkillName(String),
+    SetUsername(String),
 }
 
 #[derive(Properties, Clone, Default, PartialEq)]
@@ -120,6 +121,11 @@ impl Component for Form {
             }
             Msg::SetSkillName(text) => {
                 self.state.form_data.skill_name = text;
+
+                true
+            },
+            Msg::SetUsername(text) => {
+                self.state.form_data.username = text;
 
                 true
             },
