@@ -1,9 +1,10 @@
 table! {
     skillblocks (id) {
         id -> Int4,
-        category -> Varchar,
-        skill_description -> Text,
-        skill_name -> Text,
         username -> Text,
+        category -> Varchar,
+        offline_category -> Bool,
+        skill_name -> Text,
+        skill_description -> Text,
     }
 }
