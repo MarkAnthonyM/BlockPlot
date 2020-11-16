@@ -39,6 +39,24 @@ struct State {
     post_form_loaded: bool,
 }
 
+impl Form {
+    fn username_view(&self) -> Html {
+        html! {
+            <Field>
+                <label class="label">{ "Username" }</label>
+                <Control>
+                    <input
+                        class="input"
+                        name="username"
+                        placeholder="Username Input"
+                        oninput=self.link.callback(|e: InputData| Msg::SetUsername(e.value))
+                    />
+                </Control>
+            </Field>
+        }
+    }
+}
+
 impl Component for Form {
     type Message = Msg;
     type Properties = Props;
