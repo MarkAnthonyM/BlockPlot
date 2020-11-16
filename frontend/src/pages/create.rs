@@ -39,6 +39,7 @@ impl Form {
                     <input
                         type="checkbox"
                         name="offline_category"
+                        onclick=self.link.callback(|_| Msg::ToggleCategory)
                     />
                     { "Category Offline?" }
                 </label>
