@@ -255,40 +255,10 @@ impl Component for Form {
                         <div class="colums">
                             <div class="column is-half">
                                 <form action="http://localhost:8000/api/testpost" method="POST">
-                                    <Field>
-                                        <label class="label">{ "Skill Name" }</label>
-                                        <Control>
-                                            <input
-                                                class="input"
-                                                name="skill_name"
-                                                placeholder="Text input"
-                                                oninput=self.link.callback(|e: InputData| Msg::SetSkillName(e.value))
-                                            />
-                                        </Control>
-                                    </Field>
-                                    <Field>
-                                        <label class="label">{ "Skill Category" }</label>
-                                        <Control>
-                                            <div class="select">
-                                                <select onchange=onselect required=true name="category">
-                                                    <option value="" disabled=true selected=true hidden=true>{ "Selected Category" }</option>
-                                                    <option value="software development">{ "Software Development" }</option>
-                                                    <option value="references & learning">{ "References & Learning" }</option>
-                                                </select>
-                                            </div>
-                                        </Control>
-                                    </Field>
-                                    <Field>
-                                        <label class="label">{ "Skill Description" }</label>
-                                        <Control>
-                                            <input
-                                                class="input"
-                                                name="description"
-                                                placeholder="Skill Description"
-                                                oninput=self.link.callback(|e: InputData| Msg::SetDescription(e.value))
-                                            />
-                                        </Control>
-                                    </Field>
+                                    { self.username_view() }
+                                    { self.offline_category_view() }
+                                    { self.skill_category_view() }
+                                    { self.skill_description_view() }
                                     <Field>
                                         <div class="control">
                                             <button
