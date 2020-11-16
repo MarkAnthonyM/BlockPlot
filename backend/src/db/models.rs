@@ -3,7 +3,10 @@ use super::schema::skillblocks;
 
 #[derive(Deserialize, Serialize)]
 pub struct TimeData {
+    pub username: String,
     pub category: String,
+    pub skill_name: String,
+    pub skill_description: String,
     pub time_data: HashMap<String, i32>,
 }
 
