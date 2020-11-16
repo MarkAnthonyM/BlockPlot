@@ -247,6 +247,7 @@ impl Component for Form {
                             <div class="column is-half">
                                 <form action="http://localhost:8000/api/testpost" method="POST">
                                     { self.username_view() }
+                                    { self.skill_name_view() }
                                     { self.offline_category_view() }
                                     { self.skill_category_view() }
                                     { self.skill_description_view() }
