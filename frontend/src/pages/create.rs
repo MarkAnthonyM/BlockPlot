@@ -81,6 +81,22 @@ impl Form {
             </Field>
         }
     }
+
+    fn skill_name_view(&self) -> Html {
+        html! {
+            <Field>
+                <label class="label">{ "Skill Name" }</label>
+                <Control>
+                    <input
+                        class="input"
+                        name="skill_name"
+                        placeholder="Text input"
+                        oninput=self.link.callback(|e: InputData| Msg::SetSkillName(e.value))
+                    />
+                </Control>
+            </Field>
+        }
+    }
     
     fn username_view(&self) -> Html {
         html! {
