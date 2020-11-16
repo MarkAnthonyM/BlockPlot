@@ -71,7 +71,7 @@ impl Form {
                     <Control>
                         <input
                             class="input"
-                            name="offline_category"
+                            name="category"
                             placeholder="Offline Category Input"
                         />
                     </Control>
