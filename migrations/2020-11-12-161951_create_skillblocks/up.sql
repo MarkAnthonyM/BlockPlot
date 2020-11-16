@@ -3,5 +3,5 @@ CREATE TABLE skillblocks (
     category VARCHAR NOT NULL,
     skill_description TEXT NOT NULL,
     skill_name TEXT NOT NULL,
-    user TEXT NOT NULL
+    username TEXT NOT NULL
 )

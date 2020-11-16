@@ -4,5 +4,6 @@ table! {
         category -> Varchar,
         skill_description -> Text,
         skill_name -> Text,
+        username -> Text,
     }
 }
