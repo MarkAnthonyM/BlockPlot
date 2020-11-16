@@ -37,5 +37,5 @@ pub struct NewSkillblock {
     pub category: String,
     pub skill_description: String,
     pub skill_name: String,
-    pub user_name: String,
+    pub username: String,
 }
