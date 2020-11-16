@@ -12,14 +12,6 @@ pub struct AnalyticData {
 
 }
 
-// Might not be used. Seems similar to SkillBlock struct
-#[derive(Deserialize, Serialize)]
-pub struct FormData {
-    pub category: String,
-    pub description: String,
-    pub skill_name: String,
-}
-
 // Struct represents different color options for heatmap shading
 //TODO: Explore enum equivalent
 #[non_exhaustive]
