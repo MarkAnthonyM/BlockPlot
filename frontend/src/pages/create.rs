@@ -26,6 +26,7 @@ pub struct Props {
 struct State {
     post_form_error: Option<Error>,
     post_form_loaded: bool,
+    toggle_category: bool,
 }
 
 impl Form {
@@ -118,6 +119,7 @@ impl Component for Form {
             state: State {
                 post_form_error: None,
                 post_form_loaded: false,
+                toggle_category: false,
             },
             props,
         }
