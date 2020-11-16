@@ -35,8 +35,9 @@ pub struct Skillblock {
 #[derive(Insertable)]
 #[table_name="skillblocks"]
 pub struct NewSkillblock {
-    pub category: String,
-    pub skill_description: String,
-    pub skill_name: String,
     pub username: String,
+    pub category: String,
+    pub offline_category: bool,
+    pub skill_name: String,
+    pub skill_description: String,
 }
