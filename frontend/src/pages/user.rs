@@ -4,7 +4,7 @@ use chrono::prelude::*;
 use chrono::Duration;
 
 use crate::api;
-use crate::types::{ Color, SkillBlock, TimeWrapper };
+use crate::types::{ Color, TimeData, TimeWrapper };
 
 use ybc::{ Box, Container, Navbar, NavbarItem, Section, Tile };
 use ybc::NavbarItemTag::A;
@@ -30,14 +30,14 @@ pub struct User {
 }
 
 struct State {
-    skill_blocks: Vec<SkillBlock>,
+    skill_blocks: Vec<TimeData>,
     get_skillblocks_error: Option<Error>,
     get_skillblocks_loaded: bool,
 }
 
 impl User {
     // Create calender grid element
-    fn view_blockgrid(&self, time_block: &SkillBlock) -> Html {
+    fn view_blockgrid(&self, time_block: &TimeData) -> Html {
         // create empty vector representing weeks out of a year
         let mut week_elements = Vec::new();
 
@@ -86,7 +86,7 @@ impl User {
                 }
             }
 
-            if let Some(value) = time_block.recent_time_data.time_data.get(&day) {
+            if let Some(value) = time_block.time_data.get(&day) {
                 let minutes = value / 60;
                 match minutes {
                     0 => color = Color::NEUTRAL,
@@ -253,17 +253,7 @@ impl Component for User {
             },
             Msg::GetSkillBlocksSuccess(skillblocks) => {
                 for skillblock in skillblocks.data {
-                    let skill_block = SkillBlock {
-                        category: String::from("This is a test category"),
-                        description: String::from("This is a test description"),
-                        name: String::from("This is a test name"),
-                        recent_time_data: skillblock,
-                        block_color_lite: String::from("This is a test color"),
-                        block_color_regular: String::from("This is a test color"),
-                        block_color_deep: String::from("This is a test color"),
-                    };
-    
-                    self.state.skill_blocks.push(skill_block);
+                    self.state.skill_blocks.push(skillblock);
                     self.state.get_skillblocks_loaded = true;
                 }
 
