@@ -1,10 +1,59 @@
-use ybc::Section;
+use crate::route::Route;
+
+use ybc::{ Container, Navbar, NavbarItem };
+use ybc::NavbarItemTag::A;
 
 use yew::prelude::*;
 
-pub struct Navbar {}
+use yew_router::components::RouterAnchor;
 
-impl Component for Navbar {
+pub struct NavbarElement {}
+
+impl NavbarElement {
+    // Contruct navbar at top of page
+    fn view_navbar(&self) -> Html {
+        html! {
+            <Navbar navbrand=self.view_navbrand() navstart=self.view_navstart() navend=self.view_navend() />
+        }
+    }
+
+    // Construct navbrand section of navbar
+    fn view_navbrand(&self) -> Html {
+        html! {
+            <NavbarItem tag=A>
+                <img src="https://bulma.io/images/bulma-logo.png" />
+            </NavbarItem>
+        }
+    }
+
+    // Construct navend section of navbar
+    fn view_navend(&self) -> Html {
+        html! {
+
+        }
+    }
+
+    // Construct main section of navbar
+    fn view_navstart(&self) -> Html {
+        type Anchor = RouterAnchor<Route>;
+        
+        html! {
+            <>
+                <NavbarItem tag=A>
+                    { "UserName" }
+                </NavbarItem>
+                <Anchor route=Route::FormPage classes="navbar-item">
+                    { "Create" }
+                </Anchor>
+                <NavbarItem tag=A>
+                    { "About" }
+                </NavbarItem>
+            </>
+        }
+    }
+}
+
+impl Component for NavbarElement {
     type Message = ();
     type Properties = ();
 
@@ -22,14 +71,9 @@ impl Component for Navbar {
 
     fn view(&self) -> Html {
         html! {
-            <>
-                <div class="container">
-                    { self.view_navbar() }
-                </div>
-                <Section>
-                    { self.view_skill_blocks() }
-                </Section>
-            </>
+            <Container>
+                { self.view_navbar() }
+            </Container>
         }
     }
 }
