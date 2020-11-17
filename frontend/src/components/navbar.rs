@@ -39,9 +39,9 @@ impl NavbarElement {
         
         html! {
             <>
-                <NavbarItem tag=A>
+                <Anchor route=Route::UserPage classes="navbar-item">
                     { "UserName" }
-                </NavbarItem>
+                </Anchor>
                 <Anchor route=Route::FormPage classes="navbar-item">
                     { "Create" }
                 </Anchor>
