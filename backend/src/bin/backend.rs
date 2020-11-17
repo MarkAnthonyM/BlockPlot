@@ -86,7 +86,7 @@ fn get_skillblocks(conn: BlockplotDbConn) -> Json<models::TimeWrapper> {
                 Some(Interval),
                 Some(Day),
                 //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
-                Some(Date(String::from("2019-11-17"), String::from("2020-11-16"))),
+                Some(Date(year_start.to_string(), year_end.to_string())),
                 Some(Overview),
                 Some(Thing(skillblock.category.to_string())),
                 None,
