@@ -4,7 +4,7 @@ use chrono::prelude::*;
 use chrono::Duration;
 
 use crate::api;
-use crate::types::{ Color, TimeData, SkillBlock, TimeWrapper };
+use crate::types::{ Color, SkillBlock, TimeWrapper };
 
 use ybc::{ Box, Container, Navbar, NavbarItem, Section, Tile };
 use ybc::NavbarItemTag::A;
