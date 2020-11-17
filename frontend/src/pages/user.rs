@@ -265,22 +265,6 @@ impl Component for User {
                 self.state.get_skillblocks_loaded = true;
                 true
             },
-            // Testing logic, may remove
-            // Msg::GetSkillBlocksSuccess(skillblocks) => {
-            //     let skill_block = SkillBlock {
-            //         category: String::from("This is a test category"),
-            //         description: String::from("This is a test description"),
-            //         name: String::from("This is a test name"),
-            //         recent_time_data: skillblocks,
-            //         block_color_lite: String::from("This is a test color"),
-            //         block_color_regular: String::from("This is a test color"),
-            //         block_color_deep: String::from("This is a test color"),
-            //     };
-
-            //     self.state.skill_blocks = vec![skill_block];
-            //     self.state.get_skillblocks_loaded = true;
-            //     true
-            // },
             Msg::GetSkillBlocksSuccess(skillblocks) => {
                 for skillblock in skillblocks.data {
                     let skill_block = SkillBlock {
