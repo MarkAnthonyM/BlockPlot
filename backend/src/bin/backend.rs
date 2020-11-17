@@ -31,12 +31,6 @@ use rusty_rescuetime::parameters::RestrictOptions::{ Category, Overview };
 #[database("postgres_blockplot")]
 struct BlockplotDbConn(diesel::PgConnection);
 
-#[derive(FromForm)]
-struct Dates {
-    begin_date: String,
-    end_date: String,
-}
-
 //TODO: Figure out if time data should be restructured in a different format for the frontend
 //TODO: Explore whether a hashmap of time data should be processed and returned as json
 // #[get("/api/categories/<category>?<dates..>")]
