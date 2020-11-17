@@ -169,12 +169,9 @@ impl User {
                 <NavbarItem tag=A>
                     { "UserName" }
                 </NavbarItem>
-                <NavbarItem tag=A>
-                    //TODO: Anchor link is defaulting to blue. Figure out how to Default to black, blue on hover
-                    <Anchor route=Route::FormPage>
-                        { "Create" }
-                    </Anchor>
-                </NavbarItem>
+                <Anchor route=Route::FormPage classes="navbar-item">
+                    { "Create" }
+                </Anchor>
                 <NavbarItem tag=A>
                     { "About" }
                 </NavbarItem>
