@@ -3,6 +3,7 @@
 mod api;
 mod app;
 mod pages;
+mod route;
 mod types;
 
 use pages::Form;
