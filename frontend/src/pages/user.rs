@@ -49,9 +49,15 @@ impl User {
             current_date.month(),
             current_date.day()
         );
+
+        // Calculate value to subtract from current day. When new week starts on a sunday,
+        // 0 is subtracted from current day, shifting calender graph leftward and replacing oldest week 
+        let day_incrementor = current_date.weekday().pred().num_days_from_monday();
+        let week_incrementor = day_incrementor % 6;
+        let oldest_week = current_day - week_incrementor;
+
         let year_start = NaiveDateTime::new(
-            //TODO: Figure out how to properly render very first calender day with time data
-            NaiveDate::from_ymd(current_year - 1, current_month, current_day - 1),
+            NaiveDate::from_ymd(current_year - 1, current_month, oldest_week),
             NaiveTime::from_hms(0, 0, 0)
         );
         let year_end = NaiveDateTime::new(
