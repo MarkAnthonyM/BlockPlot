@@ -10,7 +10,6 @@ pub struct Form {
 }
 
 pub enum Msg {
-    Ignore,
     PostData,
     PostDataSuccess,
     PostDataError(Error),
@@ -156,7 +155,6 @@ impl Component for Form {
 
                 true
             },
-            Msg::Ignore => { true }
         }
     }
 
