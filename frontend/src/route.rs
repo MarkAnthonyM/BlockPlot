@@ -6,4 +6,6 @@ pub enum Route {
     FormPage,
     #[to = "/user"]
     UserPage,
+    #[to = "/"]
+    HomePage,
 }
