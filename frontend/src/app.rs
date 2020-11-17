@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+use crate::components::NavbarElement;
 use crate::pages::{ Form, User };
 use crate::route::Route;
 
@@ -29,7 +30,10 @@ impl Component for App {
         });
 
         html! {
-            <Router<Route, ()> render=render/>
+            <>
+                <NavbarElement/>
+                <Router<Route, ()> render=render/>
+            </>
         }
     }
 }
