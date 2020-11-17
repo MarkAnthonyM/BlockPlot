@@ -31,9 +31,11 @@ use rusty_rescuetime::parameters::RestrictOptions::{ Category, Overview };
 #[database("postgres_blockplot")]
 struct BlockplotDbConn(diesel::PgConnection);
 
-// Test handler for multiple data requests
-#[get("/api/categories/multi")]
-fn get_multi(conn: BlockplotDbConn) -> Json<models::TimeWrapper> {
+// Route handler fetches user skillblock information from database,
+// fetches timedata from RescueTime api,
+// and serves processed information to frontend
+#[get("/api/skillblocks")]
+fn get_skillblocks(conn: BlockplotDbConn) -> Json<models::TimeWrapper> {
     dotenv().ok();
     
     let api_key = env::var("API_KEY").unwrap();
@@ -153,7 +155,7 @@ fn main() -> Result<(), Error> {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
-        .mount("/", routes![get_multi, test_post])
+        .mount("/", routes![get_skillblocks, test_post])
         .launch();
 
     Ok(())
