@@ -1,3 +1,5 @@
+use ybc::Container;
+
 use yew::prelude::*;
 
 pub struct Home {}
@@ -20,7 +22,9 @@ impl Component for Home {
 
     fn view(&self) -> Html {
         html! {
-            <h1>{ "Hello, World!" }</h1>
+            <Container>
+                <h1>{ "Hello, World!" }</h1>
+            </Container>
         }
     }
 }
