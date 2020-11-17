@@ -88,7 +88,10 @@ pub struct SkillBlock {
 //TODO: Find way to deserialize with Chrono datetime type
 #[derive(Deserialize, Serialize)]
 pub struct TimeData {
+    pub username: String,
     pub category: String,
+    pub skill_name: String,
+    pub skill_description: String,
     pub time_data: HashMap<NaiveDateTime, i32>,
 }
 
