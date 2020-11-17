@@ -8,6 +8,8 @@ extern crate rocket_contrib;
 use backend::db::models;
 use backend::db::operations::{ create_skillblock, query_skillblock };
 
+use chrono::prelude::*;
+
 use dotenv::dotenv;
 use std::collections::HashMap;
 use std::env;
@@ -82,6 +84,26 @@ fn get_multi(conn: BlockplotDbConn) -> Json<models::TimeWrapper> {
     let api_key = env::var("API_KEY").unwrap();
     let format = String::from("json");
     
+    // Setup dates
+    let current_date = Local::now().date().naive_utc();
+    let (current_year, current_month, current_day) = (
+        current_date.year(),
+        current_date.month(),
+        current_date.day()
+    );
+
+    //TODO: Currently pulling in data from less than a year. Figure out how to query data for a full year
+    let year_start = NaiveDate::from_ymd(
+        current_year - 1,
+        current_month,
+        current_day + 1
+    );
+    let year_end = NaiveDate::from_ymd(
+        current_year,
+        current_month,
+        current_day
+    );
+    
     // Vector holds datastructures to be passed back to frontend
     let mut time_vec = Vec::new();
     let categories = query_skillblock(&conn);
@@ -97,7 +119,7 @@ fn get_multi(conn: BlockplotDbConn) -> Json<models::TimeWrapper> {
                 Some(Interval),
                 Some(Day),
                 //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
-                Some(Date(String::from("2019-11-17"), String::from("2020-11-16"))),
+                Some(Date(year_start.to_string(), year_end.to_string())),
                 Some(Category),
                 Some(Thing(skillblock.category.to_string())),
                 None,
