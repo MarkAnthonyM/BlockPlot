@@ -274,7 +274,9 @@ impl Component for User {
     fn view(&self) -> Html {
         html! {
             <>
-                { self.view_navbar() }
+                <div class="container">
+                    { self.view_navbar() }
+                </div>
                 <Section>
                     { self.view_skill_blocks() }
                 </Section>
