@@ -1,7 +1,6 @@
 use crate::route::Route;
 
-use ybc::{ Container, Navbar, NavbarItem };
-use ybc::NavbarItemTag::A;
+use ybc::{ Container, Navbar };
 
 use yew::prelude::*;
 
@@ -47,9 +46,9 @@ impl NavbarElement {
                 <Anchor route=Route::FormPage classes="navbar-item">
                     { "Create" }
                 </Anchor>
-                <NavbarItem tag=A>
+                <Anchor route=Route::AboutPage classes="navbar-item">
                     { "About" }
-                </NavbarItem>
+                </Anchor>
             </>
         }
     }
