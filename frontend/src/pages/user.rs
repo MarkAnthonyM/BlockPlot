@@ -17,8 +17,6 @@ use yew::services::fetch::FetchTask;
 
 pub enum Msg {
     GetDevSkillBlock,
-    // GetSkillBlocksSuccess(TimeData),
-    // Testing logic, may remove
     GetSkillBlocksSuccess(TimeWrapper),
     GetSkillBlocksError(Error),
 }
