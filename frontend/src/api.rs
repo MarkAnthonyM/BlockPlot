@@ -1,8 +1,6 @@
 // use crate::types::TimeData;
 use crate::types::TimeWrapper;
 use anyhow::Error;
-use chrono::prelude::*;
-use yew::services::console::ConsoleService;
 use yew::callback::Callback;
 use yew::format::{ Json, Nothing };
 use yew::services::fetch::{ FetchService, FetchTask, Request, Response };
