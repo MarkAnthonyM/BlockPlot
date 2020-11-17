@@ -22,9 +22,13 @@ impl Component for About {
 
     fn view(&self) -> Html {
         html! {
-            <Container>
-                <h1 class="title is-1">{ "Coming Soon!" }</h1>
-            </Container>
+            <section class="hero is-medium is-primary">
+                <div class="hero-body">
+                    <Container>
+                        <h1 class="title is-1">{ "Coming Soon!" }</h1>
+                    </Container>
+                </div>
+            </section>
         }
     }
 }
