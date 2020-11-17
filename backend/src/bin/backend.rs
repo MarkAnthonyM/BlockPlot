@@ -31,45 +31,6 @@ use rusty_rescuetime::parameters::RestrictOptions::{ Category, Overview };
 #[database("postgres_blockplot")]
 struct BlockplotDbConn(diesel::PgConnection);
 
-//TODO: Figure out if time data should be restructured in a different format for the frontend
-//TODO: Explore whether a hashmap of time data should be processed and returned as json
-// #[get("/api/categories/<category>?<dates..>")]
-// fn get_categories(category: String, dates: Form<Dates>) -> Json<models::TimeData> {
-//     dotenv().ok();
-    
-//     let api_key = env::var("API_KEY").unwrap();
-//     let format = String::from("json");
-    
-//     let query_parameters = Parameters::new(
-//         Some(Interval),
-//         Some(Day),
-//         //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
-//         Some(Date(dates.begin_date.clone(), dates.end_date.clone())),
-//         Some(Overview),
-//         Some(Thing(category)),
-//         None,
-//     );
-
-//     let payload = AnalyticData::fetch(&api_key, query_parameters, format).unwrap();
-
-//     let mut response = models::TimeData {
-//         category: String::from("software_development"),
-//         time_data: HashMap::new(),
-//     };
-    
-//     for query in payload.rows {
-//         if let QueryKind::SizeSixString(value) = query {
-//             if let Some(x) = response.time_data.get_mut(&value.perspective) {
-//                 *x += value.time_spent;
-//             } else {
-//                 response.time_data.insert(value.perspective, value.time_spent);
-//             }
-//         }
-//     }
-
-//     Json(response)
-// }
-
 // Test handler for multiple data requests
 #[get("/api/categories/multi")]
 fn get_multi(conn: BlockplotDbConn) -> Json<models::TimeWrapper> {
