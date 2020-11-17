@@ -2,7 +2,7 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 
 use crate::components::NavbarElement;
-use crate::pages::{ Form, User };
+use crate::pages::{ Form, User, Home };
 use crate::route::Route;
 
 pub struct App {}
@@ -27,6 +27,7 @@ impl Component for App {
         let render = Router::render(|switch: Route| match switch {
             Route::FormPage => html! {<Form/>},
             Route::UserPage => html! {<User/>},
+            Route::HomePage => html! {<Home/>},
         });
 
         html! {
