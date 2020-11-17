@@ -6,7 +6,6 @@ use yew::prelude::*;
 
 pub struct Form {
     link: ComponentLink<Self>,
-    props: Props,
     state: State,
 }
 
@@ -16,12 +15,6 @@ pub enum Msg {
     PostDataSuccess,
     PostDataError(Error),
     ToggleCategory,
-}
-
-#[derive(Properties, Clone, Default, PartialEq)]
-pub struct Props {
-    pub value: String,
-    pub onsubmit: Callback<String>,
 }
 
 struct State {
@@ -128,9 +121,9 @@ impl Form {
 
 impl Component for Form {
     type Message = Msg;
-    type Properties = Props;
+    type Properties = ();
 
-    fn create(props: Self::Properties, _link: ComponentLink<Self>) -> Self {
+    fn create(_: Self::Properties, _link: ComponentLink<Self>) -> Self {
         Self {
             link: _link,
             state: State {
@@ -138,7 +131,6 @@ impl Component for Form {
                 post_form_loaded: false,
                 toggle_category: false,
             },
-            props,
         }
     }
 
@@ -168,13 +160,8 @@ impl Component for Form {
         }
     }
 
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
-        if self.props != props {
-            self.props = props;
-            true
-        } else {
-            false
-        }
+    fn change(&mut self, _: Self::Properties) -> ShouldRender {
+        false
     }
 
     fn view(&self) -> Html {
