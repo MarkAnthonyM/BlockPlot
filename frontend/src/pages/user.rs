@@ -162,10 +162,10 @@ impl User {
         html! {
             <>
                 <NavbarItem tag=A>
-                    { "Login" }
+                    { "UserName" }
                 </NavbarItem>
                 <NavbarItem tag=A>
-                    { "Documention" }
+                    { "Create" }
                 </NavbarItem>
                 <NavbarItem tag=A>
                     { "About" }
