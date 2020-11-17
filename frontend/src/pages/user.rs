@@ -4,6 +4,7 @@ use chrono::prelude::*;
 use chrono::Duration;
 
 use crate::api;
+use crate::route::Route;
 use crate::types::{ Color, TimeData, TimeWrapper };
 
 use ybc::{ Box, Container, Navbar, NavbarItem, Section, Tile };
@@ -14,6 +15,8 @@ use ybc::TileSize;
 use yew::format::Json;
 use yew::prelude::*;
 use yew::services::fetch::FetchTask;
+
+use yew_router::components::RouterAnchor;
 
 pub enum Msg {
     GetDevSkillBlock,
@@ -159,13 +162,18 @@ impl User {
 
     // Construct main section of navbar
     fn view_navstart(&self) -> Html {
+        type Anchor = RouterAnchor<Route>;
+        
         html! {
             <>
                 <NavbarItem tag=A>
                     { "UserName" }
                 </NavbarItem>
                 <NavbarItem tag=A>
-                    { "Create" }
+                    //TODO: Anchor link is defaulting to blue. Figure out how to Default to black, blue on hover
+                    <Anchor route=Route::FormPage>
+                        { "Create" }
+                    </Anchor>
                 </NavbarItem>
                 <NavbarItem tag=A>
                     { "About" }
