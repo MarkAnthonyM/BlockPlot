@@ -231,20 +231,6 @@ impl Component for User {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            // Msg::GetDevSkillBlock => {
-            //     self.state.get_skillblocks_loaded = false;
-            //     let handler =
-            //         self.link
-            //             .callback(move |response: api::FetchResponse<TimeData>| {
-            //                 let (_, Json(data)) = response.into_parts();
-            //                 match data {
-            //                     Ok(skillblocks) => Msg::GetSkillBlocksSuccess(skillblocks),
-            //                     Err(error) => Msg::GetSkillBlocksError(error),
-            //                 }
-            //             });
-            //     self.task = Some(api::get_dev_skillblocks(handler));
-            //     true
-            // },
             // Testing logic, may remove
             Msg::GetDevSkillBlock => {
                 self.state.get_skillblocks_loaded = false;
