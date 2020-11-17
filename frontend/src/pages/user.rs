@@ -4,19 +4,15 @@ use chrono::prelude::*;
 use chrono::Duration;
 
 use crate::api;
-use crate::route::Route;
 use crate::types::{ Color, TimeData, TimeWrapper };
 
-use ybc::{ Box, Container, Navbar, NavbarItem, Section, Tile };
-use ybc::NavbarItemTag::A;
+use ybc::{ Box, Container, Section, Tile };
 use ybc::TileCtx::{ Ancestor, Child, Parent };
 use ybc::TileSize;
 
 use yew::format::Json;
 use yew::prelude::*;
 use yew::services::fetch::FetchTask;
-
-use yew_router::components::RouterAnchor;
 
 pub enum Msg {
     GetDevSkillBlock,
@@ -137,48 +133,6 @@ impl User {
         html_element
     }
 
-    // Contruct navbar at top of page
-    fn view_navbar(&self) -> Html {
-        html! {
-            <Navbar navbrand=self.view_navbrand() navstart=self.view_navstart() navend=self.view_navend() />
-        }
-    }
-
-    // Construct navbrand section of navbar
-    fn view_navbrand(&self) -> Html {
-        html! {
-            <NavbarItem tag=A>
-                <img src="https://bulma.io/images/bulma-logo.png" />
-            </NavbarItem>
-        }
-    }
-
-    // Construct navend section of navbar
-    fn view_navend(&self) -> Html {
-        html! {
-
-        }
-    }
-
-    // Construct main section of navbar
-    fn view_navstart(&self) -> Html {
-        type Anchor = RouterAnchor<Route>;
-        
-        html! {
-            <>
-                <NavbarItem tag=A>
-                    { "UserName" }
-                </NavbarItem>
-                <Anchor route=Route::FormPage classes="navbar-item">
-                    { "Create" }
-                </Anchor>
-                <NavbarItem tag=A>
-                    { "About" }
-                </NavbarItem>
-            </>
-        }
-    }
-
     // Create skill block item.
     fn view_skill_blocks(&self) -> Html {
         let mut block_elements = Vec::new();
@@ -273,14 +227,9 @@ impl Component for User {
 
     fn view(&self) -> Html {
         html! {
-            <>
-                <div class="container">
-                    { self.view_navbar() }
-                </div>
-                <Section>
-                    { self.view_skill_blocks() }
-                </Section>
-            </>
+            <Section>
+                { self.view_skill_blocks() }
+            </Section>
         }
     }
 }
