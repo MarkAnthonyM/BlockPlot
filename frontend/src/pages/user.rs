@@ -175,9 +175,9 @@ impl User {
         for block in &self.state.skill_blocks {
             let block_element = html! {
                 <Tile ctx=Ancestor>
-                    <Tile ctx=Parent size=TileSize::Two>
+                    <Tile ctx=Parent size=TileSize::Four>
                         <Tile classes=Some("notification is-primary") ctx=Child>
-                            <p class="title">{ "Example" }</p>
+                            <p class="title">{ &block.skill_name }</p>
                         </Tile>
                     </Tile>
                     <Tile ctx=Parent size=TileSize::Eight>
@@ -186,11 +186,6 @@ impl User {
                             <Box>
                                 { self.view_blockgrid(block) }
                             </Box>
-                        </Tile>
-                    </Tile>
-                    <Tile ctx=Parent size=TileSize::Two>
-                        <Tile classes=Some("notification is-primary") ctx=Child>
-                            <p class="title">{ "Example" }</p>
                         </Tile>
                     </Tile>
                 </Tile>
