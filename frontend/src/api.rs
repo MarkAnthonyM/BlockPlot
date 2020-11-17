@@ -25,7 +25,7 @@ type FetchCallback<T> = Callback<FetchResponse<T>>;
 
 // A testing request getter. Will probably remove at conclusion of tests
 pub fn get_dev_skillblocks(callback: FetchCallback<TimeWrapper>) -> FetchTask {
-    let url = format!("http://localhost:8000/api/categories/multi");
+    let url = format!("http://localhost:8000/api/skillblocks");
     let request = Request::get(url)
         .body(Nothing)
         .unwrap();
