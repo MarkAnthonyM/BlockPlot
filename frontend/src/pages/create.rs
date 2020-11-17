@@ -15,8 +15,6 @@ pub enum Msg {
 }
 
 struct State {
-    post_form_error: Option<Error>,
-    post_form_loaded: bool,
     toggle_category: bool,
 }
 
@@ -124,8 +122,6 @@ impl Component for Form {
         Self {
             link: _link,
             state: State {
-                post_form_error: None,
-                post_form_loaded: false,
                 toggle_category: false,
             },
         }
