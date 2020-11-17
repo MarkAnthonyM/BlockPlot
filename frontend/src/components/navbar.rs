@@ -19,10 +19,12 @@ impl NavbarElement {
 
     // Construct navbrand section of navbar
     fn view_navbrand(&self) -> Html {
+        type Anchor = RouterAnchor<Route>;
+        
         html! {
-            <NavbarItem tag=A>
+            <Anchor route=Route::HomePage classes="navbar-item">
                 <img src="https://bulma.io/images/bulma-logo.png" />
-            </NavbarItem>
+            </Anchor>
         }
     }
 
