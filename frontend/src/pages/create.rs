@@ -11,8 +11,6 @@ pub struct Form {
 
 pub enum Msg {
     PostData,
-    PostDataSuccess,
-    PostDataError(Error),
     ToggleCategory,
 }
 
@@ -137,16 +135,6 @@ impl Component for Form {
         match msg {
             Msg::PostData => {
                 println!("Data posted!");
-
-                true
-            },
-            Msg::PostDataError(error) => {
-                println!("Error posting data: {:?}", error);
-
-                true
-            },
-            Msg::PostDataSuccess => {
-                println!("Success posting data!");
 
                 true
             },
