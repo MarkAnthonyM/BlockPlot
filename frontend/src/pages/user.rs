@@ -35,6 +35,9 @@ struct State {
 impl User {
     // Create calender grid element
     fn view_blockgrid(&self, time_block: &TimeData) -> Html {
+        // Create empty vecotr representing months out of a year
+        let mut month_elements = Vec::new();
+        
         // create empty vector representing weeks out of a year
         let mut week_elements = Vec::new();
 
@@ -86,6 +89,19 @@ impl User {
                     week_elements.push(week_element);
     
                     day_elements = Vec::new();
+
+                    // Create month <text> elements, spaced out by first sunday of every month
+                    let month = day.format("%h");
+                    // Calculate week number of given month
+                    let week_number = (day.day() - 1) / 7 + 1;
+                    // Check if date is first week of given month 
+                    if week_number == 1 {
+                        let month_element = html! {
+                            <text class="month" y="-7" x=format!("{}", week_elements.len() * 14)>{ month }</text>
+                        };
+
+                        month_elements.push(month_element);
+                    }
                 }
             }
 
@@ -126,6 +142,7 @@ impl User {
             <svg width="780" height="128">
                 <g transform="translate(20, 20)">
                     { week_elements.into_iter().collect::<Html>() }
+                    { month_elements.into_iter().collect::<Html>() }
                 </g>
             </svg>
         };
