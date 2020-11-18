@@ -22,7 +22,10 @@ impl NavbarElement {
         
         html! {
             <Anchor route=Route::HomePage classes="navbar-item">
-                <img src="../static/logo_rough.svg" />
+                <svg width="100" height="100">
+                    <image href="static/images/logo_rough.svg" width="100" height="100"/>
+                </svg>
+                <p class="title is-3 ml-3">{ "BlockPlot" }</p>
             </Anchor>
         }
     }
@@ -41,13 +44,13 @@ impl NavbarElement {
         html! {
             <>
                 <Anchor route=Route::UserPage classes="navbar-item">
-                    { "UserName" }
+                    <p class="is-size-4">{ "UserName" }</p>
                 </Anchor>
                 <Anchor route=Route::FormPage classes="navbar-item">
-                    { "Create" }
+                    <p class="is-size-4">{ "Create" }</p>
                 </Anchor>
                 <Anchor route=Route::AboutPage classes="navbar-item">
-                    { "About" }
+                    <p class="is-size-4">{ "About" }</p>
                 </Anchor>
             </>
         }
