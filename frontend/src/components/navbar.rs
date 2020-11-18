@@ -22,7 +22,7 @@ impl NavbarElement {
         
         html! {
             <Anchor route=Route::HomePage classes="navbar-item">
-                <img src="https://bulma.io/images/bulma-logo.png" />
+                <img src="../static/logo_rough.svg" />
             </Anchor>
         }
     }
