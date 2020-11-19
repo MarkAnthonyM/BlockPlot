@@ -168,6 +168,8 @@ impl User {
                         <Tile classes=Some("notification is-primary") ctx=Child>
                             <p class="title is-3">{ "Skill:" }</p>
                             <p class="subtitle is-5">{ &block.skill_name }</p>
+                            <p class="title is-3">{ "Category:" }</p>
+                            <p class="subtitle is-5">{ &block.category }</p>
                             <p class="title is-3">{ "Description:" }</p>
                             <p class="subtitle is-5">{ &block.skill_description }</p>
                         </Tile>
