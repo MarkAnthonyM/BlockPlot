@@ -180,6 +180,26 @@ impl User {
                             <Box>
                                 { self.view_blockgrid(block) }
                             </Box>
+                            <nav class="level">
+                                <div class="level-item has-text-centered">
+                                    <div>
+                                        <p class="heading">{ "Average Time Investment" }</p>
+                                        <p class="title">{ "3542" }</p>
+                                    </div>
+                                </div>
+                                <div class="level-item has-text-centered">
+                                    <div>
+                                        <p class="heading">{ "Most Time Invested" }</p>
+                                        <p class="title">{ "3542" }</p>
+                                    </div>
+                                </div>
+                                <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">{ "Longest Day Chain" }</p>
+                                    <p class="title">{ "34 days" }</p>
+                                </div>
+                            </div>
+                            </nav>
                         </Tile>
                     </Tile>
                 </Tile>
