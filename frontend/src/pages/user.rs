@@ -153,19 +153,43 @@ impl User {
 
         // Create svg container, collect grid elements and append to <g> tag. Append week/month labels
         let html_element = html! {
-            <svg width="780" height="128">
-                <g transform="translate(30, 20)">
-                    { week_elements.into_iter().collect::<Html>() }
-                    { month_elements.into_iter().collect::<Html>() }
-                    <text text-anchor="start" class="wday" dx="-30" dy="8" style="display: none; font-size: 12px;">{ "Sun" }</text>
-                    <text text-anchor="start" class="wday" dx="-30" dy="25" style="font-size: 12px;">{ "Mon" }</text>
-                    <text text-anchor="start" class="wday" dx="-30" dy="32" style="display: none; font-size: 12px;">{ "Tue" }</text>
-                    <text text-anchor="start" class="wday" dx="-30" dy="56" style="font-size: 12px;">{ "Wed" }</text>
-                    <text text-anchor="start" class="wday" dx="-30" dy="57" style="display: none; font-size: 12px;">{ "Thurs" }</text>
-                    <text text-anchor="start" class="wday" dx="-30" dy="85" style="font-size: 12px;">{ "Fri" }</text>
-                    <text text-anchor="start" class="wday" dx="-30" dy="81" style="display: none; font-size: 12px;">{ "Sat" }</text>
-                </g>
-            </svg>
+            <>
+                <Box>
+                    <svg width="780" height="128">
+                        <g transform="translate(30, 20)">
+                            { week_elements.into_iter().collect::<Html>() }
+                            { month_elements.into_iter().collect::<Html>() }
+                            <text text-anchor="start" class="wday" dx="-30" dy="8" style="display: none; font-size: 12px;">{ "Sun" }</text>
+                            <text text-anchor="start" class="wday" dx="-30" dy="25" style="font-size: 12px;">{ "Mon" }</text>
+                            <text text-anchor="start" class="wday" dx="-30" dy="32" style="display: none; font-size: 12px;">{ "Tue" }</text>
+                            <text text-anchor="start" class="wday" dx="-30" dy="56" style="font-size: 12px;">{ "Wed" }</text>
+                            <text text-anchor="start" class="wday" dx="-30" dy="57" style="display: none; font-size: 12px;">{ "Thurs" }</text>
+                            <text text-anchor="start" class="wday" dx="-30" dy="85" style="font-size: 12px;">{ "Fri" }</text>
+                            <text text-anchor="start" class="wday" dx="-30" dy="81" style="display: none; font-size: 12px;">{ "Sat" }</text>
+                        </g>
+                    </svg>
+                </Box>
+                <nav class="level">
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">{ "Average Time Investment" }</p>
+                            <p class="title">{ time_stats.daily_max / year.len() as i32 }</p>
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">{ "Most Time Invested" }</p>
+                            <p class="title">{ time_stats.yearly_max }</p>
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">{ "Longest Day Chain" }</p>
+                            <p class="title">{ "34 days" }</p>
+                        </div>
+                    </div>
+                </nav>
+            </>
         };
 
         html_element
@@ -191,29 +215,7 @@ impl User {
                     <Tile ctx=Parent size=TileSize::Eight>
                         <Tile classes=Some("notification is-primary") ctx=Child>
                             //TODO: Fix overflow issue
-                            <Box>
-                                { self.view_blockgrid(block) }
-                            </Box>
-                            <nav class="level">
-                                <div class="level-item has-text-centered">
-                                    <div>
-                                        <p class="heading">{ "Average Time Investment" }</p>
-                                        <p class="title">{ "3542" }</p>
-                                    </div>
-                                </div>
-                                <div class="level-item has-text-centered">
-                                    <div>
-                                        <p class="heading">{ "Most Time Invested" }</p>
-                                        <p class="title">{ "3542" }</p>
-                                    </div>
-                                </div>
-                                <div class="level-item has-text-centered">
-                                <div>
-                                    <p class="heading">{ "Longest Day Chain" }</p>
-                                    <p class="title">{ "34 days" }</p>
-                                </div>
-                            </div>
-                            </nav>
+                            { self.view_blockgrid(block) }
                         </Tile>
                     </Tile>
                 </Tile>
