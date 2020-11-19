@@ -83,6 +83,12 @@ pub struct TimeData {
     pub time_data: HashMap<NaiveDateTime, i32>,
 }
 
+pub struct TimeStats {
+    pub daily_max: i32,
+    pub yearly_max: i32,
+    pub longest_chain: i32,
+}
+
 // Prototype struct being used to test handling request with multiple TimeData response objects. May remove at the conclusion of tests
 #[derive(Deserialize, Serialize)]
 pub struct TimeWrapper {
