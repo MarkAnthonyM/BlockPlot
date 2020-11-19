@@ -4,7 +4,7 @@ use chrono::prelude::*;
 use chrono::Duration;
 
 use crate::api;
-use crate::types::{ Color, TimeData, TimeWrapper };
+use crate::types::{ Color, TimeData, TimeStats, TimeWrapper };
 
 use ybc::{ Box, Container, Section, Tile };
 use ybc::TileCtx::{ Ancestor, Child, Parent };
@@ -43,6 +43,12 @@ impl User {
 
         // create empty vector representing days of a week
         let mut day_elements = Vec::new();
+
+        let mut time_stats = TimeStats {
+            daily_max: 0,
+            yearly_max: 0,
+            longest_chain: 0,
+        };
 
         // Create vector of timestamps for one year
         let current_date = Local::now().date().naive_utc();
@@ -107,6 +113,14 @@ impl User {
 
             if let Some(value) = time_block.time_data.get(&day) {
                 let minutes = value / 60;
+
+                // Time statistics calculations
+                if minutes > time_stats.daily_max {
+                    time_stats.daily_max = minutes;
+                }
+                time_stats.yearly_max += minutes;
+
+                // Represent time data as color
                 match minutes {
                     0 => color = Color::NEUTRAL,
                     1..=15 => color = Color::LIGHT,
