@@ -166,7 +166,10 @@ impl User {
                 <Tile ctx=Ancestor>
                     <Tile ctx=Parent size=TileSize::Four>
                         <Tile classes=Some("notification is-primary") ctx=Child>
-                            <p class="title">{ &block.skill_name }</p>
+                            <p class="title is-3">{ "Skill:" }</p>
+                            <p class="subtitle is-5">{ &block.skill_name }</p>
+                            <p class="title is-3">{ "Description:" }</p>
+                            <p class="subtitle is-5">{ &block.skill_description }</p>
                         </Tile>
                     </Tile>
                     <Tile ctx=Parent size=TileSize::Eight>
