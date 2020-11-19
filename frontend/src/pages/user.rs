@@ -173,13 +173,13 @@ impl User {
                     <div class="level-item has-text-centered">
                         <div>
                             <p class="heading">{ "Average Time Investment" }</p>
-                            <p class="title">{ time_stats.daily_max / year.len() as i32 }</p>
+                            <p class="title">{ time_stats.yearly_max / year.len() as i32 }</p>
                         </div>
                     </div>
                     <div class="level-item has-text-centered">
                         <div>
                             <p class="heading">{ "Most Time Invested" }</p>
-                            <p class="title">{ time_stats.yearly_max }</p>
+                            <p class="title">{ time_stats.daily_max }</p>
                         </div>
                     </div>
                     <div class="level-item has-text-centered">
