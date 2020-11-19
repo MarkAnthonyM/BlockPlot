@@ -137,12 +137,19 @@ impl User {
             }
         }
 
-        // Create svg container, collect grid elements and append to <g> tag
+        // Create svg container, collect grid elements and append to <g> tag. Append week/month labels
         let html_element = html! {
             <svg width="780" height="128">
-                <g transform="translate(20, 20)">
+                <g transform="translate(30, 20)">
                     { week_elements.into_iter().collect::<Html>() }
                     { month_elements.into_iter().collect::<Html>() }
+                    <text text-anchor="start" class="wday" dx="-30" dy="8" style="display: none; font-size: 12px;">{ "Sun" }</text>
+                    <text text-anchor="start" class="wday" dx="-30" dy="25" style="font-size: 12px;">{ "Mon" }</text>
+                    <text text-anchor="start" class="wday" dx="-30" dy="32" style="display: none; font-size: 12px;">{ "Tue" }</text>
+                    <text text-anchor="start" class="wday" dx="-30" dy="56" style="font-size: 12px;">{ "Wed" }</text>
+                    <text text-anchor="start" class="wday" dx="-30" dy="57" style="display: none; font-size: 12px;">{ "Thurs" }</text>
+                    <text text-anchor="start" class="wday" dx="-30" dy="85" style="font-size: 12px;">{ "Fri" }</text>
+                    <text text-anchor="start" class="wday" dx="-30" dy="81" style="display: none; font-size: 12px;">{ "Sat" }</text>
                 </g>
             </svg>
         };
