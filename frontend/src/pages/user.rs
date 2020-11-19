@@ -97,7 +97,7 @@ impl User {
                     // Check if date is first week of given month 
                     if week_number == 1 {
                         let month_element = html! {
-                            <text class="month" y="-7" x=format!("{}", week_elements.len() * 14)>{ month }</text>
+                            <text class="month" y="-7" x=format!("{}", week_elements.len() * 14) style="font-size: 12px;">{ month }</text>
                         };
 
                         month_elements.push(month_element);
