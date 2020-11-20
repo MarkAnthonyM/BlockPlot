@@ -50,6 +50,9 @@ impl User {
             longest_chain: 0,
         };
 
+        // Count of consective days having time data
+        let mut chain_count = 0;
+
         // Create vector of timestamps for one year
         let current_date = Local::now().date().naive_utc();
         let (current_year, current_month, current_day) = (
@@ -129,6 +132,23 @@ impl User {
                     46..=60 => color = Color::MEDIUMHIGH,
                     _ => color = Color::HIGH,
                 }
+
+                // Calculate length of longest chain of days that have time data
+                match color {
+                    Color::NEUTRAL => {
+                        if chain_count != 0 {
+                            if chain_count > time_stats.longest_chain {
+                                time_stats.longest_chain = chain_count;
+                                chain_count = 0;
+                            } else {
+                                chain_count = 0;
+                            }
+                        }
+                    },
+                    _ => {
+                        chain_count += 1;
+                    }
+                }
             }
             
             // Create <rect> element representing a day
@@ -188,7 +208,7 @@ impl User {
                     </div>
                     <div class="level-item has-text-centered">
                         <div>
-                            <p class="heading">{ "Most Time Invested" }</p>
+                            <p class="heading">{ "Max Time In A Day" }</p>
                             <p class="title">{ max_hours }</p>
                             <p class="heading">{"hour(s)"}</p>
                             <p class="title">{ max_minutes }</p>
@@ -198,7 +218,7 @@ impl User {
                     <div class="level-item has-text-centered">
                         <div>
                             <p class="heading">{ "Longest Day Chain" }</p>
-                            <p class="title">{ "34 days" }</p>
+                            <p class="title">{ time_stats.longest_chain }</p>
                         </div>
                     </div>
                 </nav>
