@@ -151,6 +151,13 @@ impl User {
             }
         }
 
+        // Time stats for hours/minutes labels
+        let year_minutes_average = time_stats.yearly_max / 365;
+        let year_hours_average = year_minutes_average / 60;
+        let year_minutes_remainder = year_minutes_average % 60;
+        let max_hours = time_stats.daily_max / 60;
+        let max_minutes = time_stats.daily_max % 60;
+
         // Create svg container, collect grid elements and append to <g> tag. Append week/month labels
         let html_element = html! {
             <>
@@ -172,14 +179,20 @@ impl User {
                 <nav class="level">
                     <div class="level-item has-text-centered">
                         <div>
-                            <p class="heading">{ "Average Time Investment" }</p>
-                            <p class="title">{ time_stats.yearly_max / year.len() as i32 }</p>
+                            <p class="heading">{ "Average Daily Time" }</p>
+                            <p class="title">{ year_hours_average }</p>
+                            <p class="heading">{"hour(s)"}</p>
+                            <p class="title">{ year_minutes_remainder }</p>
+                            <p class="heading">{ "minute(s)" }</p>
                         </div>
                     </div>
                     <div class="level-item has-text-centered">
                         <div>
                             <p class="heading">{ "Most Time Invested" }</p>
-                            <p class="title">{ time_stats.daily_max }</p>
+                            <p class="title">{ max_hours }</p>
+                            <p class="heading">{"hour(s)"}</p>
+                            <p class="title">{ max_minutes }</p>
+                            <p class="heading">{ "minute(s)" }</p>
                         </div>
                     </div>
                     <div class="level-item has-text-centered">
