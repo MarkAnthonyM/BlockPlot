@@ -219,6 +219,9 @@ impl User {
                         <div>
                             <p class="heading">{ "Longest Day Chain" }</p>
                             <p class="title">{ time_stats.longest_chain }</p>
+                            <p class="heading">{ "day(s)" }</p>
+                            <p class="title">{ chain_count }</p>
+                            <p class="heading">{ "current day chain" }</p>
                         </div>
                     </div>
                 </nav>
