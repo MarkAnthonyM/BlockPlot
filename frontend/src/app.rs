@@ -2,7 +2,7 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 
 use crate::components::NavbarElement;
-use crate::pages::{ About, Form, Home, User };
+use crate::pages::{ About, Form, Home, SignIn, SignUp, User };
 use crate::route::Route;
 
 pub struct App {}
