@@ -14,6 +14,21 @@ pub enum Msg {
 struct State {}
 
 impl SignUp {
+    fn api_key_view(&self) -> Html {
+        html! {
+            <Field>
+                <label class="label">{ "RescueTime Api Key" }</label>
+                <Control>
+                    <input
+                        class="input"
+                        name="api_key"
+                        placeholder="Input user api key"
+                    />
+                </Control>
+            </Field>
+        }
+    }
+    
     fn username_view(&self) -> Html {
         html! {
             <Field>
@@ -59,6 +74,7 @@ impl Component for SignUp {
                         <div class="column is-half">
                             <form action="placeholder/replace" method="POST">
                                 { self.username_view() }
+                                { self.api_key_view() }
                                 <Field>
                                     <div class="control">
                                         <button
