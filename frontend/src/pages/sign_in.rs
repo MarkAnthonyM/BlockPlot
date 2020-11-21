@@ -28,6 +28,21 @@ impl SignIn {
             </Field>
         }
     }
+
+    fn password_view(&self) -> Html {
+        html! {
+            <Field>
+                <label class="label">{ "Password" }</label>
+                <Control>
+                    <input
+                        class="input"
+                        name="password"
+                        placeholder="Input password"
+                    />
+                </Control>
+            </Field>
+        }
+    }
 }
 
 impl Component for SignIn {
@@ -59,6 +74,7 @@ impl Component for SignIn {
                         <div class="column is-half">
                             <form action="placeholder/replace" method="POST">
                                 { self.username_view() }
+                                { self.password_view() }
                                 <Field>
                                     <div class="control">
                                         <button
