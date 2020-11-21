@@ -8,6 +8,8 @@ pub enum Route {
     FormPage,
     #[to = "/sign_in"]
     SignInPage,
+    #[to = "/sign_up"]
+    SignUpPage,
     #[to = "/user"]
     UserPage,
     #[to = "/"]
