@@ -13,6 +13,23 @@ pub enum Msg {
 
 pub struct State {}
 
+impl SignIn {
+    fn username_view(&self) -> Html {
+        html! {
+            <Field>
+                <label class="label">{ "Username" }</label>
+                <Control>
+                    <input
+                        class="input"
+                        name="username"
+                        placeholder="Input username"
+                    />
+                </Control>
+            </Field>
+        }
+    }
+}
+
 impl Component for SignIn {
     type Message = Msg;
     type Properties = ();
@@ -41,6 +58,7 @@ impl Component for SignIn {
                     <div class="colums">
                         <div class="column is-half">
                             <form action="placeholder/replace" method="POST">
+                                { self.username_view() }
                                 <Field>
                                     <div class="control">
                                         <button
