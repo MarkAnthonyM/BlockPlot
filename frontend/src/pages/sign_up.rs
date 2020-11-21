@@ -28,6 +28,21 @@ impl SignUp {
             </Field>
         }
     }
+
+    fn user_email_view(&self) -> Html {
+        html! {
+            <Field>
+                <label class="label">{ "User Email" }</label>
+                <Control>
+                    <input
+                        class="input"
+                        name="user_email"
+                        placeholder="Input user email address"
+                    />
+                </Control>
+            </Field>
+        }
+    }
     
     fn username_view(&self) -> Html {
         html! {
@@ -74,6 +89,7 @@ impl Component for SignUp {
                         <div class="column is-half">
                             <form action="placeholder/replace" method="POST">
                                 { self.username_view() }
+                                { self.user_email_view() }
                                 { self.api_key_view() }
                                 <Field>
                                     <div class="control">
