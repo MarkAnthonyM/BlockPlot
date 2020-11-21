@@ -1,15 +1,46 @@
-use ybc::Container;
+use ybc::{ Control, Field, Section };
 
 use yew::prelude::*;
 
-pub struct SignUp {}
+pub struct SignUp {
+    link: ComponentLink<Self>,
+    _state: State,
+}
+
+pub enum Msg {
+    PostData,
+}
+
+struct State {}
+
+impl SignUp {
+    fn username_view(&self) -> Html {
+        html! {
+            <Field>
+                <label class="label">{ "Username" }</label>
+                <Control>
+                    <input
+                        class="input"
+                        name="username"
+                        placeholder="Create a Username"
+                    />
+                </Control>
+            </Field>
+        }
+    }
+}
 
 impl Component for SignUp {
-    type Message = ();
+    type Message = Msg;
     type Properties = ();
 
     fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
-        Self {}
+        Self {
+            link: _link,
+            _state: State {
+
+            }
+        }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
@@ -22,13 +53,25 @@ impl Component for SignUp {
 
     fn view(&self) -> Html {
         html! {
-            <section class="hero is-medium is-primary">
-                <div class="hero-body">
-                    <Container>
-                        <h1 class="title is-1">{ "Coming Soon!" }</h1>
-                    </Container>
-                </div>
-            </section>
+            <main class="bd-main">
+                <Section>
+                    <div class="colums">
+                        <div class="column is-half">
+                            <form action="placeholder/replace" method="POST">
+                                { self.username_view() }
+                                <Field>
+                                    <div class="control">
+                                        <button
+                                            class="button is-link"
+                                            onsubmit=self.link.callback(|_| Msg::PostData)>{ "Submit" }
+                                        </button>
+                                    </div>
+                                </Field>
+                            </form>
+                        </div>
+                    </div>
+                </Section>
+            </main>
         }
     }
 }
