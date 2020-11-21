@@ -28,6 +28,7 @@ impl Component for App {
             Route::AboutPage => html! {<About/>},
             Route::FormPage => html! {<Form/>},
             Route::SignInPage => html! {<SignIn/>},
+            Route::SignUpPage => html! {<SignUp/>},
             Route::UserPage => html! {<User/>},
             Route::HomePage => html! {<Home/>},
         });
