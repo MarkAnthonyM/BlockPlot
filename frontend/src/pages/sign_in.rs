@@ -1,3 +1,5 @@
+use ybc::Container;
+
 use yew::prelude::*;
 
 pub struct SignIn {}
@@ -20,7 +22,13 @@ impl Component for SignIn {
 
     fn view(&self) -> Html {
         html! {
-            
+            <section class="hero is-medium is-primary">
+                <div class="hero-body">
+                    <Container>
+                        <h1 class="title is-1">{ "Coming Soon!" }</h1>
+                    </Container>
+                </div>
+            </section>
         }
     }
 }
