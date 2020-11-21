@@ -32,8 +32,20 @@ impl NavbarElement {
 
     // Construct navend section of navbar
     fn view_navend(&self) -> Html {
+        type Anchor = RouterAnchor<Route>;
         html! {
-
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <Anchor route=Route::SignUpPage classes="button is-primary">
+                            <strong>{ "Sign Up" }</strong>
+                        </Anchor>
+                        <Anchor route=Route::SignInPage classes="button is-light">
+                            { "Log In" }
+                        </Anchor>
+                    </div>
+                </div>
+            </div>
         }
     }
 
