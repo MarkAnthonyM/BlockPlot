@@ -27,6 +27,7 @@ impl Component for App {
         let render = Router::render(|switch: Route| match switch {
             Route::AboutPage => html! {<About/>},
             Route::FormPage => html! {<Form/>},
+            Route::SignInPage => html! {<SignIn/>},
             Route::UserPage => html! {<User/>},
             Route::HomePage => html! {<Home/>},
         });
