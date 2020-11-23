@@ -5,6 +5,7 @@ extern crate serde;
 #[macro_use]
 extern crate rocket;
 
+pub mod auth;
 pub mod db;
 
 #[cfg(test)]
