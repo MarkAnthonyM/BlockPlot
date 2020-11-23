@@ -5,6 +5,7 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
+use backend::auth::auth0::AuthParameters;
 use backend::db::models;
 use backend::db::operations::{ create_skillblock, query_skillblock };
 
@@ -14,7 +15,11 @@ use dotenv::dotenv;
 use std::collections::HashMap;
 use std::env;
 
+use rocket::fairing::AdHoc;
+use rocket::http::Status;
+use rocket::response::Redirect;
 use rocket::request::Form;
+use rocket::State;
 
 use rocket_contrib::databases::diesel;
 use rocket_contrib::json::Json;
@@ -30,6 +35,15 @@ use rusty_rescuetime::parameters::RestrictOptions::{ Category, Overview };
 // Rocket connection pool
 #[database("postgres_blockplot")]
 struct BlockplotDbConn(diesel::PgConnection);
+
+// Route redirects to auth0 login page. Redirection link is built from
+// AuthParameters instance that is managed by rocket application State
+#[get("/auth0")]
+fn auth0_login(settings: State<AuthParameters>) -> Result<Redirect, Status> {
+    let auth0_uri = settings.build_authorize_url();
+
+    Ok(Redirect::to(auth0_uri))
+}
 
 // Route handler fetches user skillblock information from database,
 // fetches timedata from RescueTime api,
@@ -155,7 +169,13 @@ fn main() -> Result<(), Error> {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
-        .mount("/", routes![get_skillblocks, test_post])
+        .mount("/", routes![auth0_login, get_skillblocks, test_post])
+        .attach(AdHoc::on_attach("Parameters Config", |rocket| {
+            let config = rocket.config();
+            let auth_parameters = AuthParameters::new(config).unwrap();
+
+            Ok(rocket.manage(auth_parameters))
+        }))
         .launch();
 
     Ok(())
