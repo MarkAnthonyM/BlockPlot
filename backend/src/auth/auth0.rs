@@ -50,6 +50,7 @@ impl AuthParameters {
 }
 
 // Contains data used as parameters for /oauth/token endpoint
+#[derive(Deserialize, Serialize)]
 pub struct TokenRequest {
     client_id: String,
     client_secrect: String,
