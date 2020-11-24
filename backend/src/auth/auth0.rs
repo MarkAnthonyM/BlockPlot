@@ -24,7 +24,7 @@ impl AuthParameters {
     
     pub fn build_authorize_url(&self) -> String {
         format!(
-            "https://{}/authorize?audience={}&response_type=token&client_id={}&redirect_uri={}",
+            "https://{}/authorize?audience={}&response_type=code&client_id={}&redirect_uri={}",
             self.auth0_domain,
             self.audience,
             self.client_id,
