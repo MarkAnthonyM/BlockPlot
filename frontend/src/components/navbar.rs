@@ -37,12 +37,12 @@ impl NavbarElement {
             <div class="navbar-end">
                 <div class="navbar-item">
                     <div class="buttons">
-                        <Anchor route=Route::SignUpPage classes="button is-primary">
+                        <a href="http://localhost:8000/auth0" class="button is-primary">
                             <strong>{ "Sign Up" }</strong>
-                        </Anchor>
-                        <Anchor route=Route::SignInPage classes="button is-light">
+                        </a>
+                        <a href="http://localhost:8000/auth0" class="button is-light">
                             { "Log In" }
-                        </Anchor>
+                        </a>
                     </div>
                 </div>
             </div>
