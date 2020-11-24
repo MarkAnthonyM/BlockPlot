@@ -31,4 +31,14 @@ impl AuthParameters {
             self.redirect_url
         )
     }
+
+    pub fn build_token_request(&self, code: &str) -> TokenRequest {
+        TokenRequest {
+            grant_type: String::from("authorization_code"),
+            client_id: self.client_id,
+            client_secrect: self.client_secret,
+            code: code.to_string(),
+            redirect_url: self.redirect_url,
+        }
+    }
 }
