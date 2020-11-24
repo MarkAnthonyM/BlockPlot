@@ -15,13 +15,14 @@ pub struct AuthParameters {
 
 impl AuthParameters {
     pub fn new(config: &Config) -> Result<AuthParameters, ConfigError> {
-        let secret = env::var("CLIENT_SECRET").unwrap();
+        // let secret = env::var("CLIENT_SECRET").unwrap();
+        let secret = "Ib57BXDC-_Wqmszh1KQsDeZ23SQ64iRwxGELa6qkjE33-eIq0Xdzq2qv83hDWk1G";
 
         let auth_parameters = Self {
             audience: String::from(config.get_str("audience")?),
             auth0_domain: String::from(config.get_str("auth0_domain")?),
             client_id: String::from(config.get_str("client_id")?),
-            client_secret: secret,
+            client_secret: secret.to_string(),
             redirect_url: String::from(config.get_str("redirect_url")?),
         };
 
@@ -57,4 +58,13 @@ pub struct TokenRequest {
     code: String,
     grant_type: String,
     redirect_url: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct TokenResponse {
+    pub access_token: String,
+    pub expires_in: u32,
+    pub id_token: String,
+    pub refresh_token: String,
+    pub token_type: String,
 }
