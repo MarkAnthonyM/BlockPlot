@@ -32,7 +32,6 @@ impl NavbarElement {
 
     // Construct navend section of navbar
     fn view_navend(&self) -> Html {
-        type Anchor = RouterAnchor<Route>;
         html! {
             <div class="navbar-end">
                 <div class="navbar-item">
