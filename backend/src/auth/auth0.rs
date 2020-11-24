@@ -1,5 +1,7 @@
 use rocket::config::{ Config, ConfigError };
 
+use std::env;
+
 // Store various parameters needed to build authorization link
 // that fetches auth0 login page. Parameters are read from
 // Rocket.toml configuration file
@@ -7,15 +9,19 @@ pub struct AuthParameters {
     pub audience: String,
     pub auth0_domain: String,
     pub client_id: String,
+    pub client_secret: String,
     pub redirect_url: String,
 }
 
 impl AuthParameters {
     pub fn new(config: &Config) -> Result<AuthParameters, ConfigError> {
+        let secret = env::var("CLIENT_SECRET").unwrap();
+
         let auth_parameters = Self {
             audience: String::from(config.get_str("audience")?),
             auth0_domain: String::from(config.get_str("auth0_domain")?),
             client_id: String::from(config.get_str("client_id")?),
+            client_secret: secret,
             redirect_url: String::from(config.get_str("redirect_url")?),
         };
 
@@ -35,10 +41,10 @@ impl AuthParameters {
     pub fn build_token_request(&self, code: &str) -> TokenRequest {
         TokenRequest {
             grant_type: String::from("authorization_code"),
-            client_id: self.client_id,
-            client_secrect: self.client_secret,
+            client_id: self.client_id.clone(),
+            client_secrect: self.client_secret.clone(),
             code: code.to_string(),
-            redirect_url: self.redirect_url,
+            redirect_url: self.redirect_url.clone(),
         }
     }
 }
