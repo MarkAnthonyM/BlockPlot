@@ -42,3 +42,12 @@ impl AuthParameters {
         }
     }
 }
+
+// Contains data used as parameters for /oauth/token endpoint
+struct TokenRequest {
+    client_id: String,
+    client_secrect: String,
+    code: String,
+    grant_type: String,
+    redirect_url: String,
+}
