@@ -43,9 +43,9 @@ impl AuthParameters {
         TokenRequest {
             grant_type: String::from("authorization_code"),
             client_id: self.client_id.clone(),
-            client_secrect: self.client_secret.clone(),
+            client_secret: self.client_secret.clone(),
             code: code.to_string(),
-            redirect_url: self.redirect_url.clone(),
+            redirect_uri: self.redirect_url.clone(),
         }
     }
 }
@@ -54,10 +54,10 @@ impl AuthParameters {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TokenRequest {
     client_id: String,
-    client_secrect: String,
+    client_secret: String,
     code: String,
     grant_type: String,
-    redirect_url: String,
+    redirect_uri: String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
