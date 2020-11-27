@@ -60,6 +60,7 @@ pub struct TokenRequest {
     redirect_uri: String,
 }
 
+// Contains data returned from call to /oauth/token endpoint
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TokenResponse {
     pub access_token: String,
