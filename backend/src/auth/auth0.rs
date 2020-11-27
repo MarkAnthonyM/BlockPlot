@@ -67,3 +67,10 @@ pub struct TokenResponse {
     pub id_token: String,
     pub token_type: String,
 }
+
+// Prototype struct for user json object
+#[derive(Deserialize, Serialize)]
+pub struct UserInfo {
+    pub email: String,
+    pub name: String,
+}
