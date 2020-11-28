@@ -5,18 +5,21 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
-use backend::auth::auth0::AuthParameters;
+use backend::auth::auth0::{ AuthParameters, TokenResponse, UserInfo };
 use backend::db::models;
 use backend::db::operations::{ create_skillblock, query_skillblock };
 
 use chrono::prelude::*;
 
 use dotenv::dotenv;
+
+use serde_json::ser::to_vec;
+
 use std::collections::HashMap;
 use std::env;
 
 use rocket::fairing::AdHoc;
-use rocket::http::Status;
+use rocket::http::{ Cookies, Status };
 use rocket::response::Redirect;
 use rocket::request::Form;
 use rocket::State;
@@ -43,6 +46,41 @@ fn auth0_login(settings: State<AuthParameters>) -> Result<Redirect, Status> {
     let auth0_uri = settings.build_authorize_url();
 
     Ok(Redirect::to(auth0_uri))
+}
+
+// Route for testing authentication routine
+#[get("/process?<code>&<state>")]
+fn process_login(
+    code: String,
+    mut cookies: Cookies,
+    state: String,
+    settings: State<AuthParameters>
+) -> Result<Redirect, Status> {
+    let token_parameters = settings.build_token_request(&code);
+    let serialized = serde_json::to_string(&token_parameters).unwrap();
+    let token_url = format!("https://{}/oauth/token", settings.auth0_domain);
+
+    let client = reqwest::blocking::Client::new();
+    let token_response: TokenResponse = client
+        .post(&token_url)
+        .header("content-type", "application/json")
+        .body(serialized)
+        .send()
+        .unwrap()
+        .json()
+        .expect("Error with token request");
+
+    let user_info = format!("https://{}/userinfo", settings.auth0_domain);
+    let token_key = format!("Bearer {}", token_response.access_token);
+    let response: UserInfo = client
+        .get(&user_info)
+        .header("Authorization", token_key)
+        .send()
+        .unwrap()
+        .json()
+        .expect("Error with user info response");
+        
+    Ok(Redirect::to("/about"))
 }
 
 // Route handler fetches user skillblock information from database,
@@ -169,7 +207,7 @@ fn main() -> Result<(), Error> {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
-        .mount("/", routes![auth0_login, get_skillblocks, test_post])
+        .mount("/", routes![auth0_login, get_skillblocks, process_login, test_post])
         .attach(AdHoc::on_attach("Parameters Config", |rocket| {
             let config = rocket.config();
             let auth_parameters = AuthParameters::new(config).unwrap();
