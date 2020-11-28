@@ -83,6 +83,7 @@ pub struct TimeData {
     pub time_data: HashMap<NaiveDateTime, i32>,
 }
 
+// Store various stat calculations from user time data
 pub struct TimeStats {
     pub daily_max: i32,
     pub yearly_max: i32,
