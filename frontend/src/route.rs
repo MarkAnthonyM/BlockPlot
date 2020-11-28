@@ -1,5 +1,6 @@
 use yew_router::prelude::*;
 
+// Enumeration containing all possible routes
 #[derive(Switch, Debug, Clone)]
 pub enum Route {
     #[to = "/about"]
