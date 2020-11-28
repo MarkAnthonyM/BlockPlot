@@ -2,16 +2,6 @@ use chrono::NaiveDateTime;
 use std::collections::HashMap;
 use serde::{ Deserialize, Serialize };
 
-//TODO: Currently declaring structs for json data deserialization twice.
-// Should used data types from Rusty-RescueTime when possible  
-#[derive(Debug, Deserialize, Serialize)]
-pub struct AnalyticData {
-    pub notes: String,
-    pub row_headers: Vec<String>,
-    pub rows: Vec<QueryKind>,
-
-}
-
 // Struct represents different color options for heatmap shading
 //TODO: Explore enum equivalent
 #[non_exhaustive]
@@ -24,53 +14,6 @@ impl Color {
     pub const MEDIUM: &'static str = "#fd4600";
     pub const MEDIUMHIGH: &'static str = "#f1230b";
     pub const HIGH: &'static str = "#bc1c2a";
-}
-
-//TODO: Current method of deserialization feels too messy. Try to find A more concise way to work with json data
-#[derive(Debug, Deserialize, Serialize)]
-#[serde(untagged)]
-pub enum QueryKind {
-    SizeFourInt(SizeFour<i32, i32>),
-    SizeFourMixedInt(SizeFour<i32, String>),
-    SizeFourMixedString(SizeFour<String, i32>),
-    SizeFourString(SizeFour<String, String>),
-    SizeSevenInt(SizeSeven<i32>),
-    SizeSevenString(SizeSeven<String>),
-    SizeSixInt(SizeSix<i32>),
-    SizeSixString(SizeSix<String>),
-}
-
-// Struct represents individual cell data related to the row_headers field of the AnalyticData struct.
-// May not need this struct
-#[derive(Debug, Deserialize, Serialize)]
-pub struct SizeFour<T, U> {
-    pub perspective: T,
-    pub time_spent: i32,
-    pub number_of_people: i32,
-    pub restrict_kind: U,
-}
-
-// May not need this struct
-#[derive(Debug, Deserialize, Serialize)]
-pub struct SizeSeven<T> {
-    pub perspective: T,
-    pub time_spent: i32,
-    pub number_of_people: i32,
-    pub activity: String,
-    pub document: String,
-    pub category: String,
-    pub productivity: i32,
-}
-
-//struct may not be needed
-#[derive(Debug, Deserialize, Serialize)]
-pub struct SizeSix<T> {
-    pub perspective: T,
-    pub time_spent: i32,
-    pub number_of_people: i32,
-    pub activity: String,
-    pub category: String,
-    pub productivity: i32,
 }
 
 // Incoming timedata payload deserializes to this struct
