@@ -16,6 +16,7 @@ pub struct TimeWrapper {
     pub data: Vec<TimeData>,
 }
 
+// Struct for skillblock create request
 #[derive(FromForm)]
 pub struct FormData {
     pub category: String,
