@@ -50,6 +50,7 @@ impl AuthParameters {
     }
 }
 
+// Prototype
 #[derive(Debug, Deserialize)]
 struct Token {
     email: String,
