@@ -5,7 +5,7 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
-use backend::auth::auth0::{ AuthParameters, TokenResponse, UserInfo };
+use backend::auth::auth0::{ AuthParameters, Token, TokenResponse, UserInfo };
 use backend::db::models;
 use backend::db::operations::{ create_skillblock, query_skillblock };
 
@@ -71,6 +71,8 @@ fn process_login(
         .unwrap()
         .json()
         .expect("Error with token request");
+    
+    let token = decode::<Token
 
     let user_info = format!("https://{}/userinfo", settings.auth0_domain);
     let token_key = format!("Bearer {}", token_response.access_token);
