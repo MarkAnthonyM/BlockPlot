@@ -13,7 +13,7 @@ use chrono::prelude::*;
 
 use dotenv::dotenv;
 
-use jsonwebtoken::encode;
+use jsonwebtoken::{ decode, encode};
 
 use serde_json::ser::to_vec;
 
