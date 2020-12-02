@@ -50,6 +50,11 @@ impl AuthParameters {
     }
 }
 
+#[derive(Debug, Deserialize)]
+struct Token {
+    email: String,
+}
+
 // Contains data used as parameters for /oauth/token endpoint
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TokenRequest {
