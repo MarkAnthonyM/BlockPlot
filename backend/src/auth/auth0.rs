@@ -52,7 +52,7 @@ impl AuthParameters {
 
 // Prototype
 #[derive(Debug, Deserialize)]
-struct Token {
+pub struct Token {
     email: String,
 }
 
