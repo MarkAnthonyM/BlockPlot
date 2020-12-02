@@ -13,6 +13,8 @@ use chrono::prelude::*;
 
 use dotenv::dotenv;
 
+use jsonwebtoken::encode;
+
 use serde_json::ser::to_vec;
 
 use std::collections::HashMap;
