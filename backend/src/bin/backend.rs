@@ -13,7 +13,7 @@ use chrono::prelude::*;
 
 use dotenv::dotenv;
 
-use jsonwebtoken::{ decode, encode};
+use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode, decode_header, encode};
 
 use serde_json::ser::to_vec;
 
@@ -72,17 +72,11 @@ fn process_login(
         .json()
         .expect("Error with token request");
     
-    let token = decode::<Token
-
-    let user_info = format!("https://{}/userinfo", settings.auth0_domain);
-    let token_key = format!("Bearer {}", token_response.access_token);
-    let response: UserInfo = client
-        .get(&user_info)
-        .header("Authorization", token_key)
-        .send()
-        .unwrap()
-        .json()
-        .expect("Error with user info response");
+    let token = decode::<Token>(
+        &token_response.id_token,
+        &DecodingKey::from_secret(&settings.client_secret.as_bytes()),
+        &Validation::new(Algorithm::HS256)
+    ).unwrap();
         
     Ok(Redirect::to("/about"))
 }
