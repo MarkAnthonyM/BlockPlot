@@ -13,9 +13,7 @@ use chrono::prelude::*;
 
 use dotenv::dotenv;
 
-use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode, decode_header, encode};
-
-use serde_json::ser::to_vec;
+use jsonwebtoken::{ Algorithm, DecodingKey, Validation, decode };
 
 use std::collections::HashMap;
 use std::env;
@@ -78,7 +76,7 @@ fn process_login(
         &Validation::new(Algorithm::HS256)
     ).unwrap();
         
-    Ok(Redirect::to("/about"))
+    Ok(Redirect::to(format!("http://localhost:8080/user")))
 }
 
 // Route handler fetches user skillblock information from database,
