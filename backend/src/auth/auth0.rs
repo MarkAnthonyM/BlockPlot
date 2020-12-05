@@ -54,6 +54,10 @@ impl AuthParameters {
 #[derive(Debug, Deserialize)]
 pub struct Token {
     email: String,
+    given_name: String,
+    nickname: String,
+    picture: String,
+    exp: i32,
 }
 
 // Contains data used as parameters for /oauth/token endpoint
