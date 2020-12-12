@@ -113,6 +113,17 @@ struct Jwks {
     keys: Vec<Key>,
 }
 
+#[derive(Debug, Deserialize)]
+struct Key {
+    alg: String,
+    kty: String,
+    n: String,
+    e: String,
+    kid: String,
+    x5t: String,
+    x5c: Vec<String>,
+}
+
 // Contains data used as parameters for /oauth/token endpoint
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TokenRequest {
