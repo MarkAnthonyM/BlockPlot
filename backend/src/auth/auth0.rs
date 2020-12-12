@@ -1,3 +1,7 @@
+use anyhow::{ anyhow, Error };
+
+use jsonwebtoken::{ Algorithm, DecodingKey, decode, TokenData, Validation };
+
 use rocket::config::{ Config, ConfigError };
 
 use std::env;
@@ -52,7 +56,7 @@ impl AuthParameters {
 
 // Prototype
 #[derive(Debug, Deserialize)]
-pub struct Token {
+pub struct IdToken {
     email: String,
     given_name: String,
     nickname: String,
