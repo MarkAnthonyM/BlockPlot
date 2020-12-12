@@ -108,6 +108,11 @@ pub struct IdToken {
     exp: i32,
 }
 
+#[derive(Debug, Deserialize)]
+struct Jwks {
+    keys: Vec<Key>,
+}
+
 // Contains data used as parameters for /oauth/token endpoint
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TokenRequest {
