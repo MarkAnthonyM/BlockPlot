@@ -91,6 +91,15 @@ pub fn decode_and_validate(
 
 // Prototype
 #[derive(Debug, Deserialize)]
+pub struct AccessToken {
+    aud: Vec<String>,
+    exp: i32,
+    iss: String,
+    sub: String,
+}
+
+// Prototype
+#[derive(Debug, Deserialize)]
 pub struct IdToken {
     email: String,
     given_name: String,
