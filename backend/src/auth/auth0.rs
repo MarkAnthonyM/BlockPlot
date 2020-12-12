@@ -54,6 +54,41 @@ impl AuthParameters {
     }
 }
 
+// Take json web token, decode using json web key set, and validate
+// against proper audience/auth0 domain
+pub fn decode_and_validate(
+    audience: &str,
+    domain: &str,
+    jwt: &str
+) -> Result<TokenData<AccessToken>, Error> {
+    let client = reqwest::blocking::Client::new();
+    let jwks: Jwks = client
+        .get(&format!("https://{}/.well-known/jwks.json", domain))
+        .send()
+        .unwrap()
+        .json()
+        .expect("Error fetching json web keys");
+    
+    // Decode jwt token with json web key set and validation algorithm
+    let payload = decode::<AccessToken>(
+        jwt,
+        &DecodingKey::from_rsa_components(&jwks.keys[0].n, &jwks.keys[0].e),
+        &Validation::new(Algorithm::RS256)
+    ).unwrap();
+
+    // Validate for correct audience
+    if payload.claims.aud[0] != audience {
+        return Err(anyhow!("Failure on audience validation"));
+    }
+
+    // Validate for correct auth domain
+    if payload.claims.iss != format!("https://{}/", domain) {
+        return Err(anyhow!("Failure on domain validation"));
+    };
+
+    Ok(payload)
+}
+
 // Prototype
 #[derive(Debug, Deserialize)]
 pub struct IdToken {
