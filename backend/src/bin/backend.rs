@@ -5,7 +5,7 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
-use backend::auth::auth0::{ AuthParameters, Token, TokenResponse, UserInfo };
+use backend::auth::auth0::{ AuthParameters, decode_and_validate, TokenResponse, UserInfo };
 use backend::db::models;
 use backend::db::operations::{ create_skillblock, query_skillblock };
 
@@ -70,10 +70,10 @@ fn process_login(
         .json()
         .expect("Error with token request");
     
-    let token = decode::<Token>(
-        &token_response.id_token,
-        &DecodingKey::from_secret(&settings.client_secret.as_bytes()),
-        &Validation::new(Algorithm::HS256)
+    let token_payload = decode_and_validate(
+        settings.audience.as_str(),
+        settings.auth0_domain.as_str(),
+        token_response.access_token.as_str()
     ).unwrap();
         
     Ok(Redirect::to(format!("http://localhost:8080/user")))
