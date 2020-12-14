@@ -79,6 +79,25 @@ fn process_login(
     Ok(Redirect::to(format!("http://localhost:8080/user")))
 }
 
+// Route for testing logging out functionality
+#[get("/logout")]
+fn process_logout(settings: State<AuthParameters>) {
+    let return_url = format!("http://localhost:8080/index");
+    let logout_request = format!("https://{}/v2/logout?client_id={}&returnTo={}", settings.auth0_domain, settings.client_id, return_url);
+
+    let client = reqwest::blocking::Client::new();
+    let response = client
+        .get(&logout_request)
+        .send()
+        .unwrap();
+
+    if response.status().is_success() {
+        println!("logged out successfully!");
+    } else {
+        println!("Error with log out attemp!");
+    }
+}
+
 // Route handler fetches user skillblock information from database,
 // fetches timedata from RescueTime api,
 // and serves processed information to frontend
@@ -203,7 +222,7 @@ fn main() -> Result<(), Error> {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
-        .mount("/", routes![auth0_login, get_skillblocks, process_login, test_post])
+        .mount("/", routes![auth0_login, get_skillblocks, process_login, process_logout, test_post])
         .attach(AdHoc::on_attach("Parameters Config", |rocket| {
             let config = rocket.config();
             let auth_parameters = AuthParameters::new(config).unwrap();
