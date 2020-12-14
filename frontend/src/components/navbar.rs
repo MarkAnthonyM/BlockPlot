@@ -42,6 +42,9 @@ impl NavbarElement {
                         <a href="http://localhost:8000/auth0" class="button is-light">
                             { "Log In" }
                         </a>
+                        <a href="http://localhost:8000/logout" class="button is-light">
+                            { "Log Out" }
+                        </a>
                     </div>
                 </div>
             </div>
