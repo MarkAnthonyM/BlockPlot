@@ -6,6 +6,21 @@ use rocket::config::{ Config, ConfigError };
 
 use std::env;
 
+pub fn build_random_state() -> String {
+    use rand::{ distributions::Alphanumeric, thread_rng };
+    use rand::Rng;
+    use std::iter;
+    
+    let mut rng = thread_rng();
+
+    let random: String = iter::repeat(())
+        .map(|()| rng.sample(Alphanumeric))
+        .take(7)
+        .collect();
+    
+    random
+}
+
 // Store various parameters needed to build authorization link
 // that fetches auth0 login page. Parameters are read from
 // Rocket.toml configuration file
@@ -33,13 +48,14 @@ impl AuthParameters {
         Ok(auth_parameters)
     }
     
-    pub fn build_authorize_url(&self) -> String {
+    pub fn build_authorize_url(&self, state: &str) -> String {
         format!(
-            "https://{}/authorize?audience={}&response_type=code&client_id={}&redirect_uri={}",
+            "https://{}/authorize?audience={}&response_type=code&client_id={}&redirect_uri={}&state={}",
             self.auth0_domain,
             self.audience,
             self.client_id,
-            self.redirect_url
+            self.redirect_url,
+            state
         )
     }
 
