@@ -5,7 +5,7 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
-use backend::auth::auth0::{ AuthParameters, decode_and_validate, TokenResponse, UserInfo };
+use backend::auth::auth0::{AuthParameters, TokenResponse, UserInfo, build_random_state, decode_and_validate};
 use backend::db::models;
 use backend::db::operations::{ create_skillblock, query_skillblock };
 
@@ -43,7 +43,9 @@ struct BlockplotDbConn(diesel::PgConnection);
 // AuthParameters instance that is managed by rocket application State
 #[get("/auth0")]
 fn auth0_login(settings: State<AuthParameters>) -> Result<Redirect, Status> {
-    let auth0_uri = settings.build_authorize_url();
+    let state_code = build_random_state();
+    
+    let auth0_uri = settings.build_authorize_url(&state_code);
 
     Ok(Redirect::to(auth0_uri))
 }
