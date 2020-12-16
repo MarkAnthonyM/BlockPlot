@@ -163,5 +163,5 @@ pub struct TokenResponse {
 #[derive(Deserialize, Serialize)]
 pub struct UserInfo {
     pub email: String,
-    pub name: String,
+    pub user_id: String,
 }
