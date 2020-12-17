@@ -1,1 +1,3 @@
--- Your SQL goes here
+CREATE TABLE date_times (
+    id SERIAL PRIMARY KEY
+)

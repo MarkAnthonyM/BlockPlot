@@ -1,4 +1,10 @@
 table! {
+    date_times (id) {
+        id -> Int4,
+    }
+}
+
+table! {
     skillblocks (id) {
         id -> Int4,
         username -> Text,
@@ -19,6 +25,7 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
+    date_times,
     skillblocks,
     users,
 );
