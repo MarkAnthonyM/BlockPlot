@@ -1,0 +1,3 @@
+CREATE TABLE date_times (
+    id SERIAL PRIMARY KEY
+)
