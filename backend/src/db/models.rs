@@ -50,7 +50,7 @@ pub struct NewSkillblock {
 
 #[derive(Insertable)]
 #[table_name="users"]
-pub struct User {
+pub struct NewUser {
     pub user_id: i32,
     pub auth_id: String,
     pub api_key: Option<String>,
