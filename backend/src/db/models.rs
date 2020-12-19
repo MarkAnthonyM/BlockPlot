@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use super::schema::skillblocks;
+use super::schema::{ skillblocks, users };
 
 #[derive(Deserialize, Serialize)]
 pub struct TimeData {
