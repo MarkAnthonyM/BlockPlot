@@ -47,3 +47,13 @@ pub struct NewSkillblock {
     pub skill_name: String,
     pub skill_description: String,
 }
+
+#[derive(Insertable)]
+#[table_name="users"]
+pub struct User {
+    pub user_id: i32,
+    pub auth_id: String,
+    pub api_key: Option<String>,
+    pub key_present: bool,
+    pub block_count: i32,
+}
