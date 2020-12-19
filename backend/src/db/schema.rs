@@ -12,7 +12,7 @@ table! {
         block_id -> Int4,
         user_id -> Nullable<Int4>,
         category -> Varchar,
-        offline_category -> Nullable<Bool>,
+        offline_category -> Bool,
         skill_name -> Varchar,
         skill_description -> Varchar,
     }
