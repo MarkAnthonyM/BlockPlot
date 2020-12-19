@@ -23,7 +23,7 @@ table! {
         user_id -> Int4,
         auth_id -> Varchar,
         api_key -> Nullable<Varchar>,
-        key_present -> Nullable<Bool>,
+        key_present -> Bool,
         block_count -> Int4,
     }
 }
