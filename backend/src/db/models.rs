@@ -29,8 +29,8 @@ pub struct FormData {
 // Struct for querying database infromation
 #[derive(Queryable, Deserialize, Serialize)]
 pub struct Skillblock {
-    pub id: i32,
-    pub username: String,
+    pub block_id: i32,
+    pub user_id: Option<i32>,
     pub category: String,
     pub offline_category: bool,
     pub skill_name: String,
@@ -41,7 +41,6 @@ pub struct Skillblock {
 #[derive(Insertable)]
 #[table_name="skillblocks"]
 pub struct NewSkillblock {
-    pub block_id: i32,
     pub user_id: Option<i32>,
     pub category: String,
     pub offline_category: bool,
@@ -52,7 +51,6 @@ pub struct NewSkillblock {
 #[derive(Insertable)]
 #[table_name="users"]
 pub struct NewUser {
-    pub user_id: i32,
     pub auth_id: String,
     pub api_key: Option<String>,
     pub key_present: bool,
