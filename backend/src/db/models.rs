@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use super::schema::{ skillblocks, users };
+use super::schema::{ date_times, skillblocks, users };
 
 #[derive(Deserialize, Serialize)]
 pub struct TimeData {
@@ -35,6 +35,14 @@ pub struct Skillblock {
     pub offline_category: bool,
     pub skill_name: String,
     pub description: String,
+}
+
+#[derive(Insertable)]
+#[table_name="date_times"]
+pub struct NewDateTime {
+    block_id: Option<i32>,
+    day_date: String,
+    day_time: i32,
 }
 
 // Struct for database bound information
