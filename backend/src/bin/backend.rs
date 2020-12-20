@@ -165,7 +165,7 @@ fn get_skillblocks(conn: BlockplotDbConn) -> Json<models::TimeWrapper> {
         let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
         
         let mut response = models::TimeData {
-            username: skillblock.username,
+            username: String::from("test user name"),
             category: skillblock.category,
             skill_name: skillblock.skill_name,
             skill_description: skillblock.description,
@@ -197,7 +197,7 @@ fn get_skillblocks(conn: BlockplotDbConn) -> Json<models::TimeWrapper> {
 #[post("/api/testpost", data = "<form_data>")]
 fn test_post(conn: BlockplotDbConn, form_data: Form<models::FormData>) -> String {
     let db_skillblock = models::NewSkillblock {
-        username: form_data.username.to_string(),
+        user_id: Some(0),
         category: form_data.category.to_string(),
         offline_category: form_data.offline_category,
         skill_description: form_data.description.to_string(),
