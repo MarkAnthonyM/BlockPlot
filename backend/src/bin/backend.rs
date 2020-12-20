@@ -5,7 +5,7 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
-use backend::auth::auth0::{AuthParameters, TokenResponse, UserInfo, build_random_state, decode_and_validate};
+use backend::auth::auth0::{AuthParameters, TokenResponse, build_random_state, decode_and_validate, get_or_create_user};
 use backend::db::models;
 use backend::db::operations::{ create_skillblock, query_skillblock };
 
@@ -13,13 +13,11 @@ use chrono::prelude::*;
 
 use dotenv::dotenv;
 
-use jsonwebtoken::{ Algorithm, DecodingKey, Validation, decode };
-
 use std::collections::HashMap;
 use std::env;
 
 use rocket::fairing::AdHoc;
-use rocket::http::{ Cookies, Status };
+use rocket::http::{ Cookie, Cookies, Status };
 use rocket::response::Redirect;
 use rocket::request::Form;
 use rocket::State;
@@ -42,9 +40,10 @@ struct BlockplotDbConn(diesel::PgConnection);
 // Route redirects to auth0 login page. Redirection link is built from
 // AuthParameters instance that is managed by rocket application State
 #[get("/auth0")]
-fn auth0_login(settings: State<AuthParameters>) -> Result<Redirect, Status> {
+fn auth0_login(mut cookies: Cookies, settings: State<AuthParameters>) -> Result<Redirect, Status> {
     let state_code = build_random_state();
-    
+    cookies.add(Cookie::new("state", state_code.clone()));
+
     let auth0_uri = settings.build_authorize_url(&state_code);
 
     Ok(Redirect::to(auth0_uri))
@@ -55,9 +54,19 @@ fn auth0_login(settings: State<AuthParameters>) -> Result<Redirect, Status> {
 fn process_login(
     code: String,
     mut cookies: Cookies,
+    conn: BlockplotDbConn,
     state: String,
     settings: State<AuthParameters>
 ) -> Result<Redirect, Status> {
+    if let Some(cookie) = cookies.get("state") {
+        if state != cookie.value() {
+            return Err(Status::Forbidden);
+        }
+    } else {
+        return Err(Status::BadRequest);
+    }
+    cookies.remove(Cookie::named("state"));
+    
     let token_parameters = settings.build_token_request(&code);
     let serialized = serde_json::to_string(&token_parameters).unwrap();
     let token_url = format!("https://{}/oauth/token", settings.auth0_domain);
@@ -76,7 +85,9 @@ fn process_login(
         settings.audience.as_str(),
         settings.auth0_domain.as_str(),
         token_response.access_token.as_str()
-    ).unwrap();
+    ).map_err(|_| Status::Unauthorized).unwrap();
+
+    let user = get_or_create_user(&conn, &token_payload).map_err(|_| Status::InternalServerError);
         
     Ok(Redirect::to(format!("http://localhost:8080/user")))
 }
