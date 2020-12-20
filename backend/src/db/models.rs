@@ -1,4 +1,7 @@
 use std::collections::HashMap;
+use diesel::{OptionalExtension, Queryable};
+use serde::Deserialize;
+
 use super::schema::{ date_times, skillblocks, users };
 
 #[derive(Deserialize, Serialize)]
@@ -24,6 +27,15 @@ pub struct FormData {
     pub description: String,
     pub skill_name: String,
     pub username: String,
+}
+
+#[derive(Queryable, Deserialize, Serialize)]
+pub struct User {
+    pub user_id: i32,
+    pub auth_id: String,
+    pub api_key: Option<String>,
+    pub key_present: bool,
+    pub block_count: i32,
 }
 
 // Struct for querying database infromation
