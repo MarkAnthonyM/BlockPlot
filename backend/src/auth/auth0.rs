@@ -113,10 +113,10 @@ pub fn get_or_create_user(db: &diesel::PgConnection, jwt: &TokenData<AccessToken
 // Prototype
 #[derive(Debug, Deserialize)]
 pub struct AccessToken {
-    aud: Vec<String>,
-    exp: i32,
-    iss: String,
-    sub: String,
+    pub aud: Vec<String>,
+    pub exp: i32,
+    pub iss: String,
+    pub sub: String,
 }
 
 // Prototype
