@@ -29,6 +29,14 @@ pub struct FormData {
     pub username: String,
 }
 
+#[derive(Queryable, Deserialize, Serialize)]
+pub struct DateTime {
+    pub id: i32,
+    pub block_id: Option<i32>,
+    pub day_date: String,
+    pub day_time: i32,
+}
+
 // Struct for querying database infromation
 #[derive(Queryable, Deserialize, Serialize)]
 pub struct Skillblock {
