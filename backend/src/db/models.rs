@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use diesel::{OptionalExtension, Queryable};
+use diesel::Queryable;
 use serde::Deserialize;
 
 use super::schema::{ date_times, skillblocks, users };
