@@ -3,6 +3,7 @@ use anyhow::{ anyhow, Error };
 use jsonwebtoken::{ Algorithm, DecodingKey, decode, TokenData, Validation };
 
 use rocket::config::{ Config, ConfigError };
+use rocket_contrib::databases::diesel;
 
 use std::env;
 
@@ -103,6 +104,10 @@ pub fn decode_and_validate(
     };
 
     Ok(payload)
+}
+
+pub fn get_or_create_user(db: &diesel::PgConnection, jwt: &TokenData<AccessToken>) {
+    let user = "db user get function";
 }
 
 // Prototype
