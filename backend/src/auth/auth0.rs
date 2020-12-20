@@ -1,5 +1,7 @@
 use anyhow::{ anyhow, Error };
 
+use crate::db::models::{ NewUser, User };
+use crate::db::operations::{ create_user, query_user };
 use jsonwebtoken::{ Algorithm, DecodingKey, decode, TokenData, Validation };
 
 use rocket::config::{ Config, ConfigError };
@@ -106,8 +108,35 @@ pub fn decode_and_validate(
     Ok(payload)
 }
 
-pub fn get_or_create_user(db: &diesel::PgConnection, jwt: &TokenData<AccessToken>) {
-    let user = "db user get function";
+// Get user record from data base using information from decoded jwt payload.
+// If no user found, create and insert user into database using sub claim
+// from jwt payload
+pub fn get_or_create_user(db: &diesel::PgConnection, jwt_payload: &TokenData<AccessToken>) -> Result<User, diesel::result::Error> {
+    // Query database for user. Returns Option containing user struct if found.
+    // Returns None if user not found
+    let user = query_user(db, jwt_payload);
+
+    // Returns user database information as a Result type
+    // if user variable matches Some.
+    // If user variable matches None, instantiates new user
+    // and inserts into data base
+    match user {
+        Some(record) => {
+            Ok(record)
+        },
+        None => {
+            let new_user = NewUser {
+                auth_id: jwt_payload.claims.sub.to_string(),
+                api_key: None,
+                key_present: false,
+                block_count: 0,
+            };
+
+            let new_record = create_user(db, new_user);
+
+            new_record
+        }
+    }
 }
 
 // Prototype
