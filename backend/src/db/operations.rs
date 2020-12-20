@@ -27,6 +27,7 @@ pub fn query_skillblock(connection: &PgConnection) -> Vec<models::Skillblock> {
     schema::skillblocks::table.load::<models::Skillblock>(connection).expect("Error querying record")
 }
 
+// Query user record from database
 pub fn query_user(connection: &PgConnection, payload: &TokenData<AccessToken>) -> Option<models::User> {
     use self::schema::users::dsl::*;
     
