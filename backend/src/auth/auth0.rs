@@ -7,8 +7,6 @@ use jsonwebtoken::{ Algorithm, DecodingKey, decode, TokenData, Validation };
 use rocket::config::{ Config, ConfigError };
 use rocket_contrib::databases::diesel;
 
-use std::env;
-
 pub fn build_random_state() -> String {
     use rand::{ distributions::Alphanumeric, thread_rng };
     use rand::Rng;
