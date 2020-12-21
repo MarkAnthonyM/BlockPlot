@@ -1,5 +1,4 @@
 use diesel::Queryable;
-use rocket::Outcome;
 use rocket::request::{ FromRequest, Request, self };
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -62,7 +61,7 @@ pub struct User {
 impl<'a, 'r> FromRequest<'a, 'r> for User {
     type Error = ();
 
-    fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, ()> {
+    fn from_request(_request: &'a Request<'r>) -> request::Outcome<Self, ()> {
         todo!()
     }
 }
