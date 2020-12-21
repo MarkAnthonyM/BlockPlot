@@ -2,6 +2,9 @@ use anyhow::{ anyhow, Error };
 
 use crate::db::models::{ NewUser, User };
 use crate::db::operations::{ create_user, query_user };
+
+use dashmap::{DashMap, lock::RwLock};
+
 use jsonwebtoken::{ Algorithm, DecodingKey, decode, TokenData, Validation };
 
 use rocket::config::{ Config, ConfigError };
@@ -171,6 +174,8 @@ struct Key {
     x5t: String,
     x5c: Vec<String>,
 }
+
+pub struct SessionDB(pub RwLock<DashMap<String, Option<String>>>);
 
 // Contains data used as parameters for /oauth/token endpoint
 #[derive(Debug, Deserialize, Serialize)]
