@@ -115,7 +115,7 @@ fn process_logout(settings: State<AuthParameters>) {
 // fetches timedata from RescueTime api,
 // and serves processed information to frontend
 #[get("/api/skillblocks")]
-fn get_skillblocks(conn: BlockplotDbConn) -> Json<models::TimeWrapper> {
+fn get_skillblocks(conn: BlockplotDbConn, _user: models::User) -> Json<models::TimeWrapper> {
     dotenv().ok();
     
     let api_key = env::var("API_KEY").unwrap();
