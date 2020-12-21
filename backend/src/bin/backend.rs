@@ -87,7 +87,7 @@ fn process_login(
         token_response.access_token.as_str()
     ).map_err(|_| Status::Unauthorized).unwrap();
 
-    let user = get_or_create_user(&conn, &token_payload).map_err(|_| Status::InternalServerError);
+    let _user = get_or_create_user(&conn, &token_payload).map_err(|_| Status::InternalServerError);
         
     Ok(Redirect::to(format!("http://localhost:8080/user")))
 }
