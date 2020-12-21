@@ -1,6 +1,8 @@
-use std::collections::HashMap;
 use diesel::Queryable;
+use rocket::Outcome;
+use rocket::request::{ FromRequest, Request, self };
 use serde::Deserialize;
+use std::collections::HashMap;
 
 use super::schema::{ date_times, skillblocks, users };
 
@@ -55,6 +57,14 @@ pub struct User {
     pub api_key: Option<String>,
     pub key_present: bool,
     pub block_count: i32,
+}
+
+impl<'a, 'r> FromRequest<'a, 'r> for User {
+    type Error = ();
+
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, ()> {
+        todo!()
+    }
 }
 
 #[derive(Insertable)]
