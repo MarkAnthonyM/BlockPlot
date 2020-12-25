@@ -51,6 +51,8 @@ pub struct Skillblock {
     pub description: String,
 }
 
+// Struct for querying user information from postgres database
+// Is also a request guard for various endpoints
 #[derive(Queryable, Deserialize, Serialize)]
 pub struct User {
     pub user_id: i32,
@@ -60,10 +62,14 @@ pub struct User {
     pub block_count: i32,
 }
 
+// Requst guard implementation. Validation policy will
+// check for session, determine if session is associated with a logged user
+// and verify if session is still valid.
 impl<'a, 'r> FromRequest<'a, 'r> for User {
     type Error = ();
 
     fn from_request(request: &'a Request<'r>) -> request::Outcome<User, ()> {
+        // Connection pool used to interact with postgres database.
         let pg_conn = request.guard::<BlockplotDbConn>().unwrap();
         let session_id: Option<String> = request
             .cookies()
@@ -72,20 +78,26 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
 
         match session_id {
             Some(id) => {
+                // Grab in memory sessions owning database. Use session id retrived from
+                // cookies to query for a valid session
                 let session_state = request.guard::<State<SessionDB>>().unwrap();
                 let session_db = session_state.0.read();
                 let session_map = session_db.get(&id);
                 match session_map {
                     Some(key) => {
+                        // Check for Session struct associated with session key.
+                        // If none found, forward to login endpoint
                         match *key {
                             Some(ref val) => {
                                 if val.session_expired() {
                                     return rocket::Outcome::Forward(());
                                 }
+                                // Query postgres database for user. If match found,
+                                // return Success outcome, passing retrived User to
+                                // calling endpoint
                                 let pg_user = query_user(&pg_conn, val.user_id.to_string());
                                 match pg_user {
                                     Some(user) => {
-                                        println!("{:?}", user.auth_id);
                                         return rocket::Outcome::Success(user);
                                     },
                                     None => {
@@ -112,6 +124,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
     }
 }
 
+// Struct for creating and inserting a new record
+// for a given date and time returned from
+// RescueTime Api
 #[derive(Insertable)]
 #[table_name="date_times"]
 pub struct NewDateTime {
@@ -131,6 +146,8 @@ pub struct NewSkillblock {
     pub skill_description: String,
 }
 
+// Struct for creating new user record
+// for database insertion
 #[derive(Insertable)]
 #[table_name="users"]
 pub struct NewUser {
