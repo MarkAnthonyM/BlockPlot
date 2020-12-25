@@ -1,7 +1,4 @@
-use crate::auth::auth0::AccessToken;
 use diesel::prelude::*;
-use jsonwebtoken::TokenData;
-
 use super::{ models, schema };
 
 // Insert skillblock record into database
@@ -28,10 +25,10 @@ pub fn query_skillblock(connection: &PgConnection) -> Vec<models::Skillblock> {
 }
 
 // Query user record from database
-pub fn query_user(connection: &PgConnection, payload: &TokenData<AccessToken>) -> Option<models::User> {
+pub fn query_user(connection: &PgConnection, id: String) -> Option<models::User> {
     use self::schema::users::dsl::*;
     
-    let user = users.filter(auth_id.eq(payload.claims.sub.to_string()))
+    let user = users.filter(auth_id.eq(id))
         .first::<models::User>(connection);
 
     match user {
