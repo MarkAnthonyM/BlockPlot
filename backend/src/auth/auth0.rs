@@ -1,5 +1,5 @@
 use anyhow::{ anyhow, Error };
-
+use chrono::Utc;
 use crate::db::models::{ NewUser, User };
 use crate::db::operations::{ create_user, query_user };
 
@@ -144,7 +144,7 @@ pub fn get_or_create_user(db: &diesel::PgConnection, jwt_payload: &TokenData<Acc
 #[derive(Debug, Deserialize)]
 pub struct AccessToken {
     pub aud: Vec<String>,
-    pub exp: i32,
+    pub exp: i64,
     pub iss: String,
     pub sub: String,
 }
@@ -180,8 +180,15 @@ pub struct SessionDB(pub RwLock<DashMap<String, Option<Session>>>);
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Session {
     pub user_id: String,
-    pub expires: i32,
+    pub expires: i64,
     pub jwt: String,
+}
+
+impl Session {
+    pub fn session_expired(&self) -> bool {
+        let now = Utc::now().timestamp();
+        self.expires <= now
+    }
 }
 
 // Contains data used as parameters for /oauth/token endpoint
