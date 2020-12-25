@@ -5,11 +5,14 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
-use backend::auth::auth0::{AuthParameters, TokenResponse, build_random_state, decode_and_validate, get_or_create_user};
+use backend::auth::auth0::{ AuthParameters, Session, SessionDB, TokenResponse, build_random_state, decode_and_validate, get_or_create_user };
 use backend::db::models;
 use backend::db::operations::{ create_skillblock, query_skillblock };
 
 use chrono::prelude::*;
+
+use dashmap::lock::RwLock;
+use dashmap::DashMap;
 
 use dotenv::dotenv;
 
@@ -33,6 +36,8 @@ use rusty_rescuetime::parameters::ResolutionOptions::Day;
 use rusty_rescuetime::parameters::RestrictData::{ Date, Thing };
 use rusty_rescuetime::parameters::RestrictOptions::{ Category, Overview };
 
+use uuid::Uuid;
+
 // Rocket connection pool
 #[database("postgres_blockplot")]
 struct BlockplotDbConn(diesel::PgConnection);
@@ -52,6 +57,7 @@ fn auth0_login(mut cookies: Cookies, settings: State<AuthParameters>) -> Result<
 // Route for testing authentication routine
 #[get("/process?<code>&<state>")]
 fn process_login(
+    session_db: State<SessionDB>,
     code: String,
     mut cookies: Cookies,
     conn: BlockplotDbConn,
@@ -87,7 +93,26 @@ fn process_login(
         token_response.access_token.as_str()
     ).map_err(|_| Status::Unauthorized).unwrap();
 
-    let _user = get_or_create_user(&conn, &token_payload).map_err(|_| Status::InternalServerError);
+    let user = get_or_create_user(&conn, &token_payload).map_err(|_| Status::InternalServerError)?;
+
+    let new_session = Session {
+        user_id: user.auth_id,
+        expires: token_payload.claims.exp,
+        // Not sure about this part. revist
+        jwt: token_response.id_token,
+    };
+
+    let session_token = Uuid::new_v4().to_string();
+
+    session_db.0.read().insert(session_token.to_string(), Some(new_session));
+
+    let cookie = Cookie::build("session", session_token)
+        .path("/")
+        // Remember to change this to true for production
+        .secure(false)
+        .http_only(true)
+        .finish();
+    cookies.add(cookie);
         
     Ok(Redirect::to(format!("http://localhost:8080/user")))
 }
@@ -232,10 +257,13 @@ fn main() -> Result<(), Error> {
     }
         .to_cors()?;
     
+    let sessions = SessionDB(RwLock::new(DashMap::new()));
+    
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
         .mount("/", routes![auth0_login, get_skillblocks, process_login, process_logout, test_post])
+        .manage(sessions)
         .attach(AdHoc::on_attach("Parameters Config", |rocket| {
             let config = rocket.config();
             let auth_parameters = AuthParameters::new(config).unwrap();
