@@ -175,7 +175,14 @@ struct Key {
     x5c: Vec<String>,
 }
 
-pub struct SessionDB(pub RwLock<DashMap<String, Option<String>>>);
+pub struct SessionDB(pub RwLock<DashMap<String, Option<Session>>>);
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Session {
+    pub user_id: String,
+    pub expires: i32,
+    pub jwt: String,
+}
 
 // Contains data used as parameters for /oauth/token endpoint
 #[derive(Debug, Deserialize, Serialize)]
