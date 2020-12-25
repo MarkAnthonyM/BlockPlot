@@ -29,7 +29,6 @@ pub struct FormData {
     pub offline_category: bool,
     pub description: String,
     pub skill_name: String,
-    pub username: String,
 }
 
 #[derive(Queryable, Deserialize, Serialize)]
