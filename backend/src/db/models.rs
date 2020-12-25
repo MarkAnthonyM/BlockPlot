@@ -79,6 +79,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
                     Some(key) => {
                         match *key {
                             Some(ref val) => {
+                                if val.session_expired() {
+                                    return rocket::Outcome::Forward(());
+                                }
                                 let pg_user = query_user(&pg_conn, val.user_id.to_string());
                                 match pg_user {
                                     Some(user) => {
