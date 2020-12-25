@@ -1,9 +1,11 @@
+use crate::auth::auth0::SessionDB;
 use diesel::Queryable;
 use rocket::request::{ FromRequest, Request, self };
+use rocket::State;
 use serde::Deserialize;
 use std::collections::HashMap;
 
-use super::schema::{ date_times, skillblocks, users };
+use super::{operations::{BlockplotDbConn, query_user}, schema::{ date_times, skillblocks, users }};
 
 #[derive(Deserialize, Serialize)]
 pub struct TimeData {
@@ -61,8 +63,49 @@ pub struct User {
 impl<'a, 'r> FromRequest<'a, 'r> for User {
     type Error = ();
 
-    fn from_request(_request: &'a Request<'r>) -> request::Outcome<Self, ()> {
-        todo!()
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<User, ()> {
+        let pg_conn = request.guard::<BlockplotDbConn>().unwrap();
+        let session_id: Option<String> = request
+            .cookies()
+            .get("session")
+            .and_then(|cookie| cookie.value().parse().ok());
+
+        match session_id {
+            Some(id) => {
+                let session_state = request.guard::<State<SessionDB>>().unwrap();
+                let session_db = session_state.0.read();
+                let session_map = session_db.get(&id);
+                match session_map {
+                    Some(key) => {
+                        match *key {
+                            Some(ref val) => {
+                                let pg_user = query_user(&pg_conn, val.user_id.to_string());
+                                match pg_user {
+                                    Some(user) => {
+                                        println!("{:?}", user.auth_id);
+                                        return rocket::Outcome::Success(user);
+                                    },
+                                    None => {
+                                        return rocket::Outcome::Forward(());
+                                    }
+                                }
+                            },
+                            None => {
+                                println!("No user associated with session");
+                                return rocket::Outcome::Forward(());
+                            },
+                        }
+                    },
+                    None => {
+                        println!("Session not found in database!");
+                        return rocket::Outcome::Forward(());
+                    },
+                }
+            },
+            None => println!("Session id not found!")
+        }
+
+        rocket::outcome::Outcome::Forward(())
     }
 }
 
