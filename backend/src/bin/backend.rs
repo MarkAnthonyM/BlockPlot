@@ -2,8 +2,6 @@
 
 #[macro_use]
 extern crate rocket;
-#[macro_use]
-extern crate rocket_contrib;
 
 use backend::auth::auth0::{ AuthParameters, Session, SessionDB, TokenResponse, build_random_state, decode_and_validate, get_or_create_user };
 use backend::db::models;
