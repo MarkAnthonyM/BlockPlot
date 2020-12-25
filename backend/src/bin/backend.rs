@@ -110,23 +110,29 @@ fn process_login(
     Ok(Redirect::to(format!("http://localhost:8080/user")))
 }
 
-// Route for testing logging out functionality
+// Route logs user out by retriving session_id cookie,
+// uses cookie to destory session record,
+// and removes session cookie.
+// Redirect is then made to auth0 logout api endpoint,
+// which logs user out of auth0 service and redirects
+// to blockplot homepage.
 #[get("/logout")]
-fn process_logout(settings: State<AuthParameters>) {
+fn process_logout(
+    mut cookies: Cookies,
+    session_db: State<SessionDB>,
+    settings: State<AuthParameters>,
+) -> Redirect {
+    let session_id: Option<String> = cookies.get("session")
+        .and_then(|cookie| cookie.value().parse().ok());
+    if let Some(id) = session_id {
+        session_db.0.read().remove(&id);
+    }
+    cookies.remove(Cookie::named("session"));
+
     let return_url = format!("http://localhost:8080/index");
     let logout_request = format!("https://{}/v2/logout?client_id={}&returnTo={}", settings.auth0_domain, settings.client_id, return_url);
 
-    let client = reqwest::blocking::Client::new();
-    let response = client
-        .get(&logout_request)
-        .send()
-        .unwrap();
-
-    if response.status().is_success() {
-        println!("logged out successfully!");
-    } else {
-        println!("Error with log out attemp!");
-    }
+    Redirect::to(logout_request)
 }
 
 // Route handler fetches user skillblock information from database,
