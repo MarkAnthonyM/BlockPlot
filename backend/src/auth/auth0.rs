@@ -115,7 +115,7 @@ pub fn decode_and_validate(
 pub fn get_or_create_user(db: &diesel::PgConnection, jwt_payload: &TokenData<AccessToken>) -> Result<User, diesel::result::Error> {
     // Query database for user. Returns Option containing user struct if found.
     // Returns None if user not found
-    let user = query_user(db, jwt_payload);
+    let user = query_user(db, jwt_payload.claims.sub.to_string());
 
     // Returns user database information as a Result type
     // if user variable matches Some.
