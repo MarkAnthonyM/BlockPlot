@@ -1,5 +1,10 @@
 use diesel::prelude::*;
+use rocket_contrib::database;
 use super::{ models, schema };
+
+// Rocket connection pool
+#[database("postgres_blockplot")]
+pub struct BlockplotDbConn(diesel::PgConnection);
 
 // Insert skillblock record into database
 pub fn create_skillblock(connection: &PgConnection, db_struct: models::NewSkillblock) {

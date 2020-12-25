@@ -7,7 +7,7 @@ extern crate rocket_contrib;
 
 use backend::auth::auth0::{ AuthParameters, Session, SessionDB, TokenResponse, build_random_state, decode_and_validate, get_or_create_user };
 use backend::db::models;
-use backend::db::operations::{ create_skillblock, query_skillblock };
+use backend::db::operations::{ BlockplotDbConn, create_skillblock, query_skillblock };
 
 use chrono::prelude::*;
 
@@ -25,7 +25,6 @@ use rocket::response::Redirect;
 use rocket::request::Form;
 use rocket::State;
 
-use rocket_contrib::databases::diesel;
 use rocket_contrib::json::Json;
 use rocket_cors::{ AllowedHeaders, AllowedOrigins, Error };
 
@@ -37,10 +36,6 @@ use rusty_rescuetime::parameters::RestrictData::{ Date, Thing };
 use rusty_rescuetime::parameters::RestrictOptions::{ Category, Overview };
 
 use uuid::Uuid;
-
-// Rocket connection pool
-#[database("postgres_blockplot")]
-struct BlockplotDbConn(diesel::PgConnection);
 
 // Route redirects to auth0 login page. Redirection link is built from
 // AuthParameters instance that is managed by rocket application State
