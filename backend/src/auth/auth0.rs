@@ -9,6 +9,8 @@ use jsonwebtoken::{ Algorithm, DecodingKey, decode, TokenData, Validation };
 
 use rocket::config::{ Config, ConfigError };
 use rocket_contrib::databases::diesel;
+use rocket::request::{ FromRequest, Request, self };
+use rocket::State;
 
 pub fn build_random_state() -> String {
     use rand::{ distributions::Alphanumeric, thread_rng };
@@ -177,7 +179,7 @@ struct Key {
 
 pub struct SessionDB(pub RwLock<DashMap<String, Option<Session>>>);
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Session {
     pub user_id: String,
     pub expires: i64,
@@ -188,6 +190,31 @@ impl Session {
     pub fn session_expired(&self) -> bool {
         let now = Utc::now().timestamp();
         self.expires <= now
+    }
+}
+
+impl<'a, 'r> FromRequest<'a, 'r> for Session {
+    type Error = ();
+
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<Session, ()> {
+        let session_id: Option<String> = request
+            .cookies()
+            .get("session")
+            .and_then(|cookie| cookie.value().parse().ok());
+        if let Some(id) = session_id {
+            let session_db = request.guard::<State<SessionDB>>().unwrap().inner();
+            let session_map = session_db.0.get(&id).unwrap();
+            match *session_map {
+                Some(ref session) => {
+                    return rocket::Outcome::Success(session.clone());
+                },
+                None => {
+                    return rocket::Outcome::Forward(());
+                }
+            }
+        } else {
+            rocket::Outcome::Forward(())
+        }
     }
 }
 
