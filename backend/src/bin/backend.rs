@@ -46,6 +46,12 @@ fn auth0_login(mut cookies: Cookies, settings: State<AuthParameters>) -> Result<
     Ok(Redirect::to(auth0_uri))
 }
 
+// Prototype route
+#[get("/home")]
+fn home(session: Session) -> Result<Json<Session>, Status> {
+    Ok(Json(session))
+}
+
 // Route for testing authentication routine
 #[get("/process?<code>&<state>")]
 fn process_login(
@@ -265,7 +271,7 @@ fn main() -> Result<(), Error> {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
-        .mount("/", routes![auth0_login, get_skillblocks, process_login, process_logout, test_post])
+        .mount("/", routes![auth0_login, home, get_skillblocks, process_login, process_logout, test_post])
         .manage(sessions)
         .attach(AdHoc::on_attach("Parameters Config", |rocket| {
             let config = rocket.config();
