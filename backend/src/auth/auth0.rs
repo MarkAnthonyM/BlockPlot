@@ -3,7 +3,7 @@ use chrono::Utc;
 use crate::db::models::{ NewUser, User };
 use crate::db::operations::{ create_user, query_user };
 
-use dashmap::{DashMap, lock::RwLock};
+use dashmap::DashMap;
 
 use jsonwebtoken::{ Algorithm, DecodingKey, decode, TokenData, Validation };
 
@@ -177,7 +177,7 @@ struct Key {
     x5c: Vec<String>,
 }
 
-pub struct SessionDB(pub RwLock<DashMap<String, Option<Session>>>);
+pub struct SessionDB(pub DashMap<String, Option<Session>>);
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Session {

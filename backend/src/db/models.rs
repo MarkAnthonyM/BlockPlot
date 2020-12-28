@@ -75,51 +75,88 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
             .get("session")
             .and_then(|cookie| cookie.value().parse().ok());
 
+        // match session_id {
+        //     Some(id) => {
+        //         // Grab in memory sessions owning database. Use session id retrived from
+        //         // cookies to query for a valid session
+        //         let session_state = request.guard::<State<SessionDB>>().unwrap();
+        //         let session_db = session_state.0.read();
+        //         let session_map = session_db.get(&id);
+        //         match session_map {
+        //             Some(key) => {
+        //                 // Check for Session struct associated with session key.
+        //                 // If none found, forward to login endpoint
+        //                 match *key {
+        //                     Some(ref val) => {
+        //                         if val.session_expired() {
+        //                             return rocket::Outcome::Forward(());
+        //                         }
+        //                         // Query postgres database for user. If match found,
+        //                         // return Success outcome, passing retrived User to
+        //                         // calling endpoint
+        //                         let pg_user = query_user(&pg_conn, val.user_id.to_string());
+        //                         match pg_user {
+        //                             Some(user) => {
+        //                                 return rocket::Outcome::Success(user);
+        //                             },
+        //                             None => {
+        //                                 return rocket::Outcome::Forward(());
+        //                             }
+        //                         }
+        //                     },
+        //                     None => {
+        //                         println!("No user associated with session");
+        //                         return rocket::Outcome::Forward(());
+        //                     },
+        //                 }
+        //             },
+        //             None => {
+        //                 println!("Session not found in database!");
+        //                 return rocket::Outcome::Forward(());
+        //             },
+        //         }
+        //     },
+        //     None => println!("Session id not found!")
+        // }
+        
         match session_id {
             Some(id) => {
                 // Grab in memory sessions owning database. Use session id retrived from
                 // cookies to query for a valid session
-                let session_state = request.guard::<State<SessionDB>>().unwrap();
-                let session_db = session_state.0.read();
-                let session_map = session_db.get(&id);
-                match session_map {
-                    Some(key) => {
-                        // Check for Session struct associated with session key.
-                        // If none found, forward to login endpoint
-                        match *key {
-                            Some(ref val) => {
-                                if val.session_expired() {
-                                    return rocket::Outcome::Forward(());
-                                }
-                                // Query postgres database for user. If match found,
-                                // return Success outcome, passing retrived User to
-                                // calling endpoint
-                                let pg_user = query_user(&pg_conn, val.user_id.to_string());
-                                match pg_user {
-                                    Some(user) => {
-                                        return rocket::Outcome::Success(user);
-                                    },
-                                    None => {
-                                        return rocket::Outcome::Forward(());
-                                    }
-                                }
+                let session_db = request.guard::<State<SessionDB>>().unwrap().inner();
+                let session_map = session_db.0.get(&id).unwrap();
+                // Check for Session struct associated with session key.
+                // If none found, forward to login endpoint
+                match *session_map {
+                    Some(ref session) => {
+                        if session.session_expired() {
+                            return rocket::Outcome::Forward(());
+                        }
+
+                        // Query postgres database for user. If match found,
+                        // return Success outcome, passing retrived User to
+                        // calling endpoint
+                        let pg_user = query_user(&pg_conn, session.user_id.to_string());
+                        match pg_user {
+                            Some(user) => {
+                                rocket::Outcome::Success(user)
                             },
                             None => {
-                                println!("No user associated with session");
-                                return rocket::Outcome::Forward(());
-                            },
+                                rocket::Outcome::Forward(())
+                            }
                         }
                     },
                     None => {
-                        println!("Session not found in database!");
-                        return rocket::Outcome::Forward(());
-                    },
+                        rocket::Outcome::Forward(())
+                    }
                 }
             },
-            None => println!("Session id not found!")
+            None => {
+                rocket::Outcome::Forward(())
+            }
         }
 
-        rocket::outcome::Outcome::Forward(())
+        // rocket::outcome::Outcome::Forward(())
     }
 }
 

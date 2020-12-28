@@ -9,7 +9,6 @@ use backend::db::operations::{ BlockplotDbConn, create_skillblock, query_skillbl
 
 use chrono::prelude::*;
 
-use dashmap::lock::RwLock;
 use dashmap::DashMap;
 
 use dotenv::dotenv;
@@ -97,7 +96,7 @@ fn process_login(
 
     let session_token = Uuid::new_v4().to_string();
 
-    session_db.0.read().insert(session_token.to_string(), Some(new_session));
+    session_db.0.insert(session_token.to_string(), Some(new_session));
 
     let cookie = Cookie::build("session", session_token)
         .path("/")
@@ -125,7 +124,7 @@ fn process_logout(
     let session_id: Option<String> = cookies.get("session")
         .and_then(|cookie| cookie.value().parse().ok());
     if let Some(id) = session_id {
-        session_db.0.read().remove(&id);
+        session_db.0.remove(&id);
     }
     cookies.remove(Cookie::named("session"));
 
@@ -261,7 +260,7 @@ fn main() -> Result<(), Error> {
     }
         .to_cors()?;
     
-    let sessions = SessionDB(RwLock::new(DashMap::new()));
+    let sessions = SessionDB(DashMap::new());
     
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
