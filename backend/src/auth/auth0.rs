@@ -202,6 +202,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Session {
             .and_then(|cookie| cookie.value().parse().ok());
         if let Some(id) = session_id {
             let session_db = request.guard::<State<SessionDB>>().unwrap().inner();
+            // Occasionally hitting a unwrap on None panic here
             let session_map = session_db.0.get(&id).unwrap();
             match *session_map {
                 Some(ref session) => {
