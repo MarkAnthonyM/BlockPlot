@@ -156,7 +156,7 @@ pub struct AccessToken {
 pub struct IdToken {
     aud: String,
     email: String,
-    exp: i32,
+    exp: i64,
     given_name: String,
     iss: String,
     nickname: String,
