@@ -114,7 +114,7 @@ pub fn decode_and_validate(
 // Get user record from data base using information from decoded jwt payload.
 // If no user found, create and insert user into database using sub claim
 // from jwt payload
-pub fn get_or_create_user(db: &diesel::PgConnection, jwt_payload: &TokenData<AccessToken>) -> Result<User, diesel::result::Error> {
+pub fn get_or_create_user(db: &diesel::PgConnection, jwt_payload: &TokenData<IdToken>) -> Result<User, diesel::result::Error> {
     // Query database for user. Returns Option containing user struct if found.
     // Returns None if user not found
     let user = query_user(db, jwt_payload.claims.sub.to_string());
