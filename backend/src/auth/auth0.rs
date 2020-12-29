@@ -81,21 +81,14 @@ impl AuthParameters {
 pub fn decode_and_validate(
     audience: &str,
     domain: &str,
-    jwt: &str
+    jwt: &str,
+    secret: &str,
 ) -> Result<TokenData<IdToken>, Error> {
-    let client = reqwest::blocking::Client::new();
-    let jwks: Jwks = client
-        .get(&format!("https://{}/.well-known/jwks.json", domain))
-        .send()
-        .unwrap()
-        .json()
-        .expect("Error fetching json web keys");
-    
     // Decode jwt token with json web key set and validation algorithm
     let payload = decode::<IdToken>(
         jwt,
-        &DecodingKey::from_rsa_components(&jwks.keys[0].n, &jwks.keys[0].e),
-        &Validation::new(Algorithm::RS256)
+        &DecodingKey::from_secret(secret.as_ref()),
+        &Validation::new(Algorithm::HS256)
     ).unwrap();
 
     // Validate for correct audience
