@@ -88,7 +88,8 @@ fn process_login(
     let token_payload = decode_and_validate(
         settings.client_id.as_str(),
         settings.auth0_domain.as_str(),
-        token_response.id_token.as_str()
+        token_response.id_token.as_str(),
+        settings.client_secret.as_str()
     ).map_err(|_| Status::Unauthorized).unwrap();
 
     let user = get_or_create_user(&conn, &token_payload).map_err(|_| Status::InternalServerError)?;
