@@ -154,11 +154,14 @@ pub struct AccessToken {
 // Prototype
 #[derive(Debug, Deserialize)]
 pub struct IdToken {
+    aud: String,
     email: String,
+    exp: i32,
     given_name: String,
+    iss: String,
     nickname: String,
     picture: String,
-    exp: i32,
+    sub: String,
 }
 
 #[derive(Debug, Deserialize)]
