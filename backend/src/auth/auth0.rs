@@ -82,7 +82,7 @@ pub fn decode_and_validate(
     audience: &str,
     domain: &str,
     jwt: &str
-) -> Result<TokenData<AccessToken>, Error> {
+) -> Result<TokenData<IdToken>, Error> {
     let client = reqwest::blocking::Client::new();
     let jwks: Jwks = client
         .get(&format!("https://{}/.well-known/jwks.json", domain))
@@ -92,14 +92,14 @@ pub fn decode_and_validate(
         .expect("Error fetching json web keys");
     
     // Decode jwt token with json web key set and validation algorithm
-    let payload = decode::<AccessToken>(
+    let payload = decode::<IdToken>(
         jwt,
         &DecodingKey::from_rsa_components(&jwks.keys[0].n, &jwks.keys[0].e),
         &Validation::new(Algorithm::RS256)
     ).unwrap();
 
     // Validate for correct audience
-    if payload.claims.aud[0] != audience {
+    if payload.claims.aud != audience {
         return Err(anyhow!("Failure on audience validation"));
     }
 
