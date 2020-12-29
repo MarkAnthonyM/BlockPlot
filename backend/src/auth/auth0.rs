@@ -177,9 +177,12 @@ pub struct SessionDB(pub DashMap<String, Option<Session>>);
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Session {
-    pub user_id: String,
+    pub email: String,
     pub expires: i64,
-    pub jwt: String,
+    pub given_name: String,
+    pub nickname: String,
+    pub picture: String,
+    pub user_id: String,
 }
 
 impl Session {
