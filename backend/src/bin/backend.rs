@@ -95,10 +95,12 @@ fn process_login(
     let user = get_or_create_user(&conn, &token_payload).map_err(|_| Status::InternalServerError)?;
 
     let new_session = Session {
-        user_id: user.auth_id,
+        email: token_payload.claims.email,
         expires: token_payload.claims.exp,
-        // Not sure about this part. revist
-        jwt: token_response.id_token,
+        given_name: token_payload.claims.given_name,
+        nickname: token_payload.claims.nickname,
+        picture: token_payload.claims.picture,
+        user_id: user.auth_id,
     };
 
     let session_token = Uuid::new_v4().to_string();
