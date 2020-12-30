@@ -5,7 +5,7 @@ extern crate rocket;
 
 use backend::auth::auth0::{ AuthParameters, Session, SessionDB, TokenResponse, build_random_state, decode_and_validate, get_or_create_user };
 use backend::db::models;
-use backend::db::operations::{ BlockplotDbConn, create_skillblock, query_skillblock };
+use backend::db::operations::{ BlockplotDbConn, create_skillblock, query_skillblock, add_user_key };
 
 use chrono::prelude::*;
 
@@ -245,9 +245,23 @@ fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<mod
 
 // Handle form post request and store form data into database
 #[post("/api/testpost", data = "<form_data>")]
-fn test_post(conn: BlockplotDbConn, form_data: Form<models::FormData>) -> String {
+fn test_post(user: models::User, conn: BlockplotDbConn, form_data: Form<models::FormData>) -> Result<Redirect, Status> {
+    if user.block_count > 3 {
+        return Err(Status::Forbidden);
+    }
+    if !user.api_key {
+        let query_result = add_user_key(conn, user.auth_id, form_data.api_key);
+        match query_result {
+            Ok(result) => println!("Successfully updated user key! {}", result),
+            Err(error) => {
+                println!("Error updating user key! {}", error);
+                return Err(Status::Forbidden);
+            }
+        }
+    }
+
     let db_skillblock = models::NewSkillblock {
-        user_id: Some(0),
+        user_id: Some(user.user_id),
         category: form_data.category.to_string(),
         offline_category: form_data.offline_category,
         skill_description: form_data.description.to_string(),
@@ -256,7 +270,7 @@ fn test_post(conn: BlockplotDbConn, form_data: Form<models::FormData>) -> String
 
     create_skillblock(&conn, db_skillblock);
 
-    String::from("Success!")
+    Ok(Redirect::to("http://localhost:8080/user"))
 }
 
 fn main() -> Result<(), Error> {
