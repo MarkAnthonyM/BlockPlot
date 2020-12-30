@@ -9,7 +9,6 @@ use super::{operations::{BlockplotDbConn, query_user}, schema::{ date_times, ski
 
 #[derive(Deserialize, Serialize)]
 pub struct TimeData {
-    pub username: String,
     pub category: String,
     pub skill_name: String,
     pub skill_description: String,
