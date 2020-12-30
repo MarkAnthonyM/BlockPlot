@@ -54,3 +54,17 @@ pub fn add_user_key(connection: &PgConnection, id: String, key: &String) -> Resu
 
     Ok((key_result, bool_result))
 }
+
+// Prototype block_count update query
+pub fn update_block_count(connection: &PgConnection, count: i32, id: String) -> Result<usize, diesel::result::Error> {
+    use self::schema::users::dsl::*;
+    let increase_count = count + 1;
+
+    let target = users.filter(auth_id.eq(&id));
+    let result = diesel::update(target)
+        .set(block_count
+            .eq(increase_count))
+            .execute(connection)?;
+    
+    Ok(result)
+}
