@@ -25,6 +25,7 @@ pub struct TimeWrapper {
 // Struct for skillblock create request
 #[derive(FromForm)]
 pub struct FormData {
+    pub api_key: Option<String>,
     pub category: String,
     pub offline_category: bool,
     pub description: String,
