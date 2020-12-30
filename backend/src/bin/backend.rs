@@ -95,9 +95,11 @@ fn process_login(
     let user = get_or_create_user(&conn, &token_payload).map_err(|_| Status::InternalServerError)?;
 
     let new_session = Session {
+        block_count: user.block_count, 
         email: token_payload.claims.email,
         expires: token_payload.claims.exp,
         given_name: token_payload.claims.given_name,
+        key_present: user.key_present,
         nickname: token_payload.claims.nickname,
         picture: token_payload.claims.picture,
         user_id: user.auth_id,
