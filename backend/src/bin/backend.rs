@@ -5,7 +5,7 @@ extern crate rocket;
 
 use backend::auth::auth0::{ AuthParameters, Session, SessionDB, TokenResponse, build_random_state, decode_and_validate, get_or_create_user };
 use backend::db::models;
-use backend::db::operations::{ BlockplotDbConn, create_skillblock, query_skillblock, add_user_key };
+use backend::db::operations::{ BlockplotDbConn, create_skillblock, query_skillblock, add_user_key, update_block_count };
 
 use chrono::prelude::*;
 
@@ -249,12 +249,21 @@ fn test_post(user: models::User, conn: BlockplotDbConn, form_data: Form<models::
     if user.block_count > 3 {
         return Err(Status::Forbidden);
     }
-    if !user.api_key {
-        let query_result = add_user_key(conn, user.auth_id, form_data.api_key);
-        match query_result {
-            Ok(result) => println!("Successfully updated user key! {}", result),
-            Err(error) => {
-                println!("Error updating user key! {}", error);
+    if !user.key_present {
+        match &form_data.api_key {
+            Some(key) => {
+                // Consider updating db query operation to remove use of string copy 
+                let query_result = add_user_key(&conn, user.auth_id.to_string(), &key);
+                match query_result {
+                    Ok(result) => println!("Successfully updated user key! {:?}", result),
+                    Err(error) => {
+                        println!("Error updating user key! {}", error);
+                        return Err(Status::Forbidden);
+                    }
+                }
+            },
+            None => {
+                println!("Issue with api key from form");
                 return Err(Status::Forbidden);
             }
         }
@@ -269,6 +278,12 @@ fn test_post(user: models::User, conn: BlockplotDbConn, form_data: Form<models::
     };
 
     create_skillblock(&conn, db_skillblock);
+
+    // Consider updating db query operation to remove use of string copy 
+    match update_block_count(&conn, user.block_count, user.auth_id.to_string()) {
+        Ok(result) => println!("User block count successfully updated! {}", result),
+        Err(error) => println!("Error updating user block count :( {}", error),
+    }
 
     Ok(Redirect::to("http://localhost:8080/user"))
 }
