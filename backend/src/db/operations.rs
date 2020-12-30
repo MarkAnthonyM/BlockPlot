@@ -44,13 +44,13 @@ pub fn query_user(connection: &PgConnection, id: String) -> Option<models::User>
 }
 
 // Prototype update query
-pub fn add_user_key(connection: &PgConnection, id: String, key: String) -> Result<(usize, usize), diesel::result::Error> {
+pub fn add_user_key(connection: &PgConnection, id: String, key: &String) -> Result<(usize, usize), diesel::result::Error> {
     use self::schema::users::dsl::*;
 
     let target = users.filter(auth_id.eq(&id));
-    let key_result = diesel::update(target).set(api_key.eq(key)).execute(connection);
+    let key_result = diesel::update(target).set(api_key.eq(key)).execute(connection)?;
     let target = users.filter(auth_id.eq(id));
-    let bool_result = diesel::update(target).set(key_present.eq(true)).execute(connection);
+    let bool_result = diesel::update(target).set(key_present.eq(true)).execute(connection)?;
 
-    Ok(key_result, bool_result)
+    Ok((key_result, bool_result))
 }
