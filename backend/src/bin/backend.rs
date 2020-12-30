@@ -11,10 +11,7 @@ use chrono::prelude::*;
 
 use dashmap::DashMap;
 
-use dotenv::dotenv;
-
 use std::collections::HashMap;
-use std::env;
 
 use rocket::fairing::AdHoc;
 use rocket::http::{ Cookie, Cookies, Status };
@@ -155,9 +152,8 @@ fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<mod
     if !user.key_present {
         return Err(Status::NotFound);
     }
-    dotenv().ok();
-    
-    let api_key = env::var("API_KEY").unwrap();
+
+    let api_key = user.api_key.unwrap();
     let format = String::from("json");
     
     // Setup dates
