@@ -2,7 +2,6 @@ table! {
     date_times (id) {
         id -> Int4,
         block_id -> Nullable<Int4>,
-        day_date -> Varchar,
         day_time -> Int4,
     }
 }
