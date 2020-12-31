@@ -1,4 +1,5 @@
 use anyhow::Result;
+use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use rocket_contrib::database;
 use super::{ models, schema };
@@ -67,4 +68,9 @@ pub fn update_block_count(connection: &PgConnection, count: i32, id: String) -> 
             .execute(connection)?;
     
     Ok(result)
+}
+
+// Prototype date_time update query
+pub fn update_date_time(connection: &PgConnection, date: NaiveDateTime, time: i32) {
+    todo!()
 }
