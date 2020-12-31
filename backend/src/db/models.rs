@@ -1,3 +1,4 @@
+use chrono::naive::NaiveDateTime;
 use crate::auth::auth0::SessionDB;
 use diesel::Queryable;
 use rocket::request::{ FromRequest, Request, self };
@@ -12,7 +13,7 @@ pub struct TimeData {
     pub category: String,
     pub skill_name: String,
     pub skill_description: String,
-    pub time_data: HashMap<String, i32>,
+    pub time_data: HashMap<NaiveDateTime, i32>,
 }
 
 // Prototype wrapper struct for storing multiple TimeData requests
