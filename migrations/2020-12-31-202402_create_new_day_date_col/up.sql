@@ -1,0 +1,2 @@
+ALTER TABLE date_times
+ADD COLUMN day_date TIMESTAMP NOT NULL;

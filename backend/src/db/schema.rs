@@ -3,6 +3,7 @@ table! {
         id -> Int4,
         block_id -> Nullable<Int4>,
         day_time -> Int4,
+        day_date -> Timestamp,
     }
 }
 
