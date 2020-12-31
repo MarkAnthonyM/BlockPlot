@@ -36,8 +36,8 @@ pub struct FormData {
 pub struct DateTime {
     pub id: i32,
     pub block_id: Option<i32>,
-    pub day_date: String,
     pub day_time: i32,
+    pub day_date: NaiveDateTime,
 }
 
 // Struct for querying database infromation
@@ -122,8 +122,8 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
 #[table_name="date_times"]
 pub struct NewDateTime {
     block_id: Option<i32>,
-    day_date: String,
     day_time: i32,
+    day_date: NaiveDateTime,
 }
 
 // Struct for database bound information
