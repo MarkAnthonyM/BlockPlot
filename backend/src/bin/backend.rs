@@ -165,6 +165,8 @@ fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<mod
     );
 
     //TODO: Currently pulling in data from less than a year. Figure out how to query data for a full year
+    //TODO: Fix bug with current_day parameter. If current day is last day of month,
+    // adding 1 to it leads to invalid day.
     let year_start = NaiveDate::from_ymd(
         current_year - 1,
         current_month,
