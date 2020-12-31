@@ -16,6 +16,18 @@ impl Color {
     pub const HIGH: &'static str = "#bc1c2a";
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Session {
+    pub block_count: i32,
+    pub email: String,
+    pub expires: i64,
+    pub given_name: String,
+    pub key_present: bool,
+    pub nickname: String,
+    pub picture: String,
+    pub user_id: String,
+}
+
 // Incoming timedata payload deserializes to this struct
 #[derive(Deserialize, Serialize)]
 pub struct TimeData {
