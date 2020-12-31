@@ -44,6 +44,11 @@ pub fn query_user(connection: &PgConnection, id: String) -> Option<models::User>
     }
 }
 
+// Prototype add date_time query
+pub fn add_date_time(connection: &PgConnection, date: NaiveDateTime, time: i32) {
+    todo!()
+}
+
 // Prototype update query
 pub fn add_user_key(connection: &PgConnection, id: String, key: &String) -> Result<(usize, usize), diesel::result::Error> {
     use self::schema::users::dsl::*;
