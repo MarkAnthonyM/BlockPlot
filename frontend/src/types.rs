@@ -31,7 +31,6 @@ pub struct Session {
 // Incoming timedata payload deserializes to this struct
 #[derive(Deserialize, Serialize)]
 pub struct TimeData {
-    pub username: String,
     pub category: String,
     pub skill_name: String,
     pub skill_description: String,
