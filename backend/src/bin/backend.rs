@@ -211,7 +211,6 @@ fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<mod
         let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
         
         let mut response = models::TimeData {
-            username: String::from("test user name"),
             category: skillblock.category,
             skill_name: skillblock.skill_name,
             skill_description: skillblock.description,
