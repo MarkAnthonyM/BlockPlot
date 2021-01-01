@@ -1,4 +1,5 @@
 /target
+/backend/src/bin/db_cli.rs
 /frontend/dist
 Cargo.lock
 .env
