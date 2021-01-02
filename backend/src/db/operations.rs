@@ -1,12 +1,31 @@
 use anyhow::Result;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
+use diesel::select;
+use diesel::dsl::exists;
 use rocket_contrib::database;
 use super::{ models, schema };
 
 // Rocket connection pool
 #[database("postgres_blockplot")]
 pub struct BlockplotDbConn(diesel::PgConnection);
+
+// prototype skillblock check operation. Might be unneeded
+pub fn check_for_skillblock(conn: &PgConnection, cate: String) -> Result<bool, ()> {
+    use self::schema::skillblocks::dsl::*;
+
+    let skillblock_exist = select(
+        exists(skillblocks.filter(category.eq(cate)))
+    ).get_result(conn);
+    match skillblock_exist {
+        Ok(exists) => {
+            Ok(exists)
+        },
+        Err(_erorr) => {
+            Err(())
+        }
+    }
+}
 
 // Insert skillblock record into database
 pub fn create_skillblock(connection: &PgConnection, db_struct: models::NewSkillblock) {
