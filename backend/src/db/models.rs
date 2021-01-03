@@ -125,9 +125,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
 #[derive(Insertable)]
 #[table_name="date_times"]
 pub struct NewDateTime {
-    block_id: Option<i32>,
-    day_time: i32,
-    day_date: NaiveDateTime,
+    pub block_id: Option<i32>,
+    pub day_time: i32,
+    pub day_date: NaiveDateTime,
 }
 
 // Struct for database bound information
