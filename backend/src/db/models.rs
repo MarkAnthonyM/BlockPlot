@@ -32,7 +32,8 @@ pub struct FormData {
     pub skill_name: String,
 }
 
-#[derive(Queryable, Deserialize, Serialize)]
+#[derive(Associations, Identifiable, Queryable, Deserialize, Serialize)]
+#[belongs_to(Skillblock, foreign_key = "block_id")]
 pub struct DateTime {
     pub id: i32,
     pub block_id: Option<i32>,
@@ -41,7 +42,9 @@ pub struct DateTime {
 }
 
 // Struct for querying database infromation
-#[derive(Queryable, Deserialize, Serialize)]
+#[derive(Associations, Identifiable, Queryable, Deserialize, Serialize)]
+#[primary_key(block_id)]
+#[belongs_to(User, foreign_key = "user_id")]
 pub struct Skillblock {
     pub block_id: i32,
     pub user_id: Option<i32>,
@@ -53,7 +56,8 @@ pub struct Skillblock {
 
 // Struct for querying user information from postgres database
 // Is also a request guard for various endpoints
-#[derive(Queryable, Deserialize, Serialize)]
+#[derive(Identifiable, Queryable, Deserialize, Serialize)]
+#[primary_key(user_id)]
 pub struct User {
     pub user_id: i32,
     pub auth_id: String,
