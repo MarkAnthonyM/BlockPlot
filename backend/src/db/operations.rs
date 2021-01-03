@@ -80,8 +80,13 @@ pub fn query_user(connection: &PgConnection, id: String) -> Option<models::User>
 }
 
 // Prototype add date_time query
-pub fn add_date_time(connection: &PgConnection, date: NaiveDateTime, time: i32) {
-    todo!()
+pub fn add_date_time(connection: &PgConnection, date_time: models::NewDateTime) -> Result<usize, diesel::result::Error> {
+    let result = diesel::insert_into(schema::date_times::table)
+        .values(&date_time)
+        .execute(connection)
+        .expect("Error inserting date_time into database");
+    
+    Ok(result)
 }
 
 // Prototype update query
