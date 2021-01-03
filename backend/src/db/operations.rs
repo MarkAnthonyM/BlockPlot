@@ -45,6 +45,22 @@ pub fn create_user(connection: &PgConnection, new_user: models::NewUser) -> Resu
     Ok(inserted_user)
 }
 
+// Prototype date_time query operation
+pub fn query_date_times(connection: &PgConnection, id: i32) -> Result<models::DateTime, diesel::result::Error> {
+    use self::schema::skillblocks::dsl::*;
+    let skillblock = skillblocks.find(id).get_result::<models::Skillblock>(connection);
+    match skillblock {
+        Ok(block_record) => {
+            let skillblock_record = models::DateTime::belonging_to(&block_record).first(connection);
+            skillblock_record
+        },
+        Err(error) => {
+            println!("Error querying skillblock record!");
+            Err(error)
+        }
+    }
+}
+
 // Query skillblock record from database
 pub fn query_skillblock(connection: &PgConnection) -> Vec<models::Skillblock> {
     schema::skillblocks::table.load::<models::Skillblock>(connection).expect("Error querying record")
