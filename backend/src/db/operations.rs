@@ -45,6 +45,19 @@ pub fn create_user(connection: &PgConnection, new_user: models::NewUser) -> Resu
     Ok(inserted_user)
 }
 
+// Prototype Delete time_date operation. Probably need to change how
+// date_time records are fetched from db
+pub fn delete_date_time(connection: &PgConnection, dt_id: i32) -> usize {
+    use self::schema::date_times::dsl::*;
+
+    let target = diesel
+        ::delete(date_times.find(dt_id))
+        .execute(connection)
+        .expect("Error deleting date time record");
+
+    target
+}
+
 // Prototype date_time query operation
 pub fn query_date_times(connection: &PgConnection, id: i32) -> Result<models::DateTime, diesel::result::Error> {
     use self::schema::skillblocks::dsl::*;
