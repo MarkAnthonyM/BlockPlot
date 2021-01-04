@@ -103,7 +103,7 @@ pub fn add_date_time(connection: &PgConnection, date_time: models::NewDateTime) 
 }
 
 // Prototype function adds whole vector of date times in a single query
-pub fn batch_add_date_time(connection: &PgConnection, date_data: &Vec<models::NewDateTime>) -> Result<usize, Error> {
+pub fn batch_add_date_times(connection: &PgConnection, date_data: &Vec<models::NewDateTime>) -> Result<usize, Error> {
     use schema::date_times::dsl::*;
     
     let result = diesel::insert_into(date_times)
