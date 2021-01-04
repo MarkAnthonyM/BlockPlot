@@ -68,8 +68,13 @@ pub fn query_date_times(connection: &PgConnection, skillblock: &models::Skillblo
 }
 
 // Query skillblock record from database
-pub fn query_skillblock(connection: &PgConnection) -> Vec<models::Skillblock> {
-    schema::skillblocks::table.load::<models::Skillblock>(connection).expect("Error querying record")
+pub fn query_skillblocks(connection: &PgConnection, user: &models::User) -> Result<Vec<models::Skillblock>, diesel::result::Error> {
+    let skillblock_records = models
+        ::Skillblock
+        ::belonging_to(user)
+        .load::<models::Skillblock>(connection);
+    
+        skillblock_records
 }
 
 // Query user record from database
