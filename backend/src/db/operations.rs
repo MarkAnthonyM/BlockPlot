@@ -1,6 +1,7 @@
 use anyhow::Result;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
+use diesel::result::Error;
 use diesel::select;
 use diesel::dsl::exists;
 use rocket_contrib::database;
@@ -64,7 +65,7 @@ pub fn query_date_times(connection: &PgConnection, skillblock: &models::Skillblo
         ::DateTime
         ::belonging_to(skillblock)
         .load::<models::DateTime>(connection);
-        
+
     date_time_records
 }
 
@@ -99,6 +100,17 @@ pub fn add_date_time(connection: &PgConnection, date_time: models::NewDateTime) 
         .expect("Error inserting date_time into database");
     
     Ok(result)
+}
+
+// Prototype function adds whole vector of date times in a single query
+pub fn batch_add_date_time(connection: &PgConnection, date_data: &Vec<models::NewDateTime>) -> Result<usize, Error> {
+    use schema::date_times::dsl::*;
+    
+    let result = diesel::insert_into(date_times)
+        .values(date_data)
+        .execute(connection);
+
+    result
 }
 
 // Prototype update query
