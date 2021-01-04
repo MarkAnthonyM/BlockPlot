@@ -59,19 +59,12 @@ pub fn delete_date_time(connection: &PgConnection, dt_id: i32) -> usize {
 }
 
 // Prototype date_time query operation
-pub fn query_date_times(connection: &PgConnection, id: i32) -> Result<models::DateTime, diesel::result::Error> {
-    use self::schema::skillblocks::dsl::*;
-    let skillblock = skillblocks.find(id).get_result::<models::Skillblock>(connection);
-    match skillblock {
-        Ok(block_record) => {
-            let skillblock_record = models::DateTime::belonging_to(&block_record).first(connection);
-            skillblock_record
-        },
-        Err(error) => {
-            println!("Error querying skillblock record!");
-            Err(error)
-        }
-    }
+pub fn query_date_times(connection: &PgConnection, skillblock: &models::Skillblock) -> Result<Vec<models::DateTime>, diesel::result::Error> {
+    let skillblock_record = models
+        ::DateTime
+        ::belonging_to(skillblock)
+        .load::<models::DateTime>(connection);
+    skillblock_record
 }
 
 // Query skillblock record from database
