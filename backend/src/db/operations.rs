@@ -60,11 +60,12 @@ pub fn delete_date_time(connection: &PgConnection, dt_id: i32) -> usize {
 
 // Prototype date_time query operation
 pub fn query_date_times(connection: &PgConnection, skillblock: &models::Skillblock) -> Result<Vec<models::DateTime>, diesel::result::Error> {
-    let skillblock_record = models
+    let date_time_records = models
         ::DateTime
         ::belonging_to(skillblock)
         .load::<models::DateTime>(connection);
-    skillblock_record
+        
+    date_time_records
 }
 
 // Query skillblock record from database
