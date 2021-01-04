@@ -69,6 +69,21 @@ pub fn query_date_times(connection: &PgConnection, skillblock: &models::Skillblo
     date_time_records
 }
 
+// Prototype date_time query operation in descending order. Only fetchs
+// day_date and day_time as tuple struct
+pub fn query_date_times_desc(connection: &PgConnection, skillblock: &models::Skillblock) -> Result<Vec<(NaiveDateTime, i32)>, diesel::result::Error> {
+    use self::schema::date_times::dsl::*;
+    
+    let date_time_records = models
+        ::DateTime
+        ::belonging_to(skillblock)
+        .select((day_date, day_time))
+        .order(day_date.desc())
+        .load::<(NaiveDateTime, i32)>(connection);
+    
+    date_time_records
+}
+
 // Query skillblock record from database
 pub fn query_skillblocks(connection: &PgConnection, user: &models::User) -> Result<Vec<models::Skillblock>, diesel::result::Error> {
     let skillblock_records = models
