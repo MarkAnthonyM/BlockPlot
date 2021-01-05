@@ -198,6 +198,7 @@ impl Component for Form {
                 <main class="bd-main">
                     <Section>
                         <div class="colums">
+                            <p class="title is-3">{ "Let's create a skillblock!" }</p>
                             <div class="column is-half">
                                 <form action="http://localhost:8000/api/testpost" method="POST">
                                     { self.api_key_view() }
