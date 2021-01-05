@@ -63,6 +63,7 @@ impl User {
 
         // Calculate value to subtract from current day. When new week starts on a sunday,
         // 0 is subtracted from current day, shifting calender graph leftward and replacing oldest week 
+        // TODO: Fix bug when week day is sunday. overflow issue.
         let day_incrementor = current_date.weekday().pred().num_days_from_monday();
         let week_incrementor = day_incrementor % 6;
         let oldest_week = current_day - week_incrementor;
