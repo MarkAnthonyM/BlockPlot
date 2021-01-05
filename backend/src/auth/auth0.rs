@@ -201,6 +201,7 @@ impl Session {
 impl<'a, 'r> FromRequest<'a, 'r> for Session {
     type Error = ();
 
+    // TODO: Need to validate expiration token
     fn from_request(request: &'a Request<'r>) -> request::Outcome<Session, ()> {
         let session_id: Option<String> = request
             .cookies()
