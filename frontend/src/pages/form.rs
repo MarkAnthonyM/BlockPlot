@@ -27,13 +27,13 @@ impl Form {
         if !self.props.key_present {
             html! {
                 <Field>
+                    <label class="label">{ "RescueTime Api Key" }</label>
                     <p>
                         {
                             "Hey! Looks like we don't have your RescueTime API key on record. We're gonna need that.
                             Grab it or create one from your RescueTime API key management page, toss it in below, and away we'll go!"
                         }
                     </p>
-                    <label class="label">{ "RescueTime Api Key" }</label>
                     <Control>
                         <input
                             class="input"
@@ -54,7 +54,12 @@ impl Form {
     fn offline_category_view(&self) -> Html {
         html! {
             <Field>
-            <Control>
+                <Control>
+                <p>
+                    {
+                        "Is the skill you want to keep track of an offline item?"
+                    }
+                </p>
                 <label class="checkbox">
                     <input
                         type="checkbox"
@@ -73,6 +78,12 @@ impl Form {
             html! {
                 <Field>
                     <label class="label">{ "Skill Category" }</label>
+                    <p>
+                        {
+                            "Options here are pretty limited and generic. Work continues on finding a solution for
+                            more flexible options"
+                        }
+                    </p>
                     <Control>
                         <div class="select">
                             <select required=true name="category">
@@ -88,6 +99,11 @@ impl Form {
             html! {
                 <Field>
                     <label class="label">{ "Offline Category Name" }</label>
+                    <p>
+                        {
+                            "Make sure the category name you type below matches exactly with the offline category name on file with RescueTime"
+                        }
+                    </p>
                     <Control>
                         <input
                             class="input"
@@ -104,6 +120,12 @@ impl Form {
         html! {
             <Field>
                 <label class="label">{ "Skill Description" }</label>
+                <p>
+                    {
+                        "Type a short description of the skill you wish to track progress of. Maybe include what you
+                        hope to accomplish with mastering this skill"
+                    }
+                </p>
                 <Control>
                     <input
                         class="input"
@@ -119,6 +141,11 @@ impl Form {
         html! {
             <Field>
                 <label class="label">{ "Skill Name" }</label>
+                <p>
+                    {
+                        "Type a name for the skill you wish to track"
+                    }
+                </p>
                 <Control>
                     <input
                         class="input"
