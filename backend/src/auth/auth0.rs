@@ -12,6 +12,8 @@ use rocket_contrib::databases::diesel;
 use rocket::request::{ FromRequest, Request, self };
 use rocket::State;
 
+use std::env;
+
 pub fn build_random_state() -> String {
     use rand::{ distributions::Alphanumeric, thread_rng };
     use rand::Rng;
@@ -40,8 +42,10 @@ pub struct AuthParameters {
 
 impl AuthParameters {
     pub fn new(config: &Config) -> Result<AuthParameters, ConfigError> {
-        // let secret = env::var("CLIENT_SECRET").unwrap();
-        let secret = "Ib57BXDC-_Wqmszh1KQsDeZ23SQ64iRwxGELa6qkjE33-eIq0Xdzq2qv83hDWk1G";
+        use dotenv::dotenv;
+        dotenv().ok();
+        
+        let secret = env::var("CLIENT_SECRET").unwrap();
 
         let auth_parameters = Self {
             audience: String::from(config.get_str("audience")?),
