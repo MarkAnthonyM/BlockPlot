@@ -5,7 +5,7 @@ extern crate rocket;
 
 use backend::auth::auth0::{ AuthParameters, Session, SessionDB, TokenResponse, build_random_state, decode_and_validate, get_or_create_user };
 use backend::db::models;
-use backend::db::operations::{ add_user_key, batch_add_date_times, BlockplotDbConn, create_skillblock, query_date_times, query_date_times_desc, query_skillblocks, update_block_count, update_date_time };
+use backend::db::operations::{ add_user_key, batch_add_date_times, BlockplotDbConn, create_skillblock, query_date_times_desc, query_skillblocks, update_block_count, update_date_time };
 
 use chrono::prelude::*;
 use chrono::Duration;
