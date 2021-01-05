@@ -155,10 +155,10 @@ pub fn update_block_count(connection: &PgConnection, count: i32, id: String) -> 
 }
 
 // Prototype date_time update query
-pub fn update_date_time(connection: &PgConnection, date: NaiveDateTime, time: i32) -> Result<usize, diesel::result::Error> {
+pub fn update_date_time(connection: &PgConnection, fk_id: i32, date: NaiveDateTime, time: i32) -> Result<usize, diesel::result::Error> {
     use self::schema::date_times::dsl::*;
 
-    let target = date_times.filter(day_date.eq(date));
+    let target = date_times.filter(block_id.eq(fk_id)).filter(day_date.eq(date));
 
     let result = diesel::update(target)
         .set(day_time.eq(time)).execute(connection);
