@@ -4,6 +4,7 @@ use yew::prelude::*;
 
 pub struct Form {
     link: ComponentLink<Self>,
+    props: Props,
     state: State,
 }
 
@@ -12,11 +13,44 @@ pub enum Msg {
     ToggleCategory,
 }
 
+#[derive(Properties, Clone)]
+pub struct Props {
+    pub key_present: bool,
+}
+
 struct State {
     toggle_category: bool,
 }
 
 impl Form {
+    fn api_key_view(&self) -> Html {
+        if !self.props.key_present {
+            html! {
+                <Field>
+                    <p>
+                        {
+                            "Hey! Looks like we don't have your RescueTime API key on record. We're gonna need that.
+                            Grab it or create one from your RescueTime API key management page, toss it in below, and away we'll go!"
+                        }
+                    </p>
+                    <label class="label">{ "RescueTime Api Key" }</label>
+                    <Control>
+                        <input
+                            class="input"
+                            name="api_key"
+                            placeholder="Text input"
+                        />
+                    </Control>
+                </Field>
+            }
+        } else {
+            html! {
+                <>
+                </>
+            }
+        }
+    }
+    
     fn offline_category_view(&self) -> Html {
         html! {
             <Field>
@@ -99,11 +133,12 @@ impl Form {
 
 impl Component for Form {
     type Message = Msg;
-    type Properties = ();
+    type Properties = Props;
 
-    fn create(_: Self::Properties, _link: ComponentLink<Self>) -> Self {
+    fn create(props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         Self {
             link: _link,
+            props,
             state: State {
                 toggle_category: false,
             },
@@ -125,8 +160,9 @@ impl Component for Form {
         }
     }
 
-    fn change(&mut self, _: Self::Properties) -> ShouldRender {
-        false
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        self.props = props;
+        true
     }
 
     fn view(&self) -> Html {
@@ -137,6 +173,7 @@ impl Component for Form {
                         <div class="colums">
                             <div class="column is-half">
                                 <form action="http://localhost:8000/api/testpost" method="POST">
+                                    { self.api_key_view() }
                                     { self.skill_name_view() }
                                     { self.offline_category_view() }
                                     { self.skill_category_view() }
