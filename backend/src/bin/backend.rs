@@ -5,11 +5,13 @@ extern crate rocket;
 
 use backend::auth::auth0::{ AuthParameters, Session, SessionDB, TokenResponse, build_random_state, decode_and_validate, get_or_create_user };
 use backend::db::models;
-use backend::db::operations::{ BlockplotDbConn, create_skillblock, query_skillblock, add_user_key, update_block_count };
+use backend::db::operations::{ add_user_key, batch_add_date_times, BlockplotDbConn, create_skillblock, query_date_times, query_date_times_desc, query_skillblocks, update_block_count, update_date_time };
 
 use chrono::prelude::*;
+use chrono::Duration;
 
 use dashmap::DashMap;
+use models::NewDateTime;
 
 use std::collections::HashMap;
 
@@ -153,6 +155,16 @@ fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<mod
         return Err(Status::NotFound);
     }
 
+    // TODO: Should handle the error here
+    let categories = query_skillblocks(&conn, &user).unwrap();
+
+    if categories.len() < 1 {
+        return Err(Status::NotFound)
+    }
+
+    // Vector holds datastructures to be passed back to frontend
+    let mut time_vec = Vec::new();
+
     let api_key = user.api_key.unwrap();
     let format = String::from("json");
     
@@ -163,79 +175,254 @@ fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<mod
         current_date.month(),
         current_date.day()
     );
-    // Setup previous year date
-    let next_date = current_date.succ();
-    let (prev_year, prev_month, prev_day) = (
-        next_date.year() - 1,
-        next_date.month(),
-        next_date.day()
-    );
-
-    //TODO: Currently pulling in data from less than a year. Figure out how to query data for a full year
-    let year_start = NaiveDate::from_ymd(
-        prev_year,
-        prev_month,
-        prev_day
-    );
     let year_end = NaiveDate::from_ymd(
         current_year,
         current_month,
         current_day
     );
-    
-    // Vector holds datastructures to be passed back to frontend
-    let mut time_vec = Vec::new();
-    let categories = query_skillblock(&conn);
 
     // loop through gathered database records and use information to make
     // query calls to rescuetime api for time data
     for skillblock in categories {
-        let query_parameters;
-        
-        // Check for needed type of restrict_kind parameter
-        if skillblock.offline_category {
-            query_parameters = Parameters::new(
-                Some(Interval),
-                Some(Day),
-                //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
-                Some(Date(year_start.to_string(), year_end.to_string())),
-                Some(Category),
-                Some(Thing(skillblock.category.to_string())),
-                None,
-            );
-        } else {
-            query_parameters = Parameters::new(
-                Some(Interval),
-                Some(Day),
-                //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
-                Some(Date(year_start.to_string(), year_end.to_string())),
-                Some(Overview),
-                Some(Thing(skillblock.category.to_string())),
-                None,
-            );
-        }
+        let records_present = query_date_times_desc(&conn, &skillblock);
+        match records_present {
+            Ok(date_times) => {
+                // Check if any records already exist
+                if date_times.len() < 1 {
+                    // Setup previous year date
+                    let next_date = current_date.succ();
+                    let (prev_year, prev_month, prev_day) = (
+                        next_date.year() - 1,
+                        next_date.month(),
+                        next_date.day()
+                    );
+                    
+                    //TODO: Currently pulling in data from less than a year. Figure out how to query data for a full year
+                    let year_start = NaiveDate::from_ymd(
+                        prev_year,
+                        prev_month,
+                        prev_day
+                    );
 
-        let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
-        
-        let mut response = models::TimeData {
-            category: skillblock.category,
-            skill_name: skillblock.skill_name,
-            skill_description: skillblock.description,
-            time_data: HashMap::new(),
-        };
-        
-        // Create hash key/values and sum total time for given category
-        for query in payload.rows {
-            if let QueryKind::SizeSixString(value) = query {
-                if let Some(x) = response.time_data.get_mut(&value.perspective) {
-                    *x += value.time_spent;
+                    let query_parameters;
+                    
+                    // Check for needed type of restrict_kind parameter
+                    if skillblock.offline_category {
+                        query_parameters = Parameters::new(
+                            Some(Interval),
+                            Some(Day),
+                            //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                            Some(Date(year_start.to_string(), year_end.to_string())),
+                            Some(Category),
+                            Some(Thing(skillblock.category.to_string())),
+                            None,
+                        );
+                    } else {
+                        query_parameters = Parameters::new(
+                            Some(Interval),
+                            Some(Day),
+                            //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                            Some(Date(year_start.to_string(), year_end.to_string())),
+                            Some(Overview),
+                            Some(Thing(skillblock.category.to_string())),
+                            None,
+                        );
+                    }
+            
+                    let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+                    
+                    let mut response = models::TimeData {
+                        category: skillblock.category,
+                        skill_name: skillblock.skill_name,
+                        skill_description: skillblock.description,
+                        time_data: HashMap::new(),
+                    };
+                    
+                    // Create hash key/values and sum total time for given category
+                    for query in payload.rows {
+                        if let QueryKind::SizeSixString(value) = query {
+                            if let Some(x) = response.time_data.get_mut(&value.perspective) {
+                                *x += value.time_spent;
+                            } else {
+                                response.time_data.insert(value.perspective, value.time_spent);
+                            }
+                        }
+                    }
+
+                    let mut time_data_store = Vec::new();
+                    for (key, val) in response.time_data.iter() {
+                        let db_date_time = NewDateTime {
+                            block_id: Some(skillblock.block_id),
+                            day_time: *val,
+                            day_date: *key,
+                        };
+                        time_data_store.push(db_date_time);
+                    }
+
+                    match batch_add_date_times(&conn, &time_data_store) {
+                        Ok(rows) => println!("Successfully added {} rows to date database", rows),
+                        Err(error) => {
+                            println!("Error saving date data to db: {}", error);
+                            return Err(Status::InternalServerError);
+                        }
+                    }
+            
+                    time_vec.push(response);
                 } else {
-                    response.time_data.insert(value.perspective, value.time_spent);
+                    let current_ndt = NaiveDateTime::new(
+                        current_date,
+                        NaiveTime::from_hms(0, 0, 0)
+                    );
+
+                    let query_parameters;
+
+                    // Check database most recent date against
+                    // current date
+                    if date_times[0].0 == current_ndt {
+                        if skillblock.offline_category {
+                            query_parameters = Parameters::new(
+                                Some(Interval),
+                                Some(Day),
+                                //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                                Some(Date(current_date.to_string(), current_date.to_string())),
+                                Some(Category),
+                                Some(Thing(skillblock.category.to_string())),
+                                None,
+                            );
+                        } else {
+                            query_parameters = Parameters::new(
+                                Some(Interval),
+                                Some(Day),
+                                //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                                Some(Date(current_date.to_string(), current_date.to_string())),
+                                Some(Overview),
+                                Some(Thing(skillblock.category.to_string())),
+                                None,
+                            );
+                        }
+
+                        let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+
+                        let mut data = models::TimeData {
+                            category: skillblock.category,
+                            skill_name: skillblock.skill_name,
+                            skill_description: skillblock.description,
+                            time_data: HashMap::new(),
+                        };
+
+                        // Copy database date times into hashmap
+                        for dt in &date_times {
+                            data.time_data.insert(dt.0, dt.1);
+                        }
+
+                        // Remove outdated current date record from hashmap
+                        // TODO: Might be able to get rid of this part. Check
+                        // for method that will skip insert if key already exits
+                        // in hashmap
+                        data.time_data.remove(&date_times[0].0);
+    
+                        // Recalculate time total of current date
+                        // and insert updated value into hashmap
+                        for query in payload.rows {
+                            if let QueryKind::SizeSixString(value) = query {
+                                if let Some(x) = data.time_data.get_mut(&value.perspective) {
+                                    *x += value.time_spent;
+                                } else {
+                                    data.time_data.insert(value.perspective, value.time_spent);
+                                }
+                            }
+                        }
+
+                        // Grab updated date time values from hashmap
+                        // and update database record
+                        if let Some((key, val)) = data.time_data.get_key_value(&date_times[0].0) {
+                            match update_date_time(&conn, skillblock.block_id, *key, *val) {
+                                Ok(row) => println!("Successfully updated {} row!", row),
+                                Err(error) => {
+                                    println!("Error updating date data in db: {}", error);
+                                    return Err(Status::InternalServerError);
+                                }
+                            }
+                        }
+
+    
+                        time_vec.push(data);
+                    } else {
+                        // Create date older by 1 day than oldest date in database
+                        let end_date = date_times[0].0.date() + Duration::days(1);
+                        
+                        if skillblock.offline_category {
+                            query_parameters = Parameters::new(
+                                Some(Interval),
+                                Some(Day),
+                                //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                                Some(Date(end_date.to_string(), current_date.to_string())),
+                                Some(Category),
+                                Some(Thing(skillblock.category.to_string())),
+                                None,
+                            );
+                        } else {
+                            query_parameters = Parameters::new(
+                                Some(Interval),
+                                Some(Day),
+                                //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                                Some(Date(end_date.to_string(), current_date.to_string())),
+                                Some(Overview),
+                                Some(Thing(skillblock.category.to_string())),
+                                None,
+                            );
+                        }
+
+                        let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+
+                        let mut data = models::TimeData {
+                            category: skillblock.category,
+                            skill_name: skillblock.skill_name,
+                            skill_description: skillblock.description,
+                            time_data: HashMap::new(),
+                        };
+    
+                        // Create hash key/values and sum total time for given category
+                        for query in payload.rows {
+                            if let QueryKind::SizeSixString(value) = query {
+                                if let Some(x) = data.time_data.get_mut(&value.perspective) {
+                                    *x += value.time_spent;
+                                } else {
+                                    data.time_data.insert(value.perspective, value.time_spent);
+                                }
+                            }
+                        }
+
+                        let mut time_data_store = Vec::new();
+                        for (key, val) in data.time_data.iter() {
+                            let db_date_time = NewDateTime {
+                                block_id: Some(skillblock.block_id),
+                                day_time: *val,
+                                day_date: *key,
+                            };
+                            time_data_store.push(db_date_time);
+                        }
+                        match batch_add_date_times(&conn, &time_data_store) {
+                            Ok(rows) => println!("Successfully added {} rows to date database", rows),
+                            Err(error) => {
+                                println!("Error saving date data to db: {}", error);
+                                return Err(Status::InternalServerError);
+                            }
+                        }
+
+                        for dt in date_times {
+                            data.time_data.insert(dt.0, dt.1);
+                        }
+    
+                        time_vec.push(data);
+                    }
                 }
+            },
+            Err(error) => {
+                println!("Error fetching date time records: {}", error);
+                return Err(Status::InternalServerError);
             }
         }
-
-        time_vec.push(response);
     }
 
     let wrapped_json = models::TimeWrapper {
