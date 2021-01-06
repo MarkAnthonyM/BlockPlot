@@ -80,9 +80,26 @@ impl Component for App {
     }
 
     fn view(&self) -> Html {
-        let render = Router::render(|switch: Route| match switch {
+        let navbar_div;
+        let key_exists;
+        match self.state.session.as_ref() {
+            Some(session) => {
+                key_exists = session.key_present;
+                navbar_div = html! {
+                    <NavbarElement session=session/>
+                }
+            },
+            None => {
+                key_exists = false;
+                navbar_div = html! {
+                    <NavbarElement session=None/>
+                }
+            }
+        };
+
+        let render = Router::render(move |switch: Route| match switch {
             Route::AboutPage => html! {<About/>},
-            Route::FormPage => html! {<Form/>},
+            Route::FormPage => html! {<Form key_present=key_exists/>},
             Route::SignInPage => html! {<SignIn/>},
             Route::SignUpPage => html! {<SignUp/>},
             Route::UserPage => html! {<User/>},
@@ -91,7 +108,7 @@ impl Component for App {
 
         html! {
             <>
-                <NavbarElement/>
+                { navbar_div }
                 <Router<Route, ()> render=render/>
             </>
         }
