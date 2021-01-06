@@ -17,7 +17,7 @@ use std::collections::HashMap;
 
 use rocket::fairing::AdHoc;
 use rocket::http::{ Cookie, Cookies, Status };
-use rocket::response::Redirect;
+use rocket::response::{ Flash, Redirect };
 use rocket::request::Form;
 use rocket::State;
 
@@ -430,6 +430,12 @@ fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<mod
     };
 
     Ok(Json(wrapped_json))
+}
+
+// Prototype handler meant to handle fowards due to User RequestGuard failures
+#[get("/api/skillblocks", rank = 2)]
+fn get_skillblocks_redirect() -> Flash<Redirect> {
+    Flash::error(Redirect::to("/"), "Invalid user login")
 }
 
 // Handle form post request and store form data into database
