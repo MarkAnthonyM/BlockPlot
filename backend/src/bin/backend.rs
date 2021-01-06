@@ -22,6 +22,7 @@ use rocket::request::{ FlashMessage, Form };
 use rocket::State;
 
 use rocket_contrib::json::Json;
+use rocket_contrib::templates::Template;
 use rocket_cors::{ AllowedHeaders, AllowedOrigins, Error };
 
 use rusty_rescuetime::analytic_data::{ AnalyticData, QueryKind };
@@ -506,6 +507,7 @@ fn main() -> Result<(), Error> {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
+        .attach(Template::fairing())
         .mount("/", routes![auth0_login, home, index, get_skillblocks, get_skillblocks_redirect, process_login, process_logout, test_post])
         .manage(sessions)
         .attach(AdHoc::on_attach("Parameters Config", |rocket| {
