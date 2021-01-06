@@ -18,7 +18,7 @@ use std::collections::HashMap;
 use rocket::fairing::AdHoc;
 use rocket::http::{ Cookie, Cookies, Status };
 use rocket::response::{ Flash, Redirect };
-use rocket::request::Form;
+use rocket::request::{ FlashMessage, Form };
 use rocket::State;
 
 use rocket_contrib::json::Json;
@@ -32,6 +32,12 @@ use rusty_rescuetime::parameters::RestrictData::{ Date, Thing };
 use rusty_rescuetime::parameters::RestrictOptions::{ Category, Overview };
 
 use uuid::Uuid;
+
+#[get("/")]
+fn index(flash: Option<FlashMessage>) -> String {
+    flash.map(|msg| format!("{}: {}", msg.name(), msg.msg()))
+        .unwrap_or_else(|| "Welcome!".to_string())
+}
 
 // Route redirects to auth0 login page. Redirection link is built from
 // AuthParameters instance that is managed by rocket application State
@@ -500,7 +506,7 @@ fn main() -> Result<(), Error> {
     rocket::ignite()
         .attach(BlockplotDbConn::fairing())
         .attach(cors)
-        .mount("/", routes![auth0_login, home, get_skillblocks, process_login, process_logout, test_post])
+        .mount("/", routes![auth0_login, home, index, get_skillblocks, get_skillblocks_redirect, process_login, process_logout, test_post])
         .manage(sessions)
         .attach(AdHoc::on_attach("Parameters Config", |rocket| {
             let config = rocket.config();
