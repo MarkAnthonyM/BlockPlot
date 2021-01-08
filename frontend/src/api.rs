@@ -35,3 +35,17 @@ pub fn get_user_session(callback: FetchCallback<Session>) -> FetchTask {
 
     FetchService::fetch_binary_with_options(request, options, callback).unwrap()
 }
+
+// Fetch unauthorized page
+pub fn get_unauthorized_page(callback: FetchCallback<String>) -> FetchTask {
+    let url = format!("http://localhost:8000/unauthorized");
+    let request = Request::get(url)
+        .body(Nothing)
+        .unwrap();
+    let options = FetchOptions {
+        credentials: Some(RequestCredentials::Include),
+        ..FetchOptions::default()
+    };
+
+    FetchService::fetch_binary_with_options(request, options, callback).unwrap()
+}
