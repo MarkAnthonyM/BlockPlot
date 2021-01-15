@@ -2,9 +2,12 @@ use anyhow::Error;
 
 use chrono::prelude::*;
 use chrono::Duration;
+use yew_router::prelude::*;
+use yew_router::agent::RouteRequest;
 
 use crate::api;
 use crate::types::{ Color, TimeData, TimeStats, TimeWrapper };
+use crate::route::Route::UnauthorizedPage;
 
 use ybc::{ Box, Container, Section, Tile };
 use ybc::TileCtx::{ Ancestor, Child, Parent };
@@ -12,17 +15,20 @@ use ybc::TileSize;
 
 use yew::format::Json;
 use yew::prelude::*;
-use yew::services::fetch::FetchTask;
+use yew::services::fetch::{ FetchTask, StatusCode };
+use yew::services::ConsoleService;
 
 pub enum Msg {
     GetDevSkillBlock,
     GetSkillBlocksSuccess(TimeWrapper),
     GetSkillBlocksError(Error),
+    UnauthorizedAccess,
 }
 
 pub struct User {
     state: State,
     link: ComponentLink<Self>,
+    router: RouteAgentDispatcher<()>,
     task: Option<FetchTask>,
 }
 
@@ -285,6 +291,7 @@ impl Component for User {
                 get_skillblocks_loaded: false,
             },
             link,
+            router: RouteAgentDispatcher::new(),
             task: None,
         }
     }
@@ -297,10 +304,15 @@ impl Component for User {
                 let handler =
                     self.link
                         .callback(move |response: api::FetchResponse<TimeWrapper>| {
-                            let (_, Json(data)) = response.into_parts();
-                            match data {
-                                Ok(skillblocks) => Msg::GetSkillBlocksSuccess(skillblocks),
-                                Err(error) => Msg::GetSkillBlocksError(error),
+                            let (meta, Json(data)) = response.into_parts();
+                            // Check for 401, redirect to UnauthorizedPage route if true
+                            if meta.status == StatusCode::UNAUTHORIZED {
+                                Msg::UnauthorizedAccess
+                            } else {
+                                match data {
+                                    Ok(skillblocks) => Msg::GetSkillBlocksSuccess(skillblocks),
+                                    Err(error) => Msg::GetSkillBlocksError(error),
+                                }
                             }
                         });
                 self.task = Some(api::get_dev_skillblocks(handler));
@@ -319,6 +331,16 @@ impl Component for User {
 
                 true
             },
+            Msg::UnauthorizedAccess => {
+                //TODO: Implement logic to destory session state
+                // stored on frontend
+                let route = RouteRequest::ChangeRoute(
+                    Route::from(UnauthorizedPage)
+                );
+                self.router.send(route);
+                
+                true
+            }
         }
     }
 
