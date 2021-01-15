@@ -2,7 +2,7 @@ use anyhow::Error;
 
 use crate::api;
 use crate::components::NavbarElement;
-use crate::pages::{ About, Form, Home, SignIn, SignUp, User };
+use crate::pages::{ About, Form, Home, SignIn, SignUp, Unauthorized, User };
 use crate::route::Route;
 use crate::types::Session;
 
@@ -102,6 +102,7 @@ impl Component for App {
             Route::FormPage => html! {<Form key_present=key_exists/>},
             Route::SignInPage => html! {<SignIn/>},
             Route::SignUpPage => html! {<SignUp/>},
+            Route::UnauthorizedPage => html! { <Unauthorized/> },
             Route::UserPage => html! {<User/>},
             Route::HomePage => html! {<Home/>},
         });
