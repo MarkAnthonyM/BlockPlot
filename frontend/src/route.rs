@@ -11,6 +11,8 @@ pub enum Route {
     SignInPage,
     #[to = "/sign_up"]
     SignUpPage,
+    #[to = "/unauthorized"]
+    UnauthorizedPage,
     #[to = "/user"]
     UserPage,
     #[to = "/"]
