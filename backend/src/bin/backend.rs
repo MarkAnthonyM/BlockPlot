@@ -35,12 +35,11 @@ use rusty_rescuetime::parameters::RestrictOptions::{ Category, Overview };
 use uuid::Uuid;
 
 #[get("/")]
-fn index(flash: Option<FlashMessage>) -> Template {
-    let context: HashMap<String, String> = HashMap::new();
+fn index(flash: Option<FlashMessage>) -> Status {
     flash.map(|msg| format!("{}: {}", msg.name(), msg.msg()))
         .unwrap_or_else(|| "Welcome!".to_string());
     
-    Template::render("error/401", context)
+    Status::Unauthorized
 }
 
 // Route redirects to auth0 login page. Redirection link is built from
