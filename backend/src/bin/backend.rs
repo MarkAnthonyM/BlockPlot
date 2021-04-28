@@ -160,6 +160,7 @@ fn process_logout(
 fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<models::TimeWrapper>, Status> {
     // Check user for RescueTime api key.
     // Return 404 status if not found
+    //TODO: Return more appropriate status code here
     if !user.key_present {
         return Err(Status::NotFound);
     }
