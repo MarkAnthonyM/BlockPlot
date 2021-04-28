@@ -20,7 +20,10 @@ impl Component for Unauthorized {
 
     fn view(&self) -> Html {
         html! {
-            <p>{ "This is a test!" }</p>
+            <>
+                <h1>{ "Unauthorized access" }</h1>
+                <p>{ "Session may have expired. Please log in and try again." }</p>
+            </>
         }
     }
 }
