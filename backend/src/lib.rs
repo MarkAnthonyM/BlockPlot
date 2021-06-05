@@ -44,6 +44,7 @@ pub fn rocket() -> rocket::Rocket {
                 routes::authentication::auth0_login,
                 routes::authentication::process_login,
                 routes::authentication::process_logout,
+                routes::health::health_check,
                 routes::index::home,
                 routes::index::index,
                 routes::skillblocks::get_skillblocks,
