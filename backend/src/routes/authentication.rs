@@ -10,7 +10,7 @@ use uuid::Uuid;
 // Route redirects to auth0 login page. Redirection link is built from
 // AuthParameters instance that is managed by rocket application State
 #[get("/auth0")]
-fn auth0_login(mut cookies: Cookies, settings: State<AuthParameters>) -> Result<Redirect, Status> {
+pub fn auth0_login(mut cookies: Cookies, settings: State<AuthParameters>) -> Result<Redirect, Status> {
     let state_code = build_random_state();
     cookies.add(Cookie::new("state", state_code.clone()));
 
@@ -21,7 +21,7 @@ fn auth0_login(mut cookies: Cookies, settings: State<AuthParameters>) -> Result<
 
 // Route for testing authentication routine
 #[get("/process?<code>&<state>")]
-fn process_login(
+pub fn process_login(
     session_db: State<SessionDB>,
     code: String,
     mut cookies: Cookies,
@@ -94,7 +94,7 @@ fn process_login(
 // which logs user out of auth0 service and redirects
 // to blockplot homepage.
 #[get("/logout")]
-fn process_logout(
+pub fn process_logout(
     mut cookies: Cookies,
     session_db: State<SessionDB>,
     settings: State<AuthParameters>,

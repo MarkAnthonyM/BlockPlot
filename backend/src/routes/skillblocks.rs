@@ -23,7 +23,7 @@ use std::collections::HashMap;
 // fetches timedata from RescueTime api,
 // and serves processed information to frontend
 #[get("/api/skillblocks")]
-fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<models::TimeWrapper>, Status> {
+pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<models::TimeWrapper>, Status> {
     // Check user for RescueTime api key.
     // Return 404 status if not found
     //TODO: Return more appropriate status code here
@@ -310,13 +310,13 @@ fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<mod
 
 // Prototype handler meant to handle fowards due to User RequestGuard failures
 #[get("/api/skillblocks", rank = 2)]
-fn get_skillblocks_redirect() -> Flash<Redirect> {
+pub fn get_skillblocks_redirect() -> Flash<Redirect> {
     Flash::error(Redirect::to("/"), "Invalid user login")
 }
 
 // Handle form post request and store form data into database
 #[post("/api/testpost", data = "<form_data>")]
-fn test_post(user: models::User, conn: BlockplotDbConn, form_data: Form<models::FormData>) -> Result<Redirect, Status> {
+pub fn test_post(user: models::User, conn: BlockplotDbConn, form_data: Form<models::FormData>) -> Result<Redirect, Status> {
     if user.block_count > 3 {
         return Err(Status::Forbidden);
     }
