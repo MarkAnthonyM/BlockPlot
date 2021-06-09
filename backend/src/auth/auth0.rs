@@ -32,12 +32,36 @@ pub fn build_random_state() -> String {
 // Store various parameters needed to build authorization link
 // that fetches auth0 login page. Parameters are read from
 // Rocket.toml configuration file
+#[derive(serde::Deserialize, Debug)]
 pub struct AuthParameters {
     pub audience: String,
     pub auth0_domain: String,
     pub client_id: String,
     pub client_secret: String,
     pub redirect_url: String,
+}
+
+#[derive(serde::Deserialize, Debug)]
+pub struct Settings {
+    pub authparameters: AuthParameters,
+}
+
+impl Settings {
+    pub fn new() -> Result<Self, config::ConfigError> {
+        use dotenv::dotenv;
+        dotenv().ok();
+        let base_path = std::env::current_dir().expect("Failed to determine the current directory");
+        let configuration_directory = base_path.join("configuration");
+
+        let secret = env::var("CLIENT_SECRET").unwrap();
+        
+        let mut settings = config::Config::default();
+
+        settings.merge(config::File::from(configuration_directory.join("auth")).required(true))?;
+        settings.set("authparameters.client_secret", secret)?;
+
+        settings.try_into()
+    }
 }
 
 impl AuthParameters {
@@ -56,6 +80,19 @@ impl AuthParameters {
         };
 
         Ok(auth_parameters)
+    }
+
+    // Struct initialization logic for integrations testing
+    pub fn new_testing(config: Settings) -> Result<Self, config::ConfigError> {
+        let result = Self {
+            audience: config.authparameters.audience,
+            auth0_domain: config.authparameters.auth0_domain,
+            client_id: config.authparameters.client_id,
+            client_secret: config.authparameters.client_secret,
+            redirect_url: config.authparameters.redirect_url,
+        };
+
+        Ok(result)
     }
     
     pub fn build_authorize_url(&self, state: &str) -> String {

@@ -7,20 +7,24 @@ extern crate serde;
 #[macro_use]
 extern crate rocket;
 
-use crate::auth::auth0::{AuthParameters, SessionDB};
+use crate::auth::auth0::{AuthParameters, SessionDB, Settings};
 use crate::db::operations::BlockplotDbConn;
 
 use dashmap::DashMap;
 
+use rocket::config::{Config, Environment};
 use rocket::fairing::AdHoc;
 use rocket_contrib::templates::Template;
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
+use std::net::TcpListener;
+
 pub mod auth;
+pub mod configuration;
 pub mod db;
 pub mod routes;
 
-pub fn rocket() -> rocket::Rocket {
+pub fn rocket(testing: bool, listener: Option<TcpListener>) -> rocket::Rocket {
     let allowed_origins = AllowedOrigins::all();
 
     let cors = rocket_cors::CorsOptions {
@@ -33,11 +37,38 @@ pub fn rocket() -> rocket::Rocket {
         .to_cors();
     
     let sessions = SessionDB(DashMap::new());
+
+    let rocket: rocket::Rocket;
+
+    // Setup rocket instance based on whether running integrations tests or not
+    if testing {
+        let address_config = listener.unwrap();
+        let port = address_config.local_addr().unwrap().port();
+        let config = Config::build(Environment::Development)
+            .address("127.0.0.1")
+            .port(port)
+            .finalize();
+        rocket = rocket::custom(config.unwrap())
+            .attach(AdHoc::on_attach("Parameters Config", |rocket| {
+                let settings = Settings::new().unwrap();
+                let auth_parameters = AuthParameters::new_testing(settings).unwrap();
+
+                Ok(rocket.manage(auth_parameters))
+            }));
+    } else {
+        rocket = rocket::ignite()
+            .attach(BlockplotDbConn::fairing())
+            .attach(Template::fairing())
+            .attach(AdHoc::on_attach("Parameters Config", |rocket| {
+                let config = rocket.config();
+                let auth_parameters = AuthParameters::new(config).unwrap();
     
-    rocket::ignite()
-        .attach(BlockplotDbConn::fairing())
+                Ok(rocket.manage(auth_parameters))
+            }));
+    }
+    
+    rocket
         .attach(cors.unwrap())
-        .attach(Template::fairing())
         .mount(
             "/",
             routes![
@@ -53,12 +84,6 @@ pub fn rocket() -> rocket::Rocket {
             ],
         )
         .manage(sessions)
-        .attach(AdHoc::on_attach("Parameters Config", |rocket| {
-            let config = rocket.config();
-            let auth_parameters = AuthParameters::new(config).unwrap();
-
-            Ok(rocket.manage(auth_parameters))
-        }))
 }
 
 #[cfg(test)]
