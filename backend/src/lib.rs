@@ -80,7 +80,7 @@ pub fn rocket(testing: bool, listener: Option<TcpListener>) -> rocket::Rocket {
                 routes::index::index,
                 routes::skillblocks::get_skillblocks,
                 routes::skillblocks::get_skillblocks_redirect,
-                routes::skillblocks::test_post,
+                routes::skillblocks::new_skillblock,
             ],
         )
         .manage(sessions)

@@ -315,8 +315,8 @@ pub fn get_skillblocks_redirect() -> Flash<Redirect> {
 }
 
 // Handle form post request and store form data into database
-#[post("/api/testpost", data = "<form_data>")]
-pub fn test_post(user: models::User, conn: BlockplotDbConn, form_data: Form<models::FormData>) -> Result<Redirect, Status> {
+#[post("/api/new_skillblock", data = "<form_data>")]
+pub fn new_skillblock(user: models::User, conn: BlockplotDbConn, form_data: Form<models::FormData>) -> Result<Redirect, Status> {
     if user.block_count > 3 {
         return Err(Status::Forbidden);
     }
