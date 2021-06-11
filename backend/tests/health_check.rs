@@ -1,12 +1,20 @@
+#[macro_use]
+extern crate diesel_migrations;
+
 use backend::configuration::{get_configuration, DatabaseSettings};
 use backend::rocket;
 use diesel::Connection;
 use diesel::PgConnection;
 use diesel::RunQueryDsl;
+use diesel_migrations::embed_migrations;
+use rocket::config::Value;
 use rocket::http::Status;
 use rocket::local::Client;
+use std::collections::HashMap;
 use std::net::TcpListener;
 use uuid::Uuid;
+
+embed_migrations!("../migrations/");
 
 // Test app context
 struct TestApp {
@@ -31,12 +39,19 @@ impl TestApp {
             .execute(&conn)
             .expect(format!("Could not create database {}", config.database_name).as_str());
         
+        // Migrate test database
+        let db_uri = config.with_db();
+        let conn = PgConnection::establish(&db_uri)
+            .expect(&format!("Cannot connect to {} database", config.database_name));
+        
+        embedded_migrations::run(&conn);
+        
         Self {
             address,
             base_url: postgres_url,
             client,
             db_name: config.database_name.clone(),
-            pg_connection: config.with_db(),
+            pg_connection: db_uri,
         }
     }
 }
@@ -70,9 +85,16 @@ fn spawn_app() -> TestApp {
 
     // Read from files in configuration folder and populate Settings struct
     let mut configuration = get_configuration().expect("Failed to read configuration");
-    configuration.database.database_name = Uuid::new_v4().to_string();
 
-    let rocket = rocket(true, Some(listener));
+    // Configure custom rocket db settings
+    configuration.database.database_name = Uuid::new_v4().to_string();
+    let mut database_config = HashMap::new();
+    let mut databases = HashMap::new();
+    let db_url = configuration.database.with_db();
+    database_config.insert("url", Value::from(db_url));
+    databases.insert("postgres_blockplot", Value::from(database_config));
+
+    let rocket = rocket(true, Some(listener), Some(databases));
     let client = Client::new(rocket).expect("valid rocket instance");
 
     // Instantiate test app context
