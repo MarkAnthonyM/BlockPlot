@@ -77,7 +77,11 @@ fn configure_database(config: &DatabaseSettings) {
     let conn = PgConnection::establish(&db_uri)
         .expect(&format!("Cannot connect to {} database", config.database_name));
     
-    embedded_migrations::run(&conn);
+    let migration_result = embedded_migrations::run(&conn);
+    match migration_result {
+        Ok(_) => println!("Migration successful!"),
+        Err(error) => println!("Error migrating database: {}", error),
+    }
 }
 
 // Spawn testing application for integrations tests
