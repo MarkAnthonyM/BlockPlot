@@ -28,24 +28,8 @@ struct TestApp {
 impl TestApp {
     // Create new database for calling app context
     fn new(address: String, config: &DatabaseSettings, client: Client) -> Self {
-        // Connect to default database
         let postgres_url = config.without_db();
-        let conn = PgConnection::establish(&postgres_url)
-            .expect("Cannot connect to postgres database.");
-
-        // Create new database for testing
-        let query = diesel::sql_query(format!(r#"CREATE DATABASE "{}";"#, config.database_name).as_str());
-        query
-            .execute(&conn)
-            .expect(format!("Could not create database {}", config.database_name).as_str());
-        
-        // Migrate test database
         let db_uri = config.with_db();
-        let conn = PgConnection::establish(&db_uri)
-            .expect(&format!("Cannot connect to {} database", config.database_name));
-        
-        embedded_migrations::run(&conn);
-        
         Self {
             address,
             base_url: postgres_url,
@@ -62,18 +46,38 @@ impl Drop for TestApp {
         let conn = PgConnection::establish(&self.base_url).expect("Cannot connect to postgres database.");
 
         //TODO: Need to figure out how to force disconnect any active connections
-        // let disconnect_users = format!(
-        //     r#"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = "{}";"#,
-        //     self.db_name
-        // );
+        let disconnect_users = format!(
+            r#"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{}';"#,
+            self.db_name
+        );
 
-        // diesel::sql_query(disconnect_users.as_str())
-        //     .execute(&conn)
-        //     .unwrap();
+        diesel::sql_query(disconnect_users.as_str())
+            .execute(&conn)
+            .unwrap();
 
         let query = diesel::sql_query(format!(r#"DROP DATABASE "{}";"#, self.db_name).as_str());
         query.execute(&conn).expect(&format!("Couldn't drop database {}", self.db_name));
     }
+}
+
+fn configure_database(config: &DatabaseSettings) {
+    // Connect to default database
+    let postgres_url = config.without_db();
+    let conn = PgConnection::establish(&postgres_url)
+        .expect("Cannot connect to postgres database.");
+
+    // Create new database for testing
+    let query = diesel::sql_query(format!(r#"CREATE DATABASE "{}";"#, config.database_name).as_str());
+    query
+        .execute(&conn)
+        .expect(format!("Could not create database {}", config.database_name).as_str());
+    
+    // Migrate test database
+    let db_uri = config.with_db();
+    let conn = PgConnection::establish(&db_uri)
+        .expect(&format!("Cannot connect to {} database", config.database_name));
+    
+    embedded_migrations::run(&conn);
 }
 
 // Spawn testing application for integrations tests
@@ -93,6 +97,7 @@ fn spawn_app() -> TestApp {
     let db_url = configuration.database.with_db();
     database_config.insert("url", Value::from(db_url));
     databases.insert("postgres_blockplot", Value::from(database_config));
+    configure_database(&configuration.database);
 
     let rocket = rocket(true, Some(listener), Some(databases));
     let client = Client::new(rocket).expect("valid rocket instance");
