@@ -109,13 +109,13 @@ fn spawn_app() -> TestApp {
 }
 
 #[test]
-fn get_skillblocks_returns_404_if_apikey_missing() {
+fn get_skillblocks_returns_303_if_user_guard_fails() {
     let app = spawn_app();
 
-    let req = app.client.get("/get_skillblocks");
+    let req = app.client.get("/api/skillblocks");
     let response = req.dispatch();
 
-    assert_eq!(response.status(), Status::NotFound);
+    assert_eq!(response.status(), Status::SeeOther);
 }
 
 #[test]
