@@ -45,7 +45,6 @@ impl Drop for TestApp {
     fn drop(&mut self) {
         let conn = PgConnection::establish(&self.base_url).expect("Cannot connect to postgres database.");
 
-        //TODO: Need to figure out how to force disconnect any active connections
         let disconnect_users = format!(
             r#"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{}';"#,
             self.db_name
