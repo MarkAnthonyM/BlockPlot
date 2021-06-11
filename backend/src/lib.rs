@@ -12,11 +12,12 @@ use crate::db::operations::BlockplotDbConn;
 
 use dashmap::DashMap;
 
-use rocket::config::{Config, Environment};
+use rocket::config::{Config, Environment, Value};
 use rocket::fairing::AdHoc;
 use rocket_contrib::templates::Template;
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
+use std::collections::HashMap;
 use std::net::TcpListener;
 
 pub mod auth;
@@ -24,7 +25,7 @@ pub mod configuration;
 pub mod db;
 pub mod routes;
 
-pub fn rocket(testing: bool, listener: Option<TcpListener>) -> rocket::Rocket {
+pub fn rocket(testing: bool, listener: Option<TcpListener>, db_config: Option<HashMap<&str, Value>>) -> rocket::Rocket {
     let allowed_origins = AllowedOrigins::all();
 
     let cors = rocket_cors::CorsOptions {
@@ -47,6 +48,7 @@ pub fn rocket(testing: bool, listener: Option<TcpListener>) -> rocket::Rocket {
         let config = Config::build(Environment::Development)
             .address("127.0.0.1")
             .port(port)
+            .extra("databases", db_config.unwrap())
             .finalize();
         rocket = rocket::custom(config.unwrap())
             .attach(AdHoc::on_attach("Parameters Config", |rocket| {
@@ -57,7 +59,6 @@ pub fn rocket(testing: bool, listener: Option<TcpListener>) -> rocket::Rocket {
             }));
     } else {
         rocket = rocket::ignite()
-            .attach(BlockplotDbConn::fairing())
             .attach(Template::fairing())
             .attach(AdHoc::on_attach("Parameters Config", |rocket| {
                 let config = rocket.config();
@@ -69,6 +70,7 @@ pub fn rocket(testing: bool, listener: Option<TcpListener>) -> rocket::Rocket {
     
     rocket
         .attach(cors.unwrap())
+        .attach(BlockplotDbConn::fairing())
         .mount(
             "/",
             routes![
