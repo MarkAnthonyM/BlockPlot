@@ -119,6 +119,16 @@ fn get_skillblocks_returns_303_if_user_guard_fails() {
 }
 
 #[test]
+fn new_skillblock_returns_401_if_user_not_logged_in() {
+    let app = spawn_app();
+
+    let req = app.client.post("/api/new_skillblock");
+    let response = req.dispatch();
+
+    assert_eq!(response.status(), Status::Unauthorized);
+}
+
+#[test]
 fn health_check_returns_200() {
     let app = spawn_app();
 
