@@ -358,3 +358,9 @@ pub fn new_skillblock(user: models::User, conn: BlockplotDbConn, form_data: Form
 
     Ok(Redirect::to("http://localhost:8080/user"))
 }
+
+//TODO: Replace with a better redirect handler
+#[post("/api/new_skillblock", rank = 2)]
+pub fn new_skillblock_redirect() -> Status {
+    Status::Unauthorized
+}

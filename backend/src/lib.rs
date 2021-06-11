@@ -83,6 +83,7 @@ pub fn rocket(testing: bool, listener: Option<TcpListener>, db_config: Option<Ha
                 routes::skillblocks::get_skillblocks,
                 routes::skillblocks::get_skillblocks_redirect,
                 routes::skillblocks::new_skillblock,
+                routes::skillblocks::new_skillblock_redirect,
             ],
         )
         .manage(sessions)
