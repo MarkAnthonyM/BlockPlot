@@ -238,3 +238,14 @@ fn process_login_successfully_returns_303() {
 
     assert_eq!(config_result.status(), Status::SeeOther);
 }
+
+#[test]
+fn process_logout_successfully_returns_303() {
+    let app = spawn_app();
+    let _config_result = configure_testuser(&app);
+
+    let req = app.client.get("/logout");
+    let response = req.dispatch();
+
+    assert_eq!(response.status(), Status::SeeOther);
+}
