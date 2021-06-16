@@ -230,3 +230,11 @@ fn health_check_returns_200() {
 
     assert_eq!(response.status(), Status::Ok)
 }
+
+#[test]
+fn process_login_successfully_returns_303() {
+    let app = spawn_app();
+    let config_result = configure_testuser(&app).unwrap();
+
+    assert_eq!(config_result.status(), Status::SeeOther);
+}
