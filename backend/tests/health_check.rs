@@ -212,6 +212,17 @@ fn get_skillblocks_returns_303_if_user_guard_fails() {
 }
 
 #[test]
+fn get_skillblocks_returns_404_if_key_not_found() {
+    let app = spawn_app();
+    let _config_result = configure_testuser(&app);
+
+    let req = app.client.get("/api/skillblocks");
+    let response = req.dispatch();
+
+    assert_eq!(response.status(), Status::NotFound);
+}
+
+#[test]
 fn new_skillblock_returns_401_if_user_not_logged_in() {
     let app = spawn_app();
 
