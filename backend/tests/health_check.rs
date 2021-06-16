@@ -1,17 +1,22 @@
 #[macro_use]
 extern crate diesel_migrations;
 
+use backend::auth::auth0::AuthParameters;
 use backend::configuration::{get_configuration, DatabaseSettings};
 use backend::rocket;
 use diesel::Connection;
 use diesel::PgConnection;
 use diesel::RunQueryDsl;
 use diesel_migrations::embed_migrations;
+use rocket::State;
 use rocket::config::Value;
 use rocket::http::Status;
-use rocket::local::Client;
+use rocket::local::{Client, LocalResponse};
 use std::collections::HashMap;
 use std::net::TcpListener;
+use std::thread::sleep;
+use std::time::Duration;
+use thirtyfour_sync::prelude::*;
 use uuid::Uuid;
 
 embed_migrations!("../migrations/");
@@ -81,6 +86,91 @@ fn configure_database(config: &DatabaseSettings) {
         Ok(_) => println!("Migration successful!"),
         Err(error) => println!("Error migrating database: {}", error),
     }
+}
+
+// Configure and store new testuser in database
+fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
+    // Build auth0 authorization uri using state code.
+    // State code retrived from cookie created by /auth0 endpoint
+    let req = app.client.get("/auth0");
+    let response = req.dispatch();
+    let cookies = response.cookies();
+    let state_code = cookies[0].value();
+    let rocket_instance= app.client.rocket();
+    let app_state: Option<rocket::State<AuthParameters>> = State::from(rocket_instance);
+    let auth_uri;
+    match app_state {
+        Some(state) => {
+            auth_uri = state.build_authorize_url(state_code);
+        },
+        None => {
+            panic!("App state not found!");
+        }
+    }
+
+    // Create selenium browser session using gecko as webdriver
+    let caps = DesiredCapabilities::firefox();
+    let driver = WebDriver::new("http://localhost:4444", &caps)?;
+
+    // Navigate to auth0 authorization login/signup page.
+    // Delays necessary to give webpage dom elements enough time
+    // to load up properly
+    driver.get(&auth_uri)?;
+    let delay = Duration::new(3, 0);
+    sleep(delay);
+
+    // Crawl to google sign-in button element
+    // and simulate click 
+    let google_button = driver.find_element(By::ClassName("auth0-lock-social-button"))?;
+    google_button.click()?;
+    sleep(delay);
+
+    // Crawl to email input element, populate text box with user email address.
+    // Crawl to next button and simulate click
+    let email_text = driver.find_element(By::Id("identifierId"))?;
+    email_text.send_keys("fakeintegrationuser")?;
+    let button_container = driver.find_element(By::ClassName("qhFLie"))?;
+    let next_button = button_container.find_element(By::Css("button[type='button']"))?;
+    next_button.click()?;
+    sleep(delay);
+
+    // Crawl to user password input element, populate text box with user password.
+    // Crawl to submit button and simulate click
+    let elem_password = driver.find_element(By::Id("password"))?;
+    let password_text = elem_password.find_element(By::Css("input[type='password']"))?;
+    password_text.send_keys("fakeintegrations")?;
+    let button_container = driver.find_element(By::ClassName("qhFLie"))?;
+    let next_button = button_container.find_element(By::Css("button[type='button']"))?;
+    let click_result = next_button.click();
+    match click_result {
+        Ok(val) => println!("result is success: {:?}", val),
+        Err(err) => println!("result is error: {:?}", err),
+    }
+
+    //TODO: Find solution to incorporating code below for situation
+    // where user isn't previously authorized
+    // sleep(delay);
+    // let allow_button = driver.find_element(By::Id("allow"))?;
+    // let click_result = allow_button.click();
+    // match click_result {
+    //     Ok(val) => println!("result is success: {:?}", val),
+    //     Err(err) => println!("result is error: {:?}", err),
+    // }
+
+    // Grab callback url returned by authorized login.
+    // Retrive response_code and state_code query parameters.
+    // Build process_login endpoint url
+    let callback_url = driver.current_url()?;
+    let split_string: Vec<&str> = callback_url.split("?").collect();
+    let parameters = split_string[1].to_string();
+    let process_url = format!("/process?{}", parameters);
+
+    // Hit process_login endpoint, creating test user
+    // and storing in database.
+    let req = app.client.get(process_url);
+    let response = req.dispatch();
+
+    Ok(response)
 }
 
 // Spawn testing application for integrations tests
