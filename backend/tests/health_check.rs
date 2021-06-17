@@ -224,13 +224,13 @@ fn spawn_app() -> TestApp {
 }
 
 #[test]
-fn get_skillblocks_returns_303_if_user_guard_fails() {
+fn get_skillblocks_returns_401_if_user_guard_fails() {
     let app = spawn_app();
 
     let req = app.client.get("/api/skillblocks");
     let response = req.dispatch();
 
-    assert_eq!(response.status(), Status::SeeOther);
+    assert_eq!(response.status(), Status::Unauthorized);
 }
 
 #[test]
