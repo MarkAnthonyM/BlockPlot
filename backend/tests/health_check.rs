@@ -173,6 +173,28 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     Ok(response)
 }
 
+// Generate testing skillblock and store in database
+fn create_mock_skillblock(app: &TestApp) -> LocalResponse {
+    use dotenv::dotenv;
+    dotenv().ok();
+
+    // Create form data
+    let rescuetime_api_key = std::env::var("RESCUETIME_API_KEY").unwrap();
+    let _config_result = configure_testuser(&app);
+    let mock_form_data = format!(
+        "api_key={}&category=software%20&offline_category=false&description=Programming%20skillblock&skill_name=Programming",
+        rescuetime_api_key
+    );
+
+    // Dispatch post request using mock form data
+    let req = app.client.post("/api/new_skillblock")
+        .body(mock_form_data)
+        .header(ContentType::Form);
+    let response = req.dispatch();
+
+    response
+}
+
 // Spawn testing application for integrations tests
 fn spawn_app() -> TestApp {
     // Bind server to address using random port
@@ -224,23 +246,9 @@ fn get_skillblocks_returns_404_if_key_not_found() {
 
 #[test]
 fn new_skillblocks_successfully_returns_303() {
-    use dotenv::dotenv;
-    dotenv().ok();
-
-    // Arrange
-    let rescuetime_api_key = std::env::var("RESCUETIME_API_KEY").unwrap();
     let app = spawn_app();
     let _config_result = configure_testuser(&app);
-    let mock_form_data = format!(
-        "api_key={}&category=software%20&offline_category=false&description=Programming%20skillblock&skill_name=Programming",
-        rescuetime_api_key
-    );
-
-
-    let req = app.client.post("/api/new_skillblock")
-        .body(mock_form_data)
-        .header(ContentType::Form);
-    let response = req.dispatch();
+    let response = create_mock_skillblock(&app);
 
     assert_eq!(response.status(), Status::SeeOther);
 }
