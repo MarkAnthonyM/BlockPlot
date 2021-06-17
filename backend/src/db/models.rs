@@ -1,6 +1,7 @@
 use chrono::naive::NaiveDateTime;
 use crate::auth::auth0::SessionDB;
 use diesel::Queryable;
+use rocket::http::Status;
 use rocket::request::{ FromRequest, Request, self };
 use rocket::State;
 use serde::Deserialize;
@@ -91,7 +92,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
                 match *session_map {
                     Some(ref session) => {
                         if session.session_expired() {
-                            return rocket::Outcome::Forward(());
+                            return rocket::Outcome::Failure((Status::Unauthorized, ()));
                         }
 
                         // Query postgres database for user. If match found,
@@ -103,17 +104,17 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
                                 rocket::Outcome::Success(user)
                             },
                             None => {
-                                rocket::Outcome::Forward(())
+                                rocket::Outcome::Failure((Status::InternalServerError, ()))
                             }
                         }
                     },
                     None => {
-                        rocket::Outcome::Forward(())
+                        rocket::Outcome::Failure((Status::Unauthorized, ()))
                     }
                 }
             },
             None => {
-                rocket::Outcome::Forward(())
+                rocket::Outcome::Failure((Status::Unauthorized, ()))
             }
         }
     }
