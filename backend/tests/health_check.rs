@@ -22,25 +22,26 @@ use uuid::Uuid;
 embed_migrations!("../migrations/");
 
 // Test app context
+//TODO: Evaluate if address/pg_connection struct fields are neccessary
 struct TestApp {
-    address: String,
+    _address: String,
     base_url: String,
     client: Client,
     db_name: String,
-    pg_connection: String,
+    _pg_connection: String,
 }
 
 impl TestApp {
     // Create new database for calling app context
-    fn new(address: String, config: &DatabaseSettings, client: Client) -> Self {
+    fn new(_address: String, config: &DatabaseSettings, client: Client) -> Self {
         let postgres_url = config.without_db();
         let db_uri = config.with_db();
         Self {
-            address,
+            _address,
             base_url: postgres_url,
             client,
             db_name: config.database_name.clone(),
-            pg_connection: db_uri,
+            _pg_connection: db_uri,
         }
     }
 }
