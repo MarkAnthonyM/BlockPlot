@@ -91,6 +91,13 @@ fn configure_database(config: &DatabaseSettings) {
 
 // Configure and store new testuser in database
 fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
+    use dotenv::dotenv;
+    dotenv().ok();
+    
+    // Grab testing login credentials
+    let test_email = std::env::var("TESTEMAIL").unwrap();
+    let test_password = std::env::var("TESTPASSWORD").unwrap();
+    
     // Build auth0 authorization uri using state code.
     // State code retrived from cookie created by /auth0 endpoint
     let req = app.client.get("/auth0");
@@ -129,7 +136,7 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     // Crawl to email input element, populate text box with user email address.
     // Crawl to next button and simulate click
     let email_text = driver.find_element(By::Id("identifierId"))?;
-    email_text.send_keys("fakeintegrationuser")?;
+    email_text.send_keys(test_email)?;
     let button_container = driver.find_element(By::ClassName("qhFLie"))?;
     let next_button = button_container.find_element(By::Css("button[type='button']"))?;
     next_button.click()?;
@@ -139,7 +146,7 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     // Crawl to submit button and simulate click
     let elem_password = driver.find_element(By::Id("password"))?;
     let password_text = elem_password.find_element(By::Css("input[type='password']"))?;
-    password_text.send_keys("fakeintegrations")?;
+    password_text.send_keys(test_password)?;
     let button_container = driver.find_element(By::ClassName("qhFLie"))?;
     let next_button = button_container.find_element(By::Css("button[type='button']"))?;
     let click_result = next_button.click();
