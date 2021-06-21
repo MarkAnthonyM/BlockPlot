@@ -2,15 +2,14 @@ use anyhow::Error;
 
 use crate::api;
 use crate::components::NavbarElement;
-use crate::pages::{ About, Form, Home, SignIn, SignUp, Unauthorized, User };
+use crate::pages::{About, Form, Home, SignIn, SignUp, Unauthorized, User};
 use crate::route::Route;
 use crate::types::Session;
 
 use yew::format::Json;
 use yew::prelude::*;
-use yew_router::prelude::*;
 use yew::services::fetch::FetchTask;
-
+use yew_router::prelude::*;
 
 pub enum Msg {
     CheckLoginStatus,
@@ -35,7 +34,7 @@ impl Component for App {
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         link.send_message(Msg::CheckLoginStatus);
-        
+
         Self {
             link,
             state: State {
@@ -50,23 +49,23 @@ impl Component for App {
         match msg {
             Msg::CheckLoginStatus => {
                 self.state.session_checked = false;
-                let handler =
-                    self.link
-                        .callback(move |response: api::FetchResponse<Session>| {
-                            let (_, Json(data)) = response.into_parts();
-                            match data {
-                                Ok(session_info) => Msg::GetSessionSuccess(session_info),
-                                Err(error) => Msg::GetSessionError(error),
-                            }
-                        });
+                let handler = self
+                    .link
+                    .callback(move |response: api::FetchResponse<Session>| {
+                        let (_, Json(data)) = response.into_parts();
+                        match data {
+                            Ok(session_info) => Msg::GetSessionSuccess(session_info),
+                            Err(error) => Msg::GetSessionError(error),
+                        }
+                    });
                 self.task = Some(api::get_user_session(handler));
                 true
-            },
+            }
             Msg::GetSessionError(_error) => {
                 self.state.session = None;
                 self.state.session_checked = true;
                 true
-            },
+            }
             Msg::GetSessionSuccess(session) => {
                 self.state.session = Some(session);
                 self.state.session_checked = true;
@@ -88,7 +87,7 @@ impl Component for App {
                 navbar_div = html! {
                     <NavbarElement session=session/>
                 }
-            },
+            }
             None => {
                 key_exists = false;
                 navbar_div = html! {

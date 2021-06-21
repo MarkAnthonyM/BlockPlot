@@ -25,7 +25,11 @@ pub mod configuration;
 pub mod db;
 pub mod routes;
 
-pub fn rocket(testing: bool, listener: Option<TcpListener>, db_config: Option<HashMap<&str, Value>>) -> rocket::Rocket {
+pub fn rocket(
+    testing: bool,
+    listener: Option<TcpListener>,
+    db_config: Option<HashMap<&str, Value>>,
+) -> rocket::Rocket {
     let allowed_origins = AllowedOrigins::all();
 
     let cors = rocket_cors::CorsOptions {
@@ -35,8 +39,8 @@ pub fn rocket(testing: bool, listener: Option<TcpListener>, db_config: Option<Ha
         allow_credentials: true,
         ..Default::default()
     }
-        .to_cors();
-    
+    .to_cors();
+
     let sessions = SessionDB(DashMap::new());
 
     let rocket: rocket::Rocket;
@@ -50,24 +54,26 @@ pub fn rocket(testing: bool, listener: Option<TcpListener>, db_config: Option<Ha
             .port(port)
             .extra("databases", db_config.unwrap())
             .finalize();
-        rocket = rocket::custom(config.unwrap())
-            .attach(AdHoc::on_attach("Parameters Config", |rocket| {
+        rocket = rocket::custom(config.unwrap()).attach(AdHoc::on_attach(
+            "Parameters Config",
+            |rocket| {
                 let settings = Settings::new().unwrap();
                 let auth_parameters = AuthParameters::new_testing(settings).unwrap();
 
                 Ok(rocket.manage(auth_parameters))
-            }));
+            },
+        ));
     } else {
         rocket = rocket::ignite()
             .attach(Template::fairing())
             .attach(AdHoc::on_attach("Parameters Config", |rocket| {
                 let config = rocket.config();
                 let auth_parameters = AuthParameters::new(config).unwrap();
-    
+
                 Ok(rocket.manage(auth_parameters))
             }));
     }
-    
+
     rocket
         .attach(cors.unwrap())
         .attach(BlockplotDbConn::fairing())

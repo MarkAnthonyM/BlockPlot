@@ -2,20 +2,20 @@ use anyhow::Error;
 
 use chrono::prelude::*;
 use chrono::Duration;
-use yew_router::prelude::*;
 use yew_router::agent::RouteRequest;
+use yew_router::prelude::*;
 
 use crate::api;
-use crate::types::{ Color, TimeData, TimeStats, TimeWrapper };
 use crate::route::Route::UnauthorizedPage;
+use crate::types::{Color, TimeData, TimeStats, TimeWrapper};
 
-use ybc::{ Box, Container, Section, Tile };
-use ybc::TileCtx::{ Ancestor, Child, Parent };
+use ybc::TileCtx::{Ancestor, Child, Parent};
 use ybc::TileSize;
+use ybc::{Box, Container, Section, Tile};
 
 use yew::format::Json;
 use yew::prelude::*;
-use yew::services::fetch::{ FetchTask, StatusCode };
+use yew::services::fetch::{FetchTask, StatusCode};
 use yew::services::ConsoleService;
 
 pub enum Msg {
@@ -43,7 +43,7 @@ impl User {
     fn view_blockgrid(&self, time_block: &TimeData) -> Html {
         // Create empty vecotr representing months out of a year
         let mut month_elements = Vec::new();
-        
+
         // create empty vector representing weeks out of a year
         let mut week_elements = Vec::new();
 
@@ -64,11 +64,11 @@ impl User {
         let (current_year, current_month, current_day) = (
             current_date.year(),
             current_date.month(),
-            current_date.day()
+            current_date.day(),
         );
 
         // Calculate value to subtract from current day. When new week starts on a sunday,
-        // 0 is subtracted from current day, shifting calender graph leftward and replacing oldest week 
+        // 0 is subtracted from current day, shifting calender graph leftward and replacing oldest week
         // TODO: Fix bug when week day is sunday. overflow issue.
         let day_incrementor = current_date.weekday().pred().num_days_from_monday();
         let week_incrementor = day_incrementor % 6;
@@ -76,11 +76,11 @@ impl User {
 
         let year_start = NaiveDateTime::new(
             NaiveDate::from_ymd(current_year - 1, current_month, oldest_week),
-            NaiveTime::from_hms(0, 0, 0)
+            NaiveTime::from_hms(0, 0, 0),
         );
         let year_end = NaiveDateTime::new(
             NaiveDate::from_ymd(current_year, current_month, current_day),
-            NaiveTime::from_hms(0, 0, 0)
+            NaiveTime::from_hms(0, 0, 0),
         );
         let mut selected_day = year_start;
         let mut year = Vec::new();
@@ -103,14 +103,14 @@ impl User {
                         </g>
                     };
                     week_elements.push(week_element);
-    
+
                     day_elements = Vec::new();
 
                     // Create month <text> elements, spaced out by first sunday of every month
                     let month = day.format("%h");
                     // Calculate week number of given month
                     let week_number = (day.day() - 1) / 7 + 1;
-                    // Check if date is first week of given month 
+                    // Check if date is first week of given month
                     if week_number == 1 {
                         let month_element = html! {
                             <text class="month" y="-7" x=format!("{}", week_elements.len() * 14) style="font-size: 12px;">{ month }</text>
@@ -151,20 +151,20 @@ impl User {
                                 chain_count = 0;
                             }
                         }
-                    },
+                    }
                     _ => {
                         chain_count += 1;
                     }
                 }
             }
-            
+
             // Create <rect> element representing a day
             let day_element = html! {
                 <rect width="11" height="11" y=weekday.num_days_from_sunday() * 15 rx=2 ry=2 fill=color style="outline: 1px solid #1b1f230a; outline-offset: -1px;" date-data=formatted_date></rect>
             };
             day_elements.push(day_element);
 
-            // Create tags for data of most recent weekdays 
+            // Create tags for data of most recent weekdays
             if day == year.last().unwrap() {
                 let week_element = html! {
                     <g transform=format!("translate({}, 0)", week_elements.len() * 14)>
@@ -283,7 +283,7 @@ impl Component for User {
         let skill_blocks = vec![];
 
         link.send_message(Msg::GetDevSkillBlock);
-        
+
         Self {
             state: State {
                 skill_blocks,
@@ -317,12 +317,12 @@ impl Component for User {
                         });
                 self.task = Some(api::get_dev_skillblocks(handler));
                 true
-            },
+            }
             Msg::GetSkillBlocksError(error) => {
                 self.state.get_skillblocks_error = Some(error);
                 self.state.get_skillblocks_loaded = true;
                 true
-            },
+            }
             Msg::GetSkillBlocksSuccess(skillblocks) => {
                 for skillblock in skillblocks.data {
                     self.state.skill_blocks.push(skillblock);
@@ -330,15 +330,13 @@ impl Component for User {
                 }
 
                 true
-            },
+            }
             Msg::UnauthorizedAccess => {
                 //TODO: Implement logic to destory session state
                 // stored on frontend
-                let route = RouteRequest::ChangeRoute(
-                    Route::from(UnauthorizedPage)
-                );
+                let route = RouteRequest::ChangeRoute(Route::from(UnauthorizedPage));
                 self.router.send(route);
-                
+
                 true
             }
         }

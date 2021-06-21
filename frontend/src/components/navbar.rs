@@ -1,7 +1,7 @@
 use crate::route::Route;
 use crate::types::Session;
 
-use ybc::{ Container, Navbar };
+use ybc::{Container, Navbar};
 
 use yew::prelude::*;
 
@@ -28,7 +28,7 @@ impl NavbarElement {
     // Construct navbrand section of navbar
     fn view_navbrand(&self) -> Html {
         type Anchor = RouterAnchor<Route>;
-        
+
         html! {
             <Anchor route=Route::HomePage classes="navbar-item">
                 <svg width="100" height="100">
@@ -48,7 +48,7 @@ impl NavbarElement {
                         { "Log Out" }
                     </a>
                 }
-            },
+            }
             None => {
                 html! {
                     <>
@@ -69,7 +69,7 @@ impl NavbarElement {
                         <img class="is-rounded" src={ session.picture.as_str() }/>
                     </figure>
                 }
-            },
+            }
             None => {
                 html! {
                     <>
@@ -107,14 +107,14 @@ impl NavbarElement {
                         </Anchor>
                     </>
                 }
-            },
+            }
             None => {
                 html! {
                     <p class="is-size-4 navbar-item">{ "Welcome!" }</p>
                 }
             }
         };
-        
+
         html! {
             <>
                 { user_div }

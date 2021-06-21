@@ -1,4 +1,4 @@
-use ybc::{ Control, Field, Section };
+use ybc::{Control, Field, Section};
 
 use yew::prelude::*;
 
@@ -43,7 +43,7 @@ impl SignUp {
             </Field>
         }
     }
-    
+
     fn username_view(&self) -> Html {
         html! {
             <Field>
@@ -67,9 +67,7 @@ impl Component for SignUp {
     fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         Self {
             link: _link,
-            _state: State {
-
-            }
+            _state: State {},
         }
     }
 

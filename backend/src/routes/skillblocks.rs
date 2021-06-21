@@ -1,21 +1,24 @@
-use crate::db::operations::{add_user_key, batch_add_date_times, BlockplotDbConn, create_skillblock, query_date_times_desc, query_skillblocks, update_block_count, update_date_time};
 use crate::db::models;
 use crate::db::models::NewDateTime;
+use crate::db::operations::{
+    add_user_key, batch_add_date_times, create_skillblock, query_date_times_desc,
+    query_skillblocks, update_block_count, update_date_time, BlockplotDbConn,
+};
 
 use chrono::prelude::*;
 use chrono::Duration;
 
 use rocket::http::Status;
 use rocket::request::Form;
-use rocket::response::{ Flash, Redirect };
+use rocket::response::{Flash, Redirect};
 use rocket_contrib::json::Json;
 
-use rusty_rescuetime::analytic_data::{ AnalyticData, QueryKind };
+use rusty_rescuetime::analytic_data::{AnalyticData, QueryKind};
 use rusty_rescuetime::parameters::Parameters;
 use rusty_rescuetime::parameters::PerspectiveOptions::Interval;
 use rusty_rescuetime::parameters::ResolutionOptions::Day;
-use rusty_rescuetime::parameters::RestrictData::{ Date, Thing };
-use rusty_rescuetime::parameters::RestrictOptions::{ Category, Overview };
+use rusty_rescuetime::parameters::RestrictData::{Date, Thing};
+use rusty_rescuetime::parameters::RestrictOptions::{Category, Overview};
 
 use std::collections::HashMap;
 
@@ -23,7 +26,10 @@ use std::collections::HashMap;
 // fetches timedata from RescueTime api,
 // and serves processed information to frontend
 #[get("/api/skillblocks")]
-pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json<models::TimeWrapper>, Status> {
+pub fn get_skillblocks(
+    conn: BlockplotDbConn,
+    user: models::User,
+) -> Result<Json<models::TimeWrapper>, Status> {
     // Check user for RescueTime api key.
     // Return 404 status if not found
     //TODO: Return more appropriate status code here
@@ -35,7 +41,7 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
     let categories = query_skillblocks(&conn, &user).unwrap();
 
     if categories.len() < 1 {
-        return Err(Status::NotFound)
+        return Err(Status::NotFound);
     }
 
     // Vector holds datastructures to be passed back to frontend
@@ -43,19 +49,15 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
 
     let api_key = user.api_key.unwrap();
     let format = String::from("json");
-    
+
     // Setup current year date
     let current_date = Local::now().date().naive_utc();
     let (current_year, current_month, current_day) = (
         current_date.year(),
         current_date.month(),
-        current_date.day()
+        current_date.day(),
     );
-    let year_end = NaiveDate::from_ymd(
-        current_year,
-        current_month,
-        current_day
-    );
+    let year_end = NaiveDate::from_ymd(current_year, current_month, current_day);
 
     // loop through gathered database records and use information to make
     // query calls to rescuetime api for time data
@@ -67,21 +69,14 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
                 if date_times.len() < 1 {
                     // Setup previous year date
                     let next_date = current_date.succ();
-                    let (prev_year, prev_month, prev_day) = (
-                        next_date.year() - 1,
-                        next_date.month(),
-                        next_date.day()
-                    );
-                    
+                    let (prev_year, prev_month, prev_day) =
+                        (next_date.year() - 1, next_date.month(), next_date.day());
+
                     //TODO: Currently pulling in data from less than a year. Figure out how to query data for a full year
-                    let year_start = NaiveDate::from_ymd(
-                        prev_year,
-                        prev_month,
-                        prev_day
-                    );
+                    let year_start = NaiveDate::from_ymd(prev_year, prev_month, prev_day);
 
                     let query_parameters;
-                    
+
                     // Check for needed type of restrict_kind parameter
                     if skillblock.offline_category {
                         query_parameters = Parameters::new(
@@ -104,23 +99,26 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
                             None,
                         );
                     }
-            
-                    let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
-                    
+
+                    let payload =
+                        AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+
                     let mut response = models::TimeData {
                         category: skillblock.category,
                         skill_name: skillblock.skill_name,
                         skill_description: skillblock.description,
                         time_data: HashMap::new(),
                     };
-                    
+
                     // Create hash key/values and sum total time for given category
                     for query in payload.rows {
                         if let QueryKind::SizeSixString(value) = query {
                             if let Some(x) = response.time_data.get_mut(&value.perspective) {
                                 *x += value.time_spent;
                             } else {
-                                response.time_data.insert(value.perspective, value.time_spent);
+                                response
+                                    .time_data
+                                    .insert(value.perspective, value.time_spent);
                             }
                         }
                     }
@@ -142,13 +140,11 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
                             return Err(Status::InternalServerError);
                         }
                     }
-            
+
                     time_vec.push(response);
                 } else {
-                    let current_ndt = NaiveDateTime::new(
-                        current_date,
-                        NaiveTime::from_hms(0, 0, 0)
-                    );
+                    let current_ndt =
+                        NaiveDateTime::new(current_date, NaiveTime::from_hms(0, 0, 0));
 
                     let query_parameters;
 
@@ -177,7 +173,9 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
                             );
                         }
 
-                        let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+                        let payload =
+                            AnalyticData::fetch(&api_key, query_parameters, format.clone())
+                                .unwrap();
 
                         let mut data = models::TimeData {
                             category: skillblock.category,
@@ -196,7 +194,7 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
                         // for method that will skip insert if key already exits
                         // in hashmap
                         data.time_data.remove(&date_times[0].0);
-    
+
                         // Recalculate time total of current date
                         // and insert updated value into hashmap
                         for query in payload.rows {
@@ -221,12 +219,11 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
                             }
                         }
 
-    
                         time_vec.push(data);
                     } else {
                         // Create date older by 1 day than oldest date in database
                         let end_date = date_times[0].0.date() + Duration::days(1);
-                        
+
                         if skillblock.offline_category {
                             query_parameters = Parameters::new(
                                 Some(Interval),
@@ -249,7 +246,9 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
                             );
                         }
 
-                        let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+                        let payload =
+                            AnalyticData::fetch(&api_key, query_parameters, format.clone())
+                                .unwrap();
 
                         let mut data = models::TimeData {
                             category: skillblock.category,
@@ -257,7 +256,7 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
                             skill_description: skillblock.description,
                             time_data: HashMap::new(),
                         };
-    
+
                         // Create hash key/values and sum total time for given category
                         for query in payload.rows {
                             if let QueryKind::SizeSixString(value) = query {
@@ -279,7 +278,9 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
                             time_data_store.push(db_date_time);
                         }
                         match batch_add_date_times(&conn, &time_data_store) {
-                            Ok(rows) => println!("Successfully added {} rows to date database", rows),
+                            Ok(rows) => {
+                                println!("Successfully added {} rows to date database", rows)
+                            }
                             Err(error) => {
                                 println!("Error saving date data to db: {}", error);
                                 return Err(Status::InternalServerError);
@@ -289,11 +290,11 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
                         for dt in date_times {
                             data.time_data.insert(dt.0, dt.1);
                         }
-    
+
                         time_vec.push(data);
                     }
                 }
-            },
+            }
             Err(error) => {
                 println!("Error fetching date time records: {}", error);
                 return Err(Status::InternalServerError);
@@ -301,9 +302,7 @@ pub fn get_skillblocks(conn: BlockplotDbConn, user: models::User) -> Result<Json
         }
     }
 
-    let wrapped_json = models::TimeWrapper {
-        data: time_vec,
-    };
+    let wrapped_json = models::TimeWrapper { data: time_vec };
 
     Ok(Json(wrapped_json))
 }
@@ -316,14 +315,18 @@ pub fn get_skillblocks_redirect() -> Flash<Redirect> {
 
 // Handle form post request and store form data into database
 #[post("/api/new_skillblock", data = "<form_data>")]
-pub fn new_skillblock(user: models::User, conn: BlockplotDbConn, form_data: Form<models::FormData>) -> Result<Redirect, Status> {
+pub fn new_skillblock(
+    user: models::User,
+    conn: BlockplotDbConn,
+    form_data: Form<models::FormData>,
+) -> Result<Redirect, Status> {
     if user.block_count > 3 {
         return Err(Status::Forbidden);
     }
     if !user.key_present {
         match &form_data.api_key {
             Some(key) => {
-                // Consider updating db query operation to remove use of string copy 
+                // Consider updating db query operation to remove use of string copy
                 let query_result = add_user_key(&conn, user.auth_id.to_string(), &key);
                 match query_result {
                     Ok(result) => println!("Successfully updated user key! {:?}", result),
@@ -332,7 +335,7 @@ pub fn new_skillblock(user: models::User, conn: BlockplotDbConn, form_data: Form
                         return Err(Status::Forbidden);
                     }
                 }
-            },
+            }
             None => {
                 println!("Issue with api key from form");
                 return Err(Status::Forbidden);
@@ -350,7 +353,7 @@ pub fn new_skillblock(user: models::User, conn: BlockplotDbConn, form_data: Form
 
     create_skillblock(&conn, db_skillblock);
 
-    // Consider updating db query operation to remove use of string copy 
+    // Consider updating db query operation to remove use of string copy
     match update_block_count(&conn, user.block_count, user.auth_id.to_string()) {
         Ok(result) => println!("User block count successfully updated! {}", result),
         Err(error) => println!("Error updating user block count :( {}", error),

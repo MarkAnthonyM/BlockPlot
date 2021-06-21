@@ -1,13 +1,16 @@
-use chrono::naive::NaiveDateTime;
 use crate::auth::auth0::SessionDB;
+use chrono::naive::NaiveDateTime;
 use diesel::Queryable;
 use rocket::http::Status;
-use rocket::request::{ FromRequest, Request, self };
+use rocket::request::{self, FromRequest, Request};
 use rocket::State;
 use serde::Deserialize;
 use std::collections::HashMap;
 
-use super::{operations::{BlockplotDbConn, query_user}, schema::{ date_times, skillblocks, users }};
+use super::{
+    operations::{query_user, BlockplotDbConn},
+    schema::{date_times, skillblocks, users},
+};
 
 #[derive(Deserialize, Serialize)]
 pub struct TimeData {
@@ -80,7 +83,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
             .cookies()
             .get("session")
             .and_then(|cookie| cookie.value().parse().ok());
-        
+
         match session_id {
             Some(id) => {
                 // Grab in memory sessions owning database. Use session id retrived from
@@ -100,22 +103,14 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
                         // calling endpoint
                         let pg_user = query_user(&pg_conn, session.user_id.to_string());
                         match pg_user {
-                            Some(user) => {
-                                rocket::Outcome::Success(user)
-                            },
-                            None => {
-                                rocket::Outcome::Failure((Status::InternalServerError, ()))
-                            }
+                            Some(user) => rocket::Outcome::Success(user),
+                            None => rocket::Outcome::Failure((Status::InternalServerError, ())),
                         }
-                    },
-                    None => {
-                        rocket::Outcome::Failure((Status::Unauthorized, ()))
                     }
+                    None => rocket::Outcome::Failure((Status::Unauthorized, ())),
                 }
-            },
-            None => {
-                rocket::Outcome::Failure((Status::Unauthorized, ()))
             }
+            None => rocket::Outcome::Failure((Status::Unauthorized, ())),
         }
     }
 }
@@ -124,7 +119,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
 // for a given date and time returned from
 // RescueTime Api
 #[derive(Insertable)]
-#[table_name="date_times"]
+#[table_name = "date_times"]
 pub struct NewDateTime {
     pub block_id: Option<i32>,
     pub day_time: i32,
@@ -133,7 +128,7 @@ pub struct NewDateTime {
 
 // Struct for database bound information
 #[derive(Insertable)]
-#[table_name="skillblocks"]
+#[table_name = "skillblocks"]
 pub struct NewSkillblock {
     pub user_id: Option<i32>,
     pub category: String,
@@ -145,7 +140,7 @@ pub struct NewSkillblock {
 // Struct for creating new user record
 // for database insertion
 #[derive(Insertable)]
-#[table_name="users"]
+#[table_name = "users"]
 pub struct NewUser {
     pub auth_id: String,
     pub api_key: Option<String>,

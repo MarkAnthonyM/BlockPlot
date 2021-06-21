@@ -7,7 +7,7 @@ pub struct About {}
 impl Component for About {
     type Message = ();
     type Properties = ();
-    
+
     fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         Self {}
     }

@@ -1,31 +1,31 @@
-use anyhow::{ anyhow, Error };
+use crate::db::models::{NewUser, User};
+use crate::db::operations::{create_user, query_user};
+use anyhow::{anyhow, Error};
 use chrono::Utc;
-use crate::db::models::{ NewUser, User };
-use crate::db::operations::{ create_user, query_user };
 
 use dashmap::DashMap;
 
-use jsonwebtoken::{ Algorithm, DecodingKey, decode, TokenData, Validation };
+use jsonwebtoken::{decode, Algorithm, DecodingKey, TokenData, Validation};
 
-use rocket::config::{ Config, ConfigError };
-use rocket_contrib::databases::diesel;
-use rocket::request::{ FromRequest, Request, self };
+use rocket::config::{Config, ConfigError};
+use rocket::request::{self, FromRequest, Request};
 use rocket::State;
+use rocket_contrib::databases::diesel;
 
 use std::env;
 
 pub fn build_random_state() -> String {
-    use rand::{ distributions::Alphanumeric, thread_rng };
     use rand::Rng;
+    use rand::{distributions::Alphanumeric, thread_rng};
     use std::iter;
-    
+
     let mut rng = thread_rng();
 
     let random: String = iter::repeat(())
         .map(|()| rng.sample(Alphanumeric))
         .take(7)
         .collect();
-    
+
     random
 }
 
@@ -54,7 +54,7 @@ impl Settings {
         let configuration_directory = base_path.join("configuration");
 
         let secret = env::var("CLIENT_SECRET").unwrap();
-        
+
         let mut settings = config::Config::default();
 
         settings.merge(config::File::from(configuration_directory.join("auth")).required(true))?;
@@ -68,7 +68,7 @@ impl AuthParameters {
     pub fn new(config: &Config) -> Result<AuthParameters, ConfigError> {
         use dotenv::dotenv;
         dotenv().ok();
-        
+
         let secret = env::var("CLIENT_SECRET").unwrap();
 
         let auth_parameters = Self {
@@ -94,7 +94,7 @@ impl AuthParameters {
 
         Ok(result)
     }
-    
+
     pub fn build_authorize_url(&self, state: &str) -> String {
         format!(
             "https://{}/authorize?audience={}&response_type=code&client_id={}&redirect_uri={}&state={}",
@@ -129,8 +129,9 @@ pub fn decode_and_validate(
     let payload = decode::<IdToken>(
         jwt,
         &DecodingKey::from_secret(secret.as_ref()),
-        &Validation::new(Algorithm::HS256)
-    ).unwrap();
+        &Validation::new(Algorithm::HS256),
+    )
+    .unwrap();
 
     // Validate for correct audience
     if payload.claims.aud != audience {
@@ -148,7 +149,10 @@ pub fn decode_and_validate(
 // Get user record from data base using information from decoded jwt payload.
 // If no user found, create and insert user into database using sub claim
 // from jwt payload
-pub fn get_or_create_user(db: &diesel::PgConnection, jwt_payload: &TokenData<IdToken>) -> Result<User, diesel::result::Error> {
+pub fn get_or_create_user(
+    db: &diesel::PgConnection,
+    jwt_payload: &TokenData<IdToken>,
+) -> Result<User, diesel::result::Error> {
     // Query database for user. Returns Option containing user struct if found.
     // Returns None if user not found
     let user = query_user(db, jwt_payload.claims.sub.to_string());
@@ -158,9 +162,7 @@ pub fn get_or_create_user(db: &diesel::PgConnection, jwt_payload: &TokenData<IdT
     // If user variable matches None, instantiates new user
     // and inserts into data base
     match user {
-        Some(record) => {
-            Ok(record)
-        },
+        Some(record) => Ok(record),
         None => {
             let new_user = NewUser {
                 auth_id: jwt_payload.claims.sub.to_string(),
@@ -251,7 +253,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Session {
             match *session_map {
                 Some(ref session) => {
                     return rocket::Outcome::Success(session.clone());
-                },
+                }
                 None => {
                     return rocket::Outcome::Forward(());
                 }

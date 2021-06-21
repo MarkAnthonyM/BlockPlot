@@ -1,4 +1,4 @@
-use ybc::{ Control, Field, Section };
+use ybc::{Control, Field, Section};
 
 use yew::prelude::*;
 
@@ -50,7 +50,7 @@ impl Form {
             }
         }
     }
-    
+
     fn offline_category_view(&self) -> Html {
         html! {
             <Field>
@@ -72,7 +72,7 @@ impl Form {
             </Field>
         }
     }
-    
+
     fn skill_category_view(&self) -> Html {
         if !self.state.toggle_category {
             html! {
@@ -178,12 +178,12 @@ impl Component for Form {
                 println!("Data posted!");
 
                 true
-            },
+            }
             Msg::ToggleCategory => {
                 self.state.toggle_category = !self.state.toggle_category;
 
                 true
-            },
+            }
         }
     }
 

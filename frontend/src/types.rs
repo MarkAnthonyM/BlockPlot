@@ -1,6 +1,6 @@
 use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::{ Deserialize, Serialize };
 
 // Struct represents different color options for heatmap shading
 //TODO: Explore enum equivalent

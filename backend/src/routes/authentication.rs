@@ -1,4 +1,7 @@
-use crate::auth::auth0::{ AuthParameters, Session, SessionDB, TokenResponse, build_random_state, decode_and_validate, get_or_create_user };
+use crate::auth::auth0::{
+    build_random_state, decode_and_validate, get_or_create_user, AuthParameters, Session,
+    SessionDB, TokenResponse,
+};
 use crate::db::operations::BlockplotDbConn;
 
 use rocket::http::{Cookie, Cookies, Status};
@@ -10,7 +13,10 @@ use uuid::Uuid;
 // Route redirects to auth0 login page. Redirection link is built from
 // AuthParameters instance that is managed by rocket application State
 #[get("/auth0")]
-pub fn auth0_login(mut cookies: Cookies, settings: State<AuthParameters>) -> Result<Redirect, Status> {
+pub fn auth0_login(
+    mut cookies: Cookies,
+    settings: State<AuthParameters>,
+) -> Result<Redirect, Status> {
     let state_code = build_random_state();
     cookies.add(Cookie::new("state", state_code.clone()));
 
@@ -27,7 +33,7 @@ pub fn process_login(
     mut cookies: Cookies,
     conn: BlockplotDbConn,
     state: String,
-    settings: State<AuthParameters>
+    settings: State<AuthParameters>,
 ) -> Result<Redirect, Status> {
     if let Some(cookie) = cookies.get("state") {
         if state != cookie.value() {
@@ -37,7 +43,7 @@ pub fn process_login(
         return Err(Status::BadRequest);
     }
     cookies.remove(Cookie::named("state"));
-    
+
     let token_parameters = settings.build_token_request(&code);
     let serialized = serde_json::to_string(&token_parameters).unwrap();
     let token_url = format!("https://{}/oauth/token", settings.auth0_domain);
@@ -51,18 +57,21 @@ pub fn process_login(
         .unwrap()
         .json()
         .expect("Error with token request");
-    
+
     let token_payload = decode_and_validate(
         settings.client_id.as_str(),
         settings.auth0_domain.as_str(),
         token_response.id_token.as_str(),
-        settings.client_secret.as_str()
-    ).map_err(|_| Status::Unauthorized).unwrap();
+        settings.client_secret.as_str(),
+    )
+    .map_err(|_| Status::Unauthorized)
+    .unwrap();
 
-    let user = get_or_create_user(&conn, &token_payload).map_err(|_| Status::InternalServerError)?;
+    let user =
+        get_or_create_user(&conn, &token_payload).map_err(|_| Status::InternalServerError)?;
 
     let new_session = Session {
-        block_count: user.block_count, 
+        block_count: user.block_count,
         email: token_payload.claims.email,
         expires: token_payload.claims.exp,
         given_name: token_payload.claims.given_name,
@@ -74,7 +83,9 @@ pub fn process_login(
 
     let session_token = Uuid::new_v4().to_string();
 
-    session_db.0.insert(session_token.to_string(), Some(new_session));
+    session_db
+        .0
+        .insert(session_token.to_string(), Some(new_session));
 
     let cookie = Cookie::build("session", session_token)
         .path("/")
@@ -83,7 +94,7 @@ pub fn process_login(
         .http_only(true)
         .finish();
     cookies.add(cookie);
-        
+
     Ok(Redirect::to(format!("http://localhost:8080/user")))
 }
 
@@ -99,7 +110,8 @@ pub fn process_logout(
     session_db: State<SessionDB>,
     settings: State<AuthParameters>,
 ) -> Redirect {
-    let session_id: Option<String> = cookies.get("session")
+    let session_id: Option<String> = cookies
+        .get("session")
         .and_then(|cookie| cookie.value().parse().ok());
     if let Some(id) = session_id {
         session_db.0.remove(&id);
@@ -107,7 +119,10 @@ pub fn process_logout(
     cookies.remove(Cookie::named("session"));
 
     let return_url = format!("http://localhost:8080/index");
-    let logout_request = format!("https://{}/v2/logout?client_id={}&returnTo={}", settings.auth0_domain, settings.client_id, return_url);
+    let logout_request = format!(
+        "https://{}/v2/logout?client_id={}&returnTo={}",
+        settings.auth0_domain, settings.client_id, return_url
+    );
 
     Redirect::to(logout_request)
 }

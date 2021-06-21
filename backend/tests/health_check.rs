@@ -8,10 +8,10 @@ use diesel::Connection;
 use diesel::PgConnection;
 use diesel::RunQueryDsl;
 use diesel_migrations::embed_migrations;
-use rocket::State;
 use rocket::config::Value;
 use rocket::http::{ContentType, Status};
 use rocket::local::{Client, LocalResponse};
+use rocket::State;
 use std::collections::HashMap;
 use std::net::TcpListener;
 use std::thread::sleep;
@@ -49,7 +49,8 @@ impl TestApp {
 // Delete newly created databases for integrations tests at conclusion of tests
 impl Drop for TestApp {
     fn drop(&mut self) {
-        let conn = PgConnection::establish(&self.base_url).expect("Cannot connect to postgres database.");
+        let conn =
+            PgConnection::establish(&self.base_url).expect("Cannot connect to postgres database.");
 
         let disconnect_users = format!(
             r#"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{}';"#,
@@ -61,27 +62,32 @@ impl Drop for TestApp {
             .unwrap();
 
         let query = diesel::sql_query(format!(r#"DROP DATABASE "{}";"#, self.db_name).as_str());
-        query.execute(&conn).expect(&format!("Couldn't drop database {}", self.db_name));
+        query
+            .execute(&conn)
+            .expect(&format!("Couldn't drop database {}", self.db_name));
     }
 }
 
 fn configure_database(config: &DatabaseSettings) {
     // Connect to default database
     let postgres_url = config.without_db();
-    let conn = PgConnection::establish(&postgres_url)
-        .expect("Cannot connect to postgres database.");
+    let conn =
+        PgConnection::establish(&postgres_url).expect("Cannot connect to postgres database.");
 
     // Create new database for testing
-    let query = diesel::sql_query(format!(r#"CREATE DATABASE "{}";"#, config.database_name).as_str());
+    let query =
+        diesel::sql_query(format!(r#"CREATE DATABASE "{}";"#, config.database_name).as_str());
     query
         .execute(&conn)
         .expect(format!("Could not create database {}", config.database_name).as_str());
-    
+
     // Migrate test database
     let db_uri = config.with_db();
-    let conn = PgConnection::establish(&db_uri)
-        .expect(&format!("Cannot connect to {} database", config.database_name));
-    
+    let conn = PgConnection::establish(&db_uri).expect(&format!(
+        "Cannot connect to {} database",
+        config.database_name
+    ));
+
     let migration_result = embedded_migrations::run(&conn);
     match migration_result {
         Ok(_) => println!("Migration successful!"),
@@ -93,24 +99,24 @@ fn configure_database(config: &DatabaseSettings) {
 fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     use dotenv::dotenv;
     dotenv().ok();
-    
+
     // Grab testing login credentials
     let test_email = std::env::var("TESTEMAIL").unwrap();
     let test_password = std::env::var("TESTPASSWORD").unwrap();
-    
+
     // Build auth0 authorization uri using state code.
     // State code retrived from cookie created by /auth0 endpoint
     let req = app.client.get("/auth0");
     let response = req.dispatch();
     let cookies = response.cookies();
     let state_code = cookies[0].value();
-    let rocket_instance= app.client.rocket();
+    let rocket_instance = app.client.rocket();
     let app_state: Option<rocket::State<AuthParameters>> = State::from(rocket_instance);
     let auth_uri;
     match app_state {
         Some(state) => {
             auth_uri = state.build_authorize_url(state_code);
-        },
+        }
         None => {
             panic!("App state not found!");
         }
@@ -128,7 +134,7 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     sleep(delay);
 
     // Crawl to google sign-in button element
-    // and simulate click 
+    // and simulate click
     let google_button = driver.find_element(By::ClassName("auth0-lock-social-button"))?;
     google_button.click()?;
     sleep(delay);
@@ -195,7 +201,9 @@ fn create_mock_skillblock(app: &TestApp) -> LocalResponse {
     );
 
     // Dispatch post request using mock form data
-    let req = app.client.post("/api/new_skillblock")
+    let req = app
+        .client
+        .post("/api/new_skillblock")
         .body(mock_form_data)
         .header(ContentType::Form);
     let response = req.dispatch();

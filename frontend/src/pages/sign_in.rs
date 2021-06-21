@@ -1,4 +1,4 @@
-use ybc::{ Control, Field, Section };
+use ybc::{Control, Field, Section};
 
 use yew::prelude::*;
 
@@ -48,13 +48,11 @@ impl SignIn {
 impl Component for SignIn {
     type Message = Msg;
     type Properties = ();
-    
+
     fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         Self {
             link: _link,
-            _state: State {
-
-            }
+            _state: State {},
         }
     }
 

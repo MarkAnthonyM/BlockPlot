@@ -7,9 +7,10 @@ use rocket_contrib::json::Json;
 
 #[get("/")]
 pub fn index(flash: Option<FlashMessage>) -> Status {
-    flash.map(|msg| format!("{}: {}", msg.name(), msg.msg()))
+    flash
+        .map(|msg| format!("{}: {}", msg.name(), msg.msg()))
         .unwrap_or_else(|| "Welcome!".to_string());
-    
+
     Status::Unauthorized
 }
 

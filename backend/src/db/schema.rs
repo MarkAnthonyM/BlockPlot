@@ -31,8 +31,4 @@ table! {
 joinable!(date_times -> skillblocks (block_id));
 joinable!(skillblocks -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(
-    date_times,
-    skillblocks,
-    users,
-);
+allow_tables_to_appear_in_same_query!(date_times, skillblocks, users,);

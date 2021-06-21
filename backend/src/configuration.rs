@@ -20,10 +20,7 @@ impl DatabaseSettings {
     pub fn without_db(&self) -> String {
         let db_uri = format!(
             "postgres://{}:{}@{}:{}/postgres",
-            self.username,
-            self.password,
-            self.host,
-            self.port,
+            self.username, self.password, self.host, self.port,
         );
 
         db_uri
@@ -32,11 +29,7 @@ impl DatabaseSettings {
     pub fn with_db(&self) -> String {
         let db_uri = format!(
             "postgres://{}:{}@{}:{}/{}",
-            self.username,
-            self.password,
-            self.host,
-            self.port,
-            self.database_name
+            self.username, self.password, self.host, self.port, self.database_name
         );
 
         db_uri
