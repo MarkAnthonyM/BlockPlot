@@ -123,7 +123,8 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     }
 
     // Create selenium browser session using gecko as webdriver
-    let caps = DesiredCapabilities::firefox();
+    let mut caps = DesiredCapabilities::firefox();
+    caps.set_headless()?;
     let driver = WebDriver::new("http://localhost:4444", &caps)?;
 
     // Navigate to auth0 authorization login/signup page.
@@ -163,13 +164,13 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
 
     //TODO: Find solution to incorporating code below for situation
     // where user isn't previously authorized
-    sleep(delay);
-    let allow_button = driver.find_element(By::Id("allow"))?;
-    let click_result = allow_button.click();
-    match click_result {
-        Ok(val) => println!("result is success: {:?}", val),
-        Err(err) => println!("result is error: {:?}", err),
-    }
+    // sleep(delay);
+    // let allow_button = driver.find_element(By::Id("allow"))?;
+    // let click_result = allow_button.click();
+    // match click_result {
+    //     Ok(val) => println!("result is success: {:?}", val),
+    //     Err(err) => println!("result is error: {:?}", err),
+    // }
 
     // Grab callback url returned by authorized login.
     // Retrive response_code and state_code query parameters.
