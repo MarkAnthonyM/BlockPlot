@@ -1,7 +1,6 @@
 /target
 /backend/src/bin/db_cli.rs
 /frontend/dist
-/backend/configuration/auth.toml
 Cargo.lock
 .env
 Rocket.toml
