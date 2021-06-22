@@ -1,0 +1,5 @@
+[authparameters]
+audience = "blockplot"
+auth0_domain = "blockplot.us.auth0.com"
+client_id = "HihY9RvMPN549ml22l2mimX5shADEA9w"
+redirect_url = "http://localhost:8000/process"
