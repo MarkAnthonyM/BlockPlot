@@ -18,8 +18,8 @@ jobs:
           POSTGRES_DB: postgres
         ports:
           - 6543:5432
-      chrome:
-        image: selenium/standalone-firefox
+      firefox:
+        image: selenium/standalone-firefox:4
         volumes:
           - /dev/shm:/dev/shm
         ports:
