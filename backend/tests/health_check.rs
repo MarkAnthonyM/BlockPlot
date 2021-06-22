@@ -176,6 +176,7 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     // Retrive response_code and state_code query parameters.
     // Build process_login endpoint url
     let callback_url = driver.current_url()?;
+    println!("{:?}", callback_url);
     let split_string: Vec<&str> = callback_url.split("?").collect();
     let parameters = split_string[1].to_string();
     let process_url = format!("/process?{}", parameters);
