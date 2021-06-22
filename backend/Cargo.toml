@@ -19,7 +19,7 @@ rand = "0.7.3"
 reqwest = "0.10.9"
 rocket = "0.4.5"
 rocket_cors = { version = "0.5.2", default-features = false }
-rusty-rescuetime = { path = "../../rusty-rescuetime" }
+rusty-rescuetime = "0.1.0"
 serde = { version = "1.0.116", features = ["derive"] }
 serde-aux = "2.2.0"
 serde_json = "1.0.59"
