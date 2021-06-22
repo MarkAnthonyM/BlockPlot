@@ -43,7 +43,8 @@ jobs:
           cargo install diesel_cli
       - uses: actions-rs/cargo@v1
         with:
-          command: test -p backend
+          command: test
+          args: --manifest-path ./backend
   
   # fmt:
   #   name: Rustfmt
