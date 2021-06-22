@@ -33,11 +33,6 @@ jobs:
           toolchain: nightly
           override: true
       - name: Migrate database
-        env:
-          CLIENT_SECRET: ${{ secrets.CS }}
-          RESCUETIME_API_KEY: ${{ secrets.RAP }}
-          TESTEMAIL: ${{ secrets.INTE }}
-          TESTPASSWORD: ${{ secrets.INTP }}
         run: |
           sudo apt-get install libpq-dev -y
           cargo install diesel_cli
@@ -45,6 +40,11 @@ jobs:
         with:
           command: test
           args: --manifest-path ./backend/Cargo.toml
+        env:
+          CLIENT_SECRET: ${{ secrets.CS }}
+          RESCUETIME_API_KEY: ${{ secrets.RAP }}
+          TESTEMAIL: ${{ secrets.INTE }}
+          TESTPASSWORD: ${{ secrets.INTP }}
   
   # fmt:
   #   name: Rustfmt
