@@ -23,8 +23,8 @@ jobs:
         volumes:
           - /dev/shm:/dev/shm
         ports:
-        - "4444:4444"
-        - "7900:7900"
+        - 4444:4444
+        - 7900:7900
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
