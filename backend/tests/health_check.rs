@@ -131,7 +131,7 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     // Delays necessary to give webpage dom elements enough time
     // to load up properly
     driver.get(&auth_uri)?;
-    let delay = Duration::new(4, 0);
+    let delay = Duration::new(2, 0);
     sleep(delay);
 
     // Crawl to google sign-in button element
