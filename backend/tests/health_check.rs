@@ -251,16 +251,16 @@ fn spawn_app() -> TestApp {
 //     assert_eq!(response.status(), Status::Unauthorized);
 // }
 
-// #[test]
-// fn get_skillblocks_returns_404_if_key_not_found() {
-//     let app = spawn_app();
-//     let _config_result = configure_testuser(&app);
+#[test]
+fn get_skillblocks_returns_404_if_key_not_found() {
+    let app = spawn_app();
+    let _config_result = configure_testuser(&app);
 
-//     let req = app.client.get("/api/skillblocks");
-//     let response = req.dispatch();
+    let req = app.client.get("/api/skillblocks");
+    let response = req.dispatch();
 
-//     assert_eq!(response.status(), Status::NotFound);
-// }
+    assert_eq!(response.status(), Status::NotFound);
+}
 
 // #[test]
 // fn new_skillblocks_successfully_returns_303() {
@@ -310,15 +310,15 @@ fn spawn_app() -> TestApp {
 //     assert_eq!(response.status(), Status::SeeOther);
 // }
 
-#[test]
-fn test_github_actions() {
-    let app = spawn_app();
-    let mut caps = DesiredCapabilities::firefox();
-    caps.set_headless().unwrap();
-    let driver = WebDriver::new("http://localhost:4444", &caps).unwrap();
-    driver.get("https://www.google.com").unwrap();
-    let google_title = driver.title().unwrap();
+// #[test]
+// fn test_github_actions() {
+//     let app = spawn_app();
+//     let mut caps = DesiredCapabilities::firefox();
+//     caps.set_headless().unwrap();
+//     let driver = WebDriver::new("http://localhost:4444", &caps).unwrap();
+//     driver.get("https://www.google.com").unwrap();
+//     let google_title = driver.title().unwrap();
 
 
-    assert_eq!(google_title, "Google");
-}
+//     assert_eq!(google_title, "Google");
+// }
