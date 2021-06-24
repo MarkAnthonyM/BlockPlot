@@ -158,10 +158,12 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     // Crawl to submit button and simulate click
     let elem_password = driver.find_element(By::Id("password"))?;
     let password_text = elem_password.find_element(By::Css("input[type='password']"))?;
+    println!("{:?}", &test_password);
     password_text.send_keys(test_password)?;
     let button_container = driver.find_element(By::ClassName("qhFLie"))?;
     let next_button = button_container.find_element(By::Css("button[type='button']"))?;
     let click_result = next_button.click();
+    sleep(delay);
     match click_result {
         Ok(val) => println!("result is success: {:?}", val),
         Err(err) => println!("result is error: {:?}", err),
