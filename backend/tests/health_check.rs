@@ -124,7 +124,7 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
 
     // Create selenium browser session using gecko as webdriver
     let mut caps = DesiredCapabilities::firefox();
-    // caps.set_headless()?;
+    caps.set_headless()?;
     let driver = WebDriver::new("http://localhost:4444", &caps)?;
 
     // Navigate to auth0 authorization login/signup page.
