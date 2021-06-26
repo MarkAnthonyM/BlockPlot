@@ -319,6 +319,5 @@ fn get_skillblocks_returns_404_if_key_not_found() {
 //     driver.get("https://www.google.com").unwrap();
 //     let google_title = driver.title().unwrap();
 
-
 //     assert_eq!(google_title, "Google");
 // }
