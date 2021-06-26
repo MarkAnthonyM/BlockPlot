@@ -130,7 +130,6 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     // Navigate to auth0 authorization login/signup page.
     // Delays necessary to give webpage dom elements enough time
     // to load up properly
-    println!("{:?}", &auth_uri);
     driver.get(&auth_uri)?;
     let delay = Duration::new(2, 0);
     sleep(delay);
@@ -140,8 +139,6 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     let google_button = driver.find_element(By::ClassName("auth0-lock-social-button"))?;
     google_button.click()?;
     sleep(delay);
-    let mut current_url = driver.current_url()?;
-    println!("{:?}", current_url);
 
     // Crawl to email input element, populate text box with user email address.
     // Crawl to next button and simulate click
@@ -151,14 +148,11 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     let next_button = button_container.find_element(By::Css("button[type='button']"))?;
     next_button.click()?;
     sleep(delay);
-    current_url = driver.current_url()?;
-    println!("{:?}", current_url);
 
     // Crawl to user password input element, populate text box with user password.
     // Crawl to submit button and simulate click
     let elem_password = driver.find_element(By::Id("password"))?;
     let password_text = elem_password.find_element(By::Css("input[type='password']"))?;
-    println!("{:?}", &test_password);
     password_text.send_keys(test_password)?;
     let button_container = driver.find_element(By::ClassName("qhFLie"))?;
     let next_button = button_container.find_element(By::Css("button[type='button']"))?;
@@ -183,7 +177,6 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     // Retrive response_code and state_code query parameters.
     // Build process_login endpoint url
     let callback_url = driver.current_url()?;
-    println!("{:?}", callback_url);
     let split_string: Vec<&str> = callback_url.split("?").collect();
     let parameters = split_string[1].to_string();
     let process_url = format!("/process?{}", parameters);
