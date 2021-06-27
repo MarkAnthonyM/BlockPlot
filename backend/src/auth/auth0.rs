@@ -96,7 +96,6 @@ impl AuthParameters {
     }
 
     pub fn build_authorize_url(&self, state: &str) -> String {
-        //TODO: Add openid as parameter here for id token return
         format!(
             "https://{}/authorize?audience={}&scope=openid%20email%20profile&response_type=code&client_id={}&redirect_uri={}&state={}",
             self.auth0_domain,
