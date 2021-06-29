@@ -134,44 +134,27 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     let delay = Duration::new(2, 0);
     sleep(delay);
 
-    // Crawl to google sign-in button element
-    // and simulate click
-    let google_button = driver.find_element(By::ClassName("auth0-lock-social-button"))?;
-    google_button.click()?;
-    sleep(delay);
-
     // Crawl to email input element, populate text box with user email address.
-    // Crawl to next button and simulate click
-    let email_text = driver.find_element(By::Id("identifierId"))?;
+    let email_text = driver.find_element(By::Id("1-email"))?;
     email_text.send_keys(test_email)?;
-    let button_container = driver.find_element(By::ClassName("qhFLie"))?;
-    let next_button = button_container.find_element(By::Css("button[type='button']"))?;
-    next_button.click()?;
-    sleep(delay);
 
     // Crawl to user password input element, populate text box with user password.
-    // Crawl to submit button and simulate click
-    let elem_password = driver.find_element(By::Id("password"))?;
-    let password_text = elem_password.find_element(By::Css("input[type='password']"))?;
+    // Crawl to login button and simulate click
+    let password_text = driver.find_element(By::Css("input[type='password']"))?;
     password_text.send_keys(test_password)?;
-    let button_container = driver.find_element(By::ClassName("qhFLie"))?;
-    let next_button = button_container.find_element(By::Css("button[type='button']"))?;
-    let click_result = next_button.click();
+    let login_button = driver.find_element(By::ClassName("auth0-lock-submit"))?;
+    let click_result = login_button.click();
     sleep(delay);
+
+    // TODO: Find solution to incorporating code below for situation
+    // where user isn't previously authorized
+    // let allow_button = driver.find_element(By::Id("allow"))?;
+    // let click_result = allow_button.click();
+    
     match click_result {
         Ok(val) => println!("result is success: {:?}", val),
         Err(err) => println!("result is error: {:?}", err),
     }
-
-    //TODO: Find solution to incorporating code below for situation
-    // where user isn't previously authorized
-    // sleep(delay);
-    // let allow_button = driver.find_element(By::Id("allow"))?;
-    // let click_result = allow_button.click();
-    // match click_result {
-    //     Ok(val) => println!("result is success: {:?}", val),
-    //     Err(err) => println!("result is error: {:?}", err),
-    // }
 
     // Grab callback url returned by authorized login.
     // Retrive response_code and state_code query parameters.
