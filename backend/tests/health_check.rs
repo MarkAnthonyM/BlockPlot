@@ -150,7 +150,7 @@ fn configure_testuser(app: &TestApp) -> WebDriverResult<LocalResponse> {
     // where user isn't previously authorized
     // let allow_button = driver.find_element(By::Id("allow"))?;
     // let click_result = allow_button.click();
-    
+
     match click_result {
         Ok(val) => println!("result is success: {:?}", val),
         Err(err) => println!("result is error: {:?}", err),
@@ -224,15 +224,15 @@ fn spawn_app() -> TestApp {
     app
 }
 
-// #[test]
-// fn get_skillblocks_returns_401_if_user_guard_fails() {
-//     let app = spawn_app();
+#[test]
+fn get_skillblocks_returns_401_if_user_guard_fails() {
+    let app = spawn_app();
 
-//     let req = app.client.get("/api/skillblocks");
-//     let response = req.dispatch();
+    let req = app.client.get("/api/skillblocks");
+    let response = req.dispatch();
 
-//     assert_eq!(response.status(), Status::Unauthorized);
-// }
+    assert_eq!(response.status(), Status::Unauthorized);
+}
 
 #[test]
 fn get_skillblocks_returns_404_if_key_not_found() {
@@ -245,62 +245,50 @@ fn get_skillblocks_returns_404_if_key_not_found() {
     assert_eq!(response.status(), Status::NotFound);
 }
 
-// #[test]
-// fn new_skillblocks_successfully_returns_303() {
-//     let app = spawn_app();
-//     let _config_result = configure_testuser(&app);
-//     let response = create_mock_skillblock(&app);
+#[test]
+fn new_skillblocks_successfully_returns_303() {
+    let app = spawn_app();
+    let _config_result = configure_testuser(&app);
+    let response = create_mock_skillblock(&app);
 
-//     assert_eq!(response.status(), Status::SeeOther);
-// }
+    assert_eq!(response.status(), Status::SeeOther);
+}
 
-// #[test]
-// fn new_skillblock_returns_401_if_user_not_logged_in() {
-//     let app = spawn_app();
+#[test]
+fn new_skillblock_returns_401_if_user_not_logged_in() {
+    let app = spawn_app();
 
-//     let req = app.client.post("/api/new_skillblock");
-//     let response = req.dispatch();
+    let req = app.client.post("/api/new_skillblock");
+    let response = req.dispatch();
 
-//     assert_eq!(response.status(), Status::Unauthorized);
-// }
+    assert_eq!(response.status(), Status::Unauthorized);
+}
 
-// #[test]
-// fn health_check_returns_200() {
-//     let app = spawn_app();
+#[test]
+fn health_check_returns_200() {
+    let app = spawn_app();
 
-//     let req = app.client.get("/health_check");
-//     let response = req.dispatch();
+    let req = app.client.get("/health_check");
+    let response = req.dispatch();
 
-//     assert_eq!(response.status(), Status::Ok)
-// }
+    assert_eq!(response.status(), Status::Ok)
+}
 
-// #[test]
-// fn process_login_successfully_returns_303() {
-//     let app = spawn_app();
-//     let config_result = configure_testuser(&app).unwrap();
+#[test]
+fn process_login_successfully_returns_303() {
+    let app = spawn_app();
+    let config_result = configure_testuser(&app).unwrap();
 
-//     assert_eq!(config_result.status(), Status::SeeOther);
-// }
+    assert_eq!(config_result.status(), Status::SeeOther);
+}
 
-// #[test]
-// fn process_logout_successfully_returns_303() {
-//     let app = spawn_app();
-//     let _config_result = configure_testuser(&app);
+#[test]
+fn process_logout_successfully_returns_303() {
+    let app = spawn_app();
+    let _config_result = configure_testuser(&app);
 
-//     let req = app.client.get("/logout");
-//     let response = req.dispatch();
+    let req = app.client.get("/logout");
+    let response = req.dispatch();
 
-//     assert_eq!(response.status(), Status::SeeOther);
-// }
-
-// #[test]
-// fn test_github_actions() {
-//     let app = spawn_app();
-//     let mut caps = DesiredCapabilities::firefox();
-//     caps.set_headless().unwrap();
-//     let driver = WebDriver::new("http://localhost:4444", &caps).unwrap();
-//     driver.get("https://www.google.com").unwrap();
-//     let google_title = driver.title().unwrap();
-
-//     assert_eq!(google_title, "Google");
-// }
+    assert_eq!(response.status(), Status::SeeOther);
+}
