@@ -1,7 +1,7 @@
 use crate::db::models::{NewUser, User};
 use crate::db::operations::{create_user, query_user};
 use anyhow::{anyhow, Error};
-use chrono::Utc;
+use chrono::{Local, Utc};
 
 use dashmap::DashMap;
 
@@ -164,11 +164,14 @@ pub fn get_or_create_user(
     match user {
         Some(record) => Ok(record),
         None => {
+            let current_datetime = Local::now().naive_utc();
             let new_user = NewUser {
                 auth_id: jwt_payload.claims.sub.to_string(),
                 api_key: None,
                 key_present: false,
                 block_count: 0,
+                created_at: current_datetime,
+                last_login: current_datetime,
             };
 
             let new_record = create_user(db, new_user);

@@ -68,6 +68,8 @@ pub struct User {
     pub api_key: Option<String>,
     pub key_present: bool,
     pub block_count: i32,
+    pub created_at: NaiveDateTime,
+    pub last_login: NaiveDateTime,
 }
 
 // Requst guard implementation. Validation policy will
@@ -146,4 +148,6 @@ pub struct NewUser {
     pub api_key: Option<String>,
     pub key_present: bool,
     pub block_count: i32,
+    pub created_at: NaiveDateTime,
+    pub last_login: NaiveDateTime,
 }
