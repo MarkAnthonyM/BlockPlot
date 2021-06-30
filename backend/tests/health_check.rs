@@ -3,6 +3,7 @@ extern crate diesel_migrations;
 
 use backend::auth::auth0::{AuthParameters, SessionDB};
 use backend::configuration::{get_configuration, DatabaseSettings};
+use backend::db::models::User;
 use backend::db::operations::query_user;
 use backend::rocket;
 use diesel::Connection;
@@ -12,6 +13,7 @@ use diesel_migrations::embed_migrations;
 use rocket::config::Value;
 use rocket::http::{ContentType, Status};
 use rocket::local::{Client, LocalResponse};
+use rocket::Rocket;
 use rocket::State;
 use std::collections::HashMap;
 use std::net::TcpListener;
@@ -197,6 +199,34 @@ fn create_mock_skillblock(app: &TestApp) -> LocalResponse {
     response
 }
 
+// Return User struct from postgres database
+fn retrieve_user(app: &TestApp, response: LocalResponse, rocket_instance: &Rocket) -> Option<User> {
+    let session_state: Option<State<SessionDB>> = State::from(rocket_instance);
+    let cookies = response.cookies();
+    let session_cookie = cookies.into_iter().find(|x| x.name() == "session");
+    let conn =
+        PgConnection::establish(&app.pg_connection).expect("Error connecting to postgres database");
+
+    // Retrieve user id from in memory session database
+    let user_id = match session_cookie {
+        Some(session) => {
+            let session_token = session.value();
+            let session_db = session_state.unwrap();
+            let session_map = session_db.0.get(session_token).unwrap();
+            match *session_map {
+                Some(ref session) => session.user_id.to_string(),
+                None => String::from("User id not found in session database"),
+            }
+        }
+        None => String::from("Session cookie not found"),
+    };
+
+    // Retrieve user from postgres database
+    let pg_user = query_user(&conn, user_id);
+
+    pg_user
+}
+
 // Spawn testing application for integrations tests
 fn spawn_app() -> TestApp {
     // Bind server to address using random port
@@ -251,11 +281,15 @@ fn new_skillblocks_successfully_returns_303() {
     let app = spawn_app();
     let config_result = configure_testuser(&app).unwrap();
     let rocket_instance = app.client.rocket();
+
+    // Hit "/api/new_skillblock" endpoint
     let response = create_mock_skillblock(&app);
-    let conn = PgConnection::establish(&app.pg_connection).expect("Error connecting to postgres database");
-    let user = retrieve_user(rocket_instance);
+
+    // Retrieve user record from database
+    // Store number of skillblocks associated with test user
+    let user = retrieve_user(&app, config_result, rocket_instance).unwrap();
     let block_count = user.block_count;
-    
+
     // Check database for correct block count value
     assert_eq!(block_count, 1);
     assert_eq!(response.status(), Status::SeeOther);
