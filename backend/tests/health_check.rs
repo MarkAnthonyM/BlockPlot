@@ -249,9 +249,15 @@ fn get_skillblocks_returns_404_if_key_not_found() {
 #[test]
 fn new_skillblocks_successfully_returns_303() {
     let app = spawn_app();
-    let _config_result = configure_testuser(&app);
+    let config_result = configure_testuser(&app).unwrap();
+    let rocket_instance = app.client.rocket();
     let response = create_mock_skillblock(&app);
-
+    let conn = PgConnection::establish(&app.pg_connection).expect("Error connecting to postgres database");
+    let user = retrieve_user(rocket_instance);
+    let block_count = user.block_count;
+    
+    // Check database for correct block count value
+    assert_eq!(block_count, 1);
     assert_eq!(response.status(), Status::SeeOther);
 }
 
