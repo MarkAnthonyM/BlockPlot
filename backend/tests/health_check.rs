@@ -3,7 +3,7 @@ extern crate diesel_migrations;
 
 use backend::auth::auth0::{AuthParameters, SessionDB};
 use backend::configuration::{get_configuration, DatabaseSettings};
-use backend::db::models::User;
+use backend::db::models::{TimeWrapper, User};
 use backend::db::operations::query_user;
 use backend::rocket;
 use diesel::Connection;
@@ -274,6 +274,32 @@ fn get_skillblocks_returns_404_if_key_not_found() {
     let response = req.dispatch();
 
     assert_eq!(response.status(), Status::NotFound);
+}
+
+#[test]
+fn get_skillblocks_returns_200_and_payload() {
+    // Arrange
+    let app = spawn_app();
+    configure_testuser(&app).unwrap();
+    create_mock_skillblock(&app);
+
+    // Request for user skillblocks, deserialize request
+    // and store skill name data from skillblock
+    let req = app.client.get("/api/skillblocks");
+    let mut response = req.dispatch();
+    let response_body = response.body_string().unwrap();
+    let payload: TimeWrapper = serde_json::from_str(&response_body).unwrap();
+    let skillblock = payload
+        .data
+        .into_iter()
+        .find(|skillblocks| skillblocks.skill_name == "Programming");
+    let skill_name = match skillblock {
+        Some(block) => block.skill_name,
+        None => String::from("Skillblock from payload not found"),
+    };
+
+    assert_eq!(skill_name, "Programming");
+    assert_eq!(response.status(), Status::Ok);
 }
 
 #[test]
