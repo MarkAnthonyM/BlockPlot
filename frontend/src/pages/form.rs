@@ -200,7 +200,7 @@ impl Component for Form {
                         <div class="colums">
                             <p class="title is-3">{ "Let's create a skillblock!" }</p>
                             <div class="column is-half">
-                                <form action="http://localhost:8000/api/testpost" method="POST">
+                                <form action="http://localhost:8000/api/new_skillblock" method="POST">
                                     { self.api_key_view() }
                                     { self.skill_name_view() }
                                     { self.offline_category_view() }
