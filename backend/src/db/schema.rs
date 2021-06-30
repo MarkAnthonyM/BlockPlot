@@ -25,10 +25,16 @@ table! {
         api_key -> Nullable<Varchar>,
         key_present -> Bool,
         block_count -> Int4,
+        created_at -> Timestamp,
+        last_login -> Timestamp,
     }
 }
 
 joinable!(date_times -> skillblocks (block_id));
 joinable!(skillblocks -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(date_times, skillblocks, users,);
+allow_tables_to_appear_in_same_query!(
+    date_times,
+    skillblocks,
+    users,
+);
