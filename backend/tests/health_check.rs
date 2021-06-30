@@ -320,33 +320,15 @@ fn process_login_successfully_stores_user_and_returns_303() {
     // Arrange
     let app = spawn_app();
     let config_result = configure_testuser(&app).unwrap();
+    let status_response = config_result.status();
     let rocket_instance = app.client.rocket();
-    let session_state: Option<rocket::State<SessionDB>> = State::from(rocket_instance);
-    let conn =
-        PgConnection::establish(&app.pg_connection).expect("Error connection to postgres database");
-    let cookies = config_result.cookies();
-    let session_cookie = cookies.into_iter().find(|x| x.name() == "session");
-
-    // Retrieve user id from in memory session database
-    let user_id = match session_cookie {
-        Some(session) => {
-            let session_token = session.value();
-            let session_db = session_state.unwrap();
-            let session_map = session_db.0.get(session_token).unwrap();
-            match *session_map {
-                Some(ref session) => session.user_id.to_string(),
-                None => String::from("User id not found in session database"),
-            }
-        }
-        None => String::from("Session cookie not found"),
-    };
 
     // Retrieve user from postgres database
-    let pg_user = query_user(&conn, user_id);
+    let pg_user = retrieve_user(&app, config_result, rocket_instance);
 
     // Assert
     assert_eq!(pg_user.is_some(), true);
-    assert_eq!(config_result.status(), Status::SeeOther);
+    assert_eq!(status_response, Status::SeeOther);
 }
 
 #[test]
