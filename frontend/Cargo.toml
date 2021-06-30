@@ -11,5 +11,5 @@ anyhow = "1.0.33"
 chrono = { version = "0.4.19", features = ["serde", "wasmbind"] }
 serde = { version = "1.0.117", features = ["derive"] }
 ybc = "*"
-yew = "0.17.3"
+yew = "0.18.0"
 yew-router = "0.14.0"
