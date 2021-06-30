@@ -320,7 +320,7 @@ fn process_login_successfully_stores_user_and_returns_303() {
     // Arrange
     let app = spawn_app();
     let config_result = configure_testuser(&app).unwrap();
-    let status_response = config_result.status();
+    let response_status = config_result.status();
     let rocket_instance = app.client.rocket();
 
     // Retrieve user from postgres database
@@ -328,7 +328,7 @@ fn process_login_successfully_stores_user_and_returns_303() {
 
     // Assert
     assert_eq!(pg_user.is_some(), true);
-    assert_eq!(status_response, Status::SeeOther);
+    assert_eq!(response_status, Status::SeeOther);
 }
 
 #[test]
