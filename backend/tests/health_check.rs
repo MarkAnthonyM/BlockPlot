@@ -286,11 +286,11 @@ fn new_skillblocks_successfully_returns_303() {
     let response = create_mock_skillblock(&app);
 
     // Retrieve user record from database
-    // Store number of skillblocks associated with test user
+    // Store number of newly created skillblocks associated with test user
     let user = retrieve_user(&app, config_result, rocket_instance).unwrap();
     let block_count = user.block_count;
 
-    // Check database for correct block count value
+    // Check database for correct number of newly created skillblocks
     assert_eq!(block_count, 1);
     assert_eq!(response.status(), Status::SeeOther);
 }
