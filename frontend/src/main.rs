@@ -1,5 +1,7 @@
 #![recursion_limit = "512"]
 
+extern crate num_traits;
+
 mod api;
 mod app;
 mod components;

@@ -9,6 +9,8 @@ use crate::api;
 use crate::route::Route::UnauthorizedPage;
 use crate::types::{Color, TimeData, TimeStats, TimeWrapper};
 
+use num_traits::FromPrimitive;
+
 use ybc::TileCtx::{Ancestor, Child, Parent};
 use ybc::TileSize;
 use ybc::{Box, Container, Section, Tile};
@@ -70,12 +72,23 @@ impl User {
         // Calculate value to subtract from current day. When new week starts on a sunday,
         // 0 is subtracted from current day, shifting calender graph leftward and replacing oldest week
         // TODO: Fix bug when week day is sunday. overflow issue.
-        let day_incrementor = current_date.weekday().pred().num_days_from_monday();
-        let week_incrementor = day_incrementor % 6;
-        let oldest_week = current_day - week_incrementor;
+        // let day = current_date.day();
+        // let oldest_week = if day >= 1 && day < 8 {
+        //     let month = Month::from_u32(current_date.month()).unwrap();
+        //     let month_num = month.pred().number_from_month();
+        //     let last_year = current_year - 1;
+            
+        //     NaiveDate::from_weekday_of_month(last_year, month_num, Weekday::Sun, 4).day()
+        // } else {
+        //     let day_incrementor = current_date.weekday().pred().num_days_from_monday();
+        //     let week_incrementor = day_incrementor % 6;
+            
+        //     current_day - week_incrementor
+        // };
 
+        // Current workaround uses current day for graph starting square
         let year_start = NaiveDateTime::new(
-            NaiveDate::from_ymd(current_year - 1, current_month, oldest_week),
+            NaiveDate::from_ymd(current_year - 1, current_month, current_day),
             NaiveTime::from_hms(0, 0, 0),
         );
         let year_end = NaiveDateTime::new(
