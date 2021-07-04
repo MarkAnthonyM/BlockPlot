@@ -1,8 +1,9 @@
 use crate::db::models;
 use crate::db::models::NewDateTime;
+use crate::db::operations::add_date_time;
 use crate::db::operations::{
     add_user_key, batch_add_date_times, create_skillblock, query_date_times_desc,
-    query_skillblocks, update_block_count, update_date_time, BlockplotDbConn,
+    query_skillblocks, update_block_count, update_date_time, update_blocks_last_fetched, BlockplotDbConn,
 };
 
 use chrono::prelude::*;
@@ -143,87 +144,80 @@ pub fn get_skillblocks(
 
                     time_vec.push(response);
                 } else {
-                    let current_ndt =
-                        NaiveDateTime::new(current_date, NaiveTime::from_hms(0, 0, 0));
+                    // Setup current date, and last known date blocks were
+                    // fetched from the database
+                    let current_nd = Local::now().date().naive_utc();
+                    let last_fetched = user.blocks_last_fetched.date();
 
-                    let query_parameters;
-
-                    // Check database most recent date against
-                    // current date
-                    if date_times[0].0 == current_ndt {
-                        if skillblock.offline_category {
-                            query_parameters = Parameters::new(
-                                Some(Interval),
-                                Some(Day),
-                                //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
-                                Some(Date(current_date.to_string(), current_date.to_string())),
-                                Some(Category),
-                                Some(Thing(skillblock.category.to_string())),
-                                None,
-                            );
-                        } else {
-                            query_parameters = Parameters::new(
-                                Some(Interval),
-                                Some(Day),
-                                //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
-                                Some(Date(current_date.to_string(), current_date.to_string())),
-                                Some(Overview),
-                                Some(Thing(skillblock.category.to_string())),
-                                None,
-                            );
-                        }
-
-                        let payload =
-                            AnalyticData::fetch(&api_key, query_parameters, format.clone())
-                                .unwrap();
-
-                        let mut data = models::TimeData {
-                            category: skillblock.category,
-                            skill_name: skillblock.skill_name,
-                            skill_description: skillblock.description,
-                            time_data: HashMap::new(),
-                        };
-
-                        // Copy database date times into hashmap
-                        for dt in &date_times {
-                            data.time_data.insert(dt.0, dt.1);
-                        }
-
-                        // Remove outdated current date record from hashmap
-                        // TODO: Might be able to get rid of this part. Check
-                        // for method that will skip insert if key already exits
-                        // in hashmap
-                        data.time_data.remove(&date_times[0].0);
-
-                        // Recalculate time total of current date
-                        // and insert updated value into hashmap
-                        for query in payload.rows {
-                            if let QueryKind::SizeSixString(value) = query {
-                                if let Some(x) = data.time_data.get_mut(&value.perspective) {
-                                    *x += value.time_spent;
-                                } else {
-                                    data.time_data.insert(value.perspective, value.time_spent);
-                                }
-                            }
-                        }
-
-                        // Grab updated date time values from hashmap
-                        // and update database record
-                        if let Some((key, val)) = data.time_data.get_key_value(&date_times[0].0) {
-                            match update_date_time(&conn, skillblock.block_id, *key, *val) {
-                                Ok(row) => println!("Successfully updated {} row!", row),
-                                Err(error) => {
-                                    println!("Error updating date data in db: {}", error);
-                                    return Err(Status::InternalServerError);
-                                }
-                            }
-                        }
-
-                        time_vec.push(data);
+                    // Update time data of last known login date
+                    let mut query_parameters;
+                    if skillblock.offline_category {
+                        query_parameters = Parameters::new(
+                            Some(Interval),
+                            Some(Day),
+                            //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                            Some(Date(last_fetched.to_string(), last_fetched.to_string())),
+                            Some(Category),
+                            Some(Thing(skillblock.category.to_string())),
+                            None,
+                        );
                     } else {
-                        // Create date older by 1 day than oldest date in database
-                        let end_date = date_times[0].0.date() + Duration::days(1);
+                        query_parameters = Parameters::new(
+                            Some(Interval),
+                            Some(Day),
+                            //TODO: Currently cloning Date's fields here. Figure out if instead lifetime identifier should be included on Parameter struct
+                            Some(Date(last_fetched.to_string(), last_fetched.to_string())),
+                            Some(Overview),
+                            Some(Thing(skillblock.category.to_string())),
+                            None,
+                        );
+                    }
 
+                    let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+
+                    let mut last_date_data: (NaiveDateTime, i32) = (last_fetched.and_hms(0, 0, 0), 0);
+
+                    // Recalculate time total of last known login date
+                    for query in payload.rows {
+                        if let QueryKind::SizeSixString(value) = query {
+                            last_date_data.1 += value.time_spent;
+                        }
+                    }
+
+                    // Update database record with newly calculated date data of
+                    // last known login date. If database record doesn't exist,
+                    // create a record and insert into database
+                    match update_date_time(&conn, skillblock.block_id, last_date_data.0, last_date_data.1) {
+                        Ok(row) => {
+                            println!("Successfully updated {} row!", row);
+                            if row == 0 {
+                                let new_date_time = NewDateTime {
+                                    block_id: Some(skillblock.block_id),
+                                    day_time: last_date_data.1,
+                                    day_date: last_date_data.0,
+                                };
+                                match add_date_time(&conn, new_date_time) {
+                                    Ok(row) => println!("Successfully added {} row to database", row),
+                                    Err(error) => println!("Error saving date data to db: {}", error),
+                                }
+                            }
+                        },
+                        Err(error) => {
+                            println!("Error updating date data in db: {}", error);
+                            return Err(Status::InternalServerError);
+                        }
+                    }
+
+                    // Check for elapsed time between last known block
+                    // fetch date and current date
+                    if last_fetched != current_nd {
+                        // Generate day date that is one day older
+                        // than last known block fetch date
+                        let end_date = last_fetched + Duration::days(1);
+
+                        // Query ResueTime Api for data spanning length
+                        // of elapsed time between last known block
+                        // fetch and current date
                         if skillblock.offline_category {
                             query_parameters = Parameters::new(
                                 Some(Interval),
@@ -246,9 +240,7 @@ pub fn get_skillblocks(
                             );
                         }
 
-                        let payload =
-                            AnalyticData::fetch(&api_key, query_parameters, format.clone())
-                                .unwrap();
+                        let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
 
                         let mut data = models::TimeData {
                             category: skillblock.category,
@@ -268,6 +260,8 @@ pub fn get_skillblocks(
                             }
                         }
 
+                        // Store newly calcuated time data in vector
+                        // bound for postgres database
                         let mut time_data_store = Vec::new();
                         for (key, val) in data.time_data.iter() {
                             let db_date_time = NewDateTime {
@@ -277,24 +271,57 @@ pub fn get_skillblocks(
                             };
                             time_data_store.push(db_date_time);
                         }
+
+                        // Add newly calculated time data to postgres database
                         match batch_add_date_times(&conn, &time_data_store) {
-                            Ok(rows) => {
-                                println!("Successfully added {} rows to date database", rows)
-                            }
+                            Ok(rows) => println!("Successfully added {} rows to database", rows),
                             Err(error) => {
                                 println!("Error saving date data to db: {}", error);
                                 return Err(Status::InternalServerError);
                             }
                         }
 
+                        // Insert previous time data records
+                        // gathered from postgres database
                         for dt in date_times {
                             data.time_data.insert(dt.0, dt.1);
+                        }
+
+                        // Insert newly updated record created from last
+                        // known block fetch date
+                        if let Some(x) = data.time_data.get_mut(&last_date_data.0) {
+                            *x = last_date_data.1;
+                        } else {
+                            data.time_data.insert(last_date_data.0, last_date_data.1);
+                        }
+
+                        time_vec.push(data);
+                    } else {
+                        let mut data = models::TimeData {
+                            category: skillblock.category,
+                            skill_name: skillblock.skill_name,
+                            skill_description: skillblock.description,
+                            time_data: HashMap::new(),
+                        };
+
+                        // Insert previous time data records
+                        // gathered from postgres database
+                        for dt in date_times {
+                            data.time_data.insert(dt.0, dt.1);
+                        }
+
+                        // Insert newly updated record created from last
+                        // known block fetch date
+                        if let Some(x) = data.time_data.get_mut(&last_date_data.0) {
+                            *x = last_date_data.1;
+                        } else {
+                            data.time_data.insert(last_date_data.0, last_date_data.1);
                         }
 
                         time_vec.push(data);
                     }
                 }
-            }
+            },
             Err(error) => {
                 println!("Error fetching date time records: {}", error);
                 return Err(Status::InternalServerError);
@@ -303,6 +330,11 @@ pub fn get_skillblocks(
     }
 
     let wrapped_json = models::TimeWrapper { data: time_vec };
+
+    //TODO: Should rename schema to differentiate between database login and
+    // website login
+    // Update database record that keeps track of last date skillblocks were fetched
+    update_blocks_last_fetched(&conn, user.auth_id).map_err(|_| Status::InternalServerError).unwrap();
 
     Ok(Json(wrapped_json))
 }
