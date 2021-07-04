@@ -205,6 +205,23 @@ pub fn update_blocks_last_fetched(
     let result = diesel::update(target)
         .set(blocks_last_fetched.eq(current_timestamp))
         .execute(connection);
-    
+
+    result
+}
+
+// Update database record that keeps track of
+// last time user logged in
+pub fn update_user_login_timestamp(
+    connection: &PgConnection,
+    id: String,
+) -> Result<usize, diesel::result::Error> {
+    use self::schema::users::dsl::*;
+    let current_timestamp = Local::now().naive_utc();
+
+    let target = users.filter(auth_id.eq(&id));
+    let result = diesel::update(target)
+        .set(last_login.eq(current_timestamp))
+        .execute(connection);
+
     result
 }

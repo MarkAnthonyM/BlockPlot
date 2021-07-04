@@ -3,7 +3,8 @@ use crate::db::models::NewDateTime;
 use crate::db::operations::add_date_time;
 use crate::db::operations::{
     add_user_key, batch_add_date_times, create_skillblock, query_date_times_desc,
-    query_skillblocks, update_block_count, update_date_time, update_blocks_last_fetched, BlockplotDbConn,
+    query_skillblocks, update_block_count, update_blocks_last_fetched, update_date_time,
+    BlockplotDbConn,
 };
 
 use chrono::prelude::*;
@@ -173,9 +174,11 @@ pub fn get_skillblocks(
                         );
                     }
 
-                    let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+                    let payload =
+                        AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
 
-                    let mut last_date_data: (NaiveDateTime, i32) = (last_fetched.and_hms(0, 0, 0), 0);
+                    let mut last_date_data: (NaiveDateTime, i32) =
+                        (last_fetched.and_hms(0, 0, 0), 0);
 
                     // Recalculate time total of last known login date
                     for query in payload.rows {
@@ -187,7 +190,12 @@ pub fn get_skillblocks(
                     // Update database record with newly calculated date data of
                     // last known login date. If database record doesn't exist,
                     // create a record and insert into database
-                    match update_date_time(&conn, skillblock.block_id, last_date_data.0, last_date_data.1) {
+                    match update_date_time(
+                        &conn,
+                        skillblock.block_id,
+                        last_date_data.0,
+                        last_date_data.1,
+                    ) {
                         Ok(row) => {
                             println!("Successfully updated {} row!", row);
                             if row == 0 {
@@ -197,11 +205,15 @@ pub fn get_skillblocks(
                                     day_date: last_date_data.0,
                                 };
                                 match add_date_time(&conn, new_date_time) {
-                                    Ok(row) => println!("Successfully added {} row to database", row),
-                                    Err(error) => println!("Error saving date data to db: {}", error),
+                                    Ok(row) => {
+                                        println!("Successfully added {} row to database", row)
+                                    }
+                                    Err(error) => {
+                                        println!("Error saving date data to db: {}", error)
+                                    }
                                 }
                             }
-                        },
+                        }
                         Err(error) => {
                             println!("Error updating date data in db: {}", error);
                             return Err(Status::InternalServerError);
@@ -240,7 +252,9 @@ pub fn get_skillblocks(
                             );
                         }
 
-                        let payload = AnalyticData::fetch(&api_key, query_parameters, format.clone()).unwrap();
+                        let payload =
+                            AnalyticData::fetch(&api_key, query_parameters, format.clone())
+                                .unwrap();
 
                         let mut data = models::TimeData {
                             category: skillblock.category,
@@ -321,7 +335,7 @@ pub fn get_skillblocks(
                         time_vec.push(data);
                     }
                 }
-            },
+            }
             Err(error) => {
                 println!("Error fetching date time records: {}", error);
                 return Err(Status::InternalServerError);
@@ -334,7 +348,9 @@ pub fn get_skillblocks(
     //TODO: Should rename schema to differentiate between database login and
     // website login
     // Update database record that keeps track of last date skillblocks were fetched
-    update_blocks_last_fetched(&conn, user.auth_id).map_err(|_| Status::InternalServerError).unwrap();
+    update_blocks_last_fetched(&conn, user.auth_id)
+        .map_err(|_| Status::InternalServerError)
+        .unwrap();
 
     Ok(Json(wrapped_json))
 }

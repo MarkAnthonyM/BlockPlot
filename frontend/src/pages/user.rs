@@ -77,12 +77,12 @@ impl User {
         //     let month = Month::from_u32(current_date.month()).unwrap();
         //     let month_num = month.pred().number_from_month();
         //     let last_year = current_year - 1;
-            
+
         //     NaiveDate::from_weekday_of_month(last_year, month_num, Weekday::Sun, 4).day()
         // } else {
         //     let day_incrementor = current_date.weekday().pred().num_days_from_monday();
         //     let week_incrementor = day_incrementor % 6;
-            
+
         //     current_day - week_incrementor
         // };
 

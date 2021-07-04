@@ -2,7 +2,7 @@ use crate::auth::auth0::{
     build_random_state, decode_and_validate, get_or_create_user, AuthParameters, Session,
     SessionDB, TokenResponse,
 };
-use crate::db::operations::{BlockplotDbConn, update_user_login_timestamp};
+use crate::db::operations::{update_user_login_timestamp, BlockplotDbConn};
 
 use rocket::http::{Cookie, Cookies, Status};
 use rocket::response::Redirect;
@@ -69,7 +69,7 @@ pub fn process_login(
 
     let user =
         get_or_create_user(&conn, &token_payload).map_err(|_| Status::InternalServerError)?;
-    
+
     let user_id = user.auth_id.clone();
 
     let new_session = Session {
@@ -97,7 +97,9 @@ pub fn process_login(
         .finish();
     cookies.add(cookie);
 
-    update_user_login_timestamp(&conn, user_id).map_err(|_| Status::InternalServerError).unwrap();
+    update_user_login_timestamp(&conn, user_id)
+        .map_err(|_| Status::InternalServerError)
+        .unwrap();
 
     Ok(Redirect::to(format!("http://localhost:8080/user")))
 }
