@@ -26,6 +26,7 @@ table! {
         key_present -> Bool,
         block_count -> Int4,
         created_at -> Timestamp,
+        blocks_last_fetched -> Timestamp,
         last_login -> Timestamp,
     }
 }
