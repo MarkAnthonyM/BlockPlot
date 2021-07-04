@@ -1,5 +1,6 @@
 use super::{models, schema};
 use anyhow::Result;
+use chrono::Local;
 use chrono::NaiveDateTime;
 use diesel::dsl::exists;
 use diesel::prelude::*;
@@ -188,5 +189,22 @@ pub fn update_date_time(
         .set(day_time.eq(time))
         .execute(connection);
 
+    result
+}
+
+// Update database record that keeps track of
+// last date skillblocks were fetched
+pub fn update_blocks_last_fetched(
+    connection: &PgConnection,
+    id: String,
+) -> Result<usize, diesel::result::Error> {
+    use self::schema::users::dsl::*;
+    let current_timestamp = Local::now().naive_utc();
+
+    let target = users.filter(auth_id.eq(&id));
+    let result = diesel::update(target)
+        .set(blocks_last_fetched.eq(current_timestamp))
+        .execute(connection);
+    
     result
 }
