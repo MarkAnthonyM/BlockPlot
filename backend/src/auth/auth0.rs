@@ -170,6 +170,7 @@ pub fn get_or_create_user(
                 api_key: None,
                 key_present: false,
                 block_count: 0,
+                blocks_last_fetched: current_datetime,
                 created_at: current_datetime,
                 last_login: current_datetime,
             };

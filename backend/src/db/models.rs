@@ -68,6 +68,7 @@ pub struct User {
     pub api_key: Option<String>,
     pub key_present: bool,
     pub block_count: i32,
+    pub blocks_last_fetched: NaiveDateTime,
     pub created_at: NaiveDateTime,
     pub last_login: NaiveDateTime,
 }
@@ -148,6 +149,7 @@ pub struct NewUser {
     pub api_key: Option<String>,
     pub key_present: bool,
     pub block_count: i32,
+    pub blocks_last_fetched: NaiveDateTime,
     pub created_at: NaiveDateTime,
     pub last_login: NaiveDateTime,
 }
