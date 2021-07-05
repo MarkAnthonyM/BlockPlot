@@ -1,3 +1,4 @@
+use crate::auth::auth0::SessionDB;
 use crate::db::models;
 use crate::db::models::NewDateTime;
 use crate::db::operations::add_date_time;
@@ -10,9 +11,10 @@ use crate::db::operations::{
 use chrono::prelude::*;
 use chrono::Duration;
 
-use rocket::http::Status;
+use rocket::http::{Cookies, Status};
 use rocket::request::Form;
 use rocket::response::{Flash, Redirect};
+use rocket::State;
 use rocket_contrib::json::Json;
 
 use rusty_rescuetime::analytic_data::{AnalyticData, QueryKind};
@@ -366,7 +368,9 @@ pub fn get_skillblocks_redirect() -> Flash<Redirect> {
 pub fn new_skillblock(
     user: models::User,
     conn: BlockplotDbConn,
+    cookies: Cookies,
     form_data: Form<models::FormData>,
+    session_db: State<SessionDB>,
 ) -> Result<Redirect, Status> {
     if user.block_count > 3 {
         return Err(Status::Forbidden);
@@ -381,6 +385,23 @@ pub fn new_skillblock(
                     Err(error) => {
                         println!("Error updating user key! {}", error);
                         return Err(Status::Forbidden);
+                    }
+                }
+
+                // Update session state record to reflect
+                // addition of RescueTime api key
+                let session_cookie: Option<String> = cookies
+                    .get("session")
+                    .and_then(|cookie| cookie.value().parse().ok());
+                if let Some(session_id) = session_cookie {
+                    let mut session_hashmap = session_db.0.get_mut(&session_id).unwrap();
+                    match *session_hashmap {
+                        Some(ref mut session) => {
+                            session.key_present = true;
+                        }
+                        None => {
+                            println!("Error updating key_present session record in backend");
+                        }
                     }
                 }
             }
@@ -405,6 +426,23 @@ pub fn new_skillblock(
     match update_block_count(&conn, user.block_count, user.auth_id.to_string()) {
         Ok(result) => println!("User block count successfully updated! {}", result),
         Err(error) => println!("Error updating user block count :( {}", error),
+    }
+
+    // Update session state record to reflect
+    // new addition of a skillblock
+    let session_cookie: Option<String> = cookies
+        .get("session")
+        .and_then(|cookie| cookie.value().parse().ok());
+    if let Some(session_id) = session_cookie {
+        let mut session_hashmap = session_db.0.get_mut(&session_id).unwrap();
+        match *session_hashmap {
+            Some(ref mut session) => {
+                session.block_count += 1;
+            }
+            None => {
+                println!("Error updating block_count session record in backend");
+            }
+        }
     }
 
     Ok(Redirect::to("http://localhost:8080/user"))
