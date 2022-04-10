@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://imgur.com/CFQafTK">
+    <img src="https://i.imgur.com/CFQafTK.png">
 </p>
 
 # BlockPlot
