@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="https://imgur.com/CFQafTK">
+</p>
+
 # BlockPlot
 A productivity website that aims to help you realize your ambitions and aspirations in building skills!
 
